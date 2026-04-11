@@ -87,6 +87,15 @@ class Router
         if ($method === 'POST' && preg_match('/^admin\/inventory\/(\d+)\/deactivate$/', $path, $matches)) {
             $this->call('InventoryController', 'deactivate', [(int)$matches[1]]);
         }
+        if ($method === 'POST' && preg_match('/^admin\/inventory\/(\d+)\/restore$/', $path, $matches)) {
+            $this->call('InventoryController', 'restore', [(int) $matches[1]]);
+        }
+        if ($method === 'GET' && $path === 'admin/inventory/trash') {
+            $this->call('InventoryController', 'trash');
+        }
+        if ($method === 'DELETE' && preg_match('/^admin\/inventory\/(\d+)$/', $path, $matches)) {
+            $this->call('InventoryController', 'destroy', [(int)$matches[1]]);
+        }
 
         // Categories
         if ($method === 'GET' && $path === 'admin/categories') {

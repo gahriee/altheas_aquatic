@@ -13,11 +13,13 @@ class Auth
     public static function start(): void
     {
         if (session_status() === PHP_SESSION_NONE) {
+            $isSecure = (defined('APP_ENV') && APP_ENV === 'production');
+            
             session_set_cookie_params([
                 'lifetime' => 0,
                 'path' => '/',
                 'domain' => '',
-                'secure' => true,
+                'secure' => $isSecure,
                 'httponly' => true,
                 'samesite' => 'Strict'
             ]);

@@ -2,6 +2,9 @@ import { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import ErrorMessage from '../../components/shared/ErrorMessage';
+import Label from '../../components/ui/Label';
+import Input from '../../components/ui/Input';
+import Button from '../../components/ui/Button';
 
 export default function Login() {
   const [username, setUsername] = useState('');
@@ -26,8 +29,7 @@ export default function Login() {
     setIsSubmitting(true);
 
     try {
-      await login(username, password);
-      // Success is handled by the useEffect above
+      await login(username, password, true);
     } catch (err) {
       setError(err.message || 'Login failed. Please try again.');
     } finally {
@@ -52,30 +54,28 @@ export default function Login() {
 
           <form className="space-y-6" onSubmit={handleSubmit}>
             <div>
-              <label htmlFor="username" className="block text-sm font-bold text-sage-500 mb-2 ml-1">
+              <Label htmlFor="username">
                 Username
-              </label>
+              </Label>
               <div className="mt-1">
-                <input
+                <Input
                   id="username"
                   name="username"
-                  type="text"
                   autoComplete="username"
                   required
                   value={username}
                   onChange={(e) => setUsername(e.target.value)}
-                  className="appearance-none block w-full px-5 py-3.5 bg-sage-50 border border-sage-100 rounded-2xl shadow-sm placeholder-sage-300 focus:outline-none focus:ring-2 focus:ring-mint-300 focus:bg-white transition-all sm:text-sm"
                   placeholder="Admin username"
                 />
               </div>
             </div>
 
             <div>
-              <label htmlFor="password" name="password" className="block text-sm font-bold text-sage-500 mb-2 ml-1">
+              <Label htmlFor="password">
                 Password
-              </label>
+              </Label>
               <div className="mt-1">
-                <input
+                <Input
                   id="password"
                   name="password"
                   type="password"
@@ -83,22 +83,18 @@ export default function Login() {
                   required
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="appearance-none block w-full px-5 py-3.5 bg-sage-50 border border-sage-100 rounded-2xl shadow-sm placeholder-sage-300 focus:outline-none focus:ring-2 focus:ring-mint-300 focus:bg-white transition-all sm:text-sm"
                   placeholder="••••••••"
                 />
               </div>
             </div>
 
             <div>
-              <button
+              <Button
                 type="submit"
-                disabled={isSubmitting}
-                className={`w-full flex justify-center py-4 px-6 border border-transparent rounded-2xl shadow-xl shadow-teal-100 text-sm font-bold text-white bg-teal-500 hover:bg-teal-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-teal-500 transition-all active:scale-[0.98] ${
-                  isSubmitting ? 'opacity-50 cursor-not-allowed' : ''
-                }`}
+                loading={isSubmitting}
               >
-                {isSubmitting ? 'Signing in...' : 'Sign in'}
-              </button>
+                Sign in
+              </Button>
             </div>
           </form>
         </div>

@@ -45,8 +45,8 @@ Because the frontend is a React SPA making fetch() calls, traditional hidden-for
 **Decision #5 — DB-Based Rate Limiting (No Redis)**  
 A `rate_limit_log` table in MySQL tracks failed login attempts per IP. This is sufficient for brute-force protection on a single-shop application without adding Redis infrastructure.
 
-**Decision #6 — Soft Delete for Products (Not Hard Delete)**  
-Products are never permanently removed from the database. Deactivating a product (`is_active = 0`) hides it from the storefront while preserving all linked `order_items` records. This keeps sales history complete and auditable at all times.
+**Decision #6 — Soft Delete & Trash Management**  
+Products are never permanently removed from the database. Deactivating a product (`is_active = 0`) hides it from the default storefront and admin inventory views, but preserves all linked `order_items` records. Deactivated products are managed via a "Trash" interface in the admin panel, where they can be reviewed and restored (`is_active = 1`). This maintains data integrity and complete sales history while keeping the active inventory clean.
 
 **Decision #7 — Atomic Stock Deduction at Checkout**  
 Stock deduction and order creation happen inside a single MySQL transaction with a SELECT FOR UPDATE lock. This eliminates race conditions and prevents overselling even under concurrent checkouts.
@@ -159,6 +159,10 @@ altheas-aquatic/
 │   │   │   │   ├── StorefrontLayout.jsx    # Navbar + footer shell for storefront pages
 │   │   │   │   ├── Navbar.jsx
 │   │   │   │   └── ProductCard.jsx
+│   │   │   ├── ui/                         # Atomic UI components
+│   │   │   │   ├── Button.jsx
+│   │   │   │   ├── Input.jsx
+│   │   │   │   └── Label.jsx
 │   │   │   └── shared/
 │   │   │       ├── ProtectedRoute.jsx      # Redirects to /admin/login if not authenticated
 │   │   │       ├── LoginModal.jsx          # Portable login modal with post-login action support
@@ -272,6 +276,8 @@ POST /api/admin/inventory               → InventoryController::store()
 GET  /api/admin/inventory/{id}          → InventoryController::show()
 POST /api/admin/inventory/{id}          → InventoryController::update()
 POST /api/admin/inventory/{id}/deactivate → InventoryController::deactivate()
+GET  /api/admin/inventory/trash         → InventoryController::trash()
+POST /api/admin/inventory/{id}/restore   → InventoryController::restore()
 
 # Categories
 GET  /api/admin/categories              → CategoryController::index()
@@ -370,7 +376,7 @@ GET  /image.php?file={filename}         → image.php (standalone script)
 | :--- | :--- | :--- | :--- |
 | `product_id` | INT | PK, AUTO_INCREMENT | |
 | `category_id` | INT | FK → categories, NOT NULL | |
-| `name` | VARCHAR(150) | NOT NULL | |
+| `name` | VARCHAR(150) | UNIQUE, NOT NULL | |
 | `description` | TEXT | NULLABLE | |
 | `price` | DECIMAL(10,2) | NOT NULL | PHP currency |
 | `stock_qty` | INT | DEFAULT 0 | Current stock |

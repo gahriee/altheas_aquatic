@@ -3,6 +3,9 @@ import { useAuth } from '../../context/AuthContext';
 import { useCart } from '../../context/CartContext';
 import ErrorMessage from './ErrorMessage';
 import { X } from 'lucide-react';
+import Label from '../ui/Label';
+import Input from '../ui/Input';
+import Button from '../ui/Button';
 
 export default function LoginModal() {
   const { isLoginModalOpen, closeLoginModal, login, pendingAction } = useAuth();
@@ -62,42 +65,37 @@ export default function LoginModal() {
 
           <form className="space-y-5" onSubmit={handleSubmit}>
             <div>
-              <label className="block text-sm font-bold text-sage-500 mb-2 ml-1">
+              <Label>
                 Username
-              </label>
-              <input
+              </Label>
+              <Input
                 type="text"
                 required
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
-                className="w-full px-5 py-3.5 bg-sage-50 border border-sage-100 rounded-2xl focus:outline-none focus:ring-2 focus:ring-mint-300 focus:bg-white transition-all"
                 placeholder="Enter your username"
               />
             </div>
 
             <div>
-              <label className="block text-sm font-bold text-sage-500 mb-2 ml-1">
+              <Label>
                 Password
-              </label>
-              <input
+              </Label>
+              <Input
                 type="password"
                 required
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="w-full px-5 py-3.5 bg-sage-50 border border-sage-100 rounded-2xl focus:outline-none focus:ring-2 focus:ring-mint-300 focus:bg-white transition-all"
                 placeholder="••••••••"
               />
             </div>
 
-            <button
+            <Button
               type="submit"
-              disabled={isSubmitting}
-              className={`w-full py-4 px-6 bg-teal-500 hover:bg-teal-600 text-white font-bold rounded-2xl shadow-xl shadow-teal-100 transition-all active:scale-[0.98] ${
-                isSubmitting ? 'opacity-50 cursor-not-allowed' : ''
-              }`}
+              loading={isSubmitting}
             >
-              {isSubmitting ? 'Signing in...' : 'Sign in'}
-            </button>
+              Sign in
+            </Button>
           </form>
 
           <p className="mt-8 text-center text-sm text-sage-500">

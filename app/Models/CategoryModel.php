@@ -18,4 +18,18 @@ class CategoryModel
     {
         $this->db = $db;
     }
+
+    /**
+     * ----------------------------------------
+     * fetchAll
+     * ----------------------------------------
+     * Fetch all categories from the database.
+     */
+    public function fetchAll(): array
+    {
+        $sql = "SELECT * FROM categories ORDER BY name ASC";
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute();
+        return $stmt->fetchAll();
+    }
 }

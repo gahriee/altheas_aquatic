@@ -1,3 +1,5 @@
+import { toast } from 'react-hot-toast';
+
 /**
  * Althea's Aquatic API Client
  * Handles CSRF tokens, JSON parsing, and error handling.
@@ -24,7 +26,13 @@ export async function initCsrf() {
  * Base fetch wrapper for Althea's Aquatic API.
  */
 export async function apiFetch(path, options = {}) {
-  const { method = 'GET', body, headers = {}, ...rest } = options;
+  const { 
+    method = 'GET', 
+    body, 
+    headers = {}, 
+    showToast = null, // null = auto-determined based on method
+    ...rest 
+  } = options;
 
   const defaultHeaders = {
     ...headers,
@@ -58,13 +66,27 @@ export async function apiFetch(path, options = {}) {
     } catch (e) {
       errorData = { error: 'An unexpected error occurred' };
     }
-    throw new Error(errorData.error || response.statusText);
+    
+    const message = errorData.error || response.statusText;
+    if (showToast !== false) toast.error(message);
+    throw new Error(message);
   }
 
   // Handle empty responses
   if (response.status === 204) {
+    if (showToast === true || (showToast === null && ['POST', 'PUT', 'PATCH', 'DELETE'].includes(method))) {
+      toast.success('Successfully updated');
+    }
     return null;
   }
 
-  return await response.json();
+  const result = await response.json();
+
+  // Automatic success toast for creation/updating
+  if (showToast === true || (showToast === null && ['POST', 'PUT', 'PATCH', 'DELETE'].includes(method))) {
+    const successMsg = result.message || 'Operation successful';
+    toast.success(successMsg);
+  }
+
+  return result;
 }
