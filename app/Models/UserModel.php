@@ -18,4 +18,25 @@ class UserModel
     {
         $this->db = $db;
     }
+
+    /**
+     * ----------------------------------------
+     * getByUsername
+     * ----------------------------------------
+     * Fetch a user record by their username.
+     *
+     * @param string $username The username to search for.
+     * @return array|null The user record or null if not found.
+     */
+    public function getByUsername(string $username): ?array
+    {
+        try {
+            $stmt = $this->db->prepare("SELECT * FROM users WHERE username = :username");
+            $stmt->execute(['username' => $username]);
+            $user = $stmt->fetch();
+            return $user ?: null;
+        } catch (\PDOException $e) {
+            return null;
+        }
+    }
 }

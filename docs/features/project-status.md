@@ -12,8 +12,9 @@
 ### Phase 1: Core Foundation (Weeks 1–2) — Current Focus
 - [x] Project scaffold: MVC folder structure, front controller, autoloader, `.env` config
 - [x] Database schema: all 7 tables with InnoDB + FK constraints, seed categories
-- [ ] Authentication: login form, bcrypt verify, session management, logout, brute-force protection
-- [ ] Inventory Module: product CRUD, image upload, soft delete, low-stock display
+- [x] Authentication: login form, bcrypt verify, session management, logout, brute-force protection
+- [x] Apply Aquatic Theme: update all frontend components to strictly follow `tailwind.config.js` palette (Ticket: `2026-04-11-02`)
+- [ ] Inventory Module: product CRUD, image upload, soft delete, low-stock display (Ticket: `2026-04-11-03`)
 - [ ] Supplier Module: supplier CRUD, record delivery, auto stock update
 - [ ] Customer Storefront: home page, product detail, category filter
 - [ ] Cart & Checkout: session cart, customer info form, atomic stock deduction, order confirmation
@@ -42,20 +43,21 @@
 | :--- | :---: | :--- |
 | **Project Scaffold** | `[x]` | MVC folder structure, front controller, autoloader, env config |
 | **Database Schema** | `[x]` | All 7 tables: users, categories, products, suppliers, deliveries, orders, order_items, rate_limit_log |
-| **Authentication** | `[ ]` | Login, bcrypt verify, session regeneration, logout, rate limiting |
+| **Authentication** | `[x]` | Multi-role login (customer/admin), bcrypt verify, session regeneration, logout, rate limiting |
 | **Inventory Module** | `[ ]` | Product CRUD, image upload, soft delete, low-stock query |
 | **Supplier Module** | `[ ]` | Supplier CRUD, delivery form, auto stock deduction |
 | **Order Module** | `[ ]` | Atomic checkout, order creation, order_items insert, stock deduction |
 | **Reports Module** | `[ ]` | Date-range sales query, inventory status, supplier summaries, CSV export |
-| **Rate Limit Logic** | `[ ]` | rate_limit_log insert/check — 5 attempts per IP per 10 minutes |
-| **CSRF Protection** | `[ ]` | Token generate/verify helper — applied to all state-changing forms |
+| **Rate Limit Logic** | `[x]` | rate_limit_log insert/check — 5 attempts per IP per 10 minutes |
+| **CSRF Protection** | `[x]` | Token generate/verify helper — applied to all state-changing forms |
 | **File Upload Handler** | `[ ]` | MIME validation, random rename, outside-web-root storage, serve script |
+| **Login Modal** | `[x]` | Portable auth with aquatic theme and post-login action support |
 
 ### 🖥️ Frontend Pages
 
 | Page | Status | Notes |
 | :--- | :---: | :--- |
-| **Login Page** | `[ ]` | Credential form, error message, rate-limit feedback |
+| **Login Page** | `[x]` | Credential form, error message, rate-limit feedback |
 | **Admin Dashboard** | `[ ]` | Summary cards, quick-action buttons, navigation sidebar |
 | **Inventory Management** | `[ ]` | Sortable product table, add/edit form, image preview, low-stock highlights, pagination |
 | **Supplier Management** | `[ ]` | Supplier list, add/edit form, record delivery form, per-supplier history |
@@ -91,11 +93,11 @@
 
 ### 🔐 Priority 2: Authentication Module
 
-- [ ] **Login Form** (`AuthController::loginForm`): username + password form with CSRF token; error message display area; rate-limit feedback ("Too many attempts — try again in X minutes")
-- [ ] **Login Handler** (`AuthController::login`): check `rate_limit_log` for IP threshold; `password_verify` against `password_hash`; `session_regenerate_id(true)` on success; set `$_SESSION['user_id']` and `role`; redirect to dashboard; on failure insert `rate_limit_log` row
-- [ ] **Auth Middleware**: `app/Core/Auth.php` — `requireLogin()` method called at the top of every admin controller; redirects to `/admin/login` if session invalid
-- [ ] **Logout Handler** (`AuthController::logout`): CSRF-verified POST; `session_destroy()`; clear session cookie; redirect to login
-- [ ] **Session Config**: `session.cookie_httponly = 1`, `session.cookie_secure = 1`, `session.cookie_samesite = Strict`, `session.gc_maxlifetime = 1800` (30 minutes)
+- [x] **Login Form** (`AuthController::loginForm`): username + password form with CSRF token; error message display area; rate-limit feedback ("Too many attempts — try again in X minutes")
+- [x] **Login Handler** (`AuthController::login`): check `rate_limit_log` for IP threshold; `password_verify` against `password_hash`; `session_regenerate_id(true)` on success; set `$_SESSION['user_id']` and `role`; redirect to dashboard; on failure insert `rate_limit_log` row
+- [x] **Auth Middleware**: `app/Core/Auth.php` — `requireLogin()` method called at the top of every admin controller; redirects to `/admin/login` if session invalid
+- [x] **Logout Handler** (`AuthController::logout`): CSRF-verified POST; `session_destroy()`; clear session cookie; redirect to login
+- [x] **Session Config**: `session.cookie_httponly = 1`, `session.cookie_secure = 1`, `session.cookie_samesite = Strict`, `session.gc_maxlifetime = 1800` (30 minutes)
 
 ---
 

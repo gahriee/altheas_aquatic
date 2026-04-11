@@ -28,7 +28,13 @@ Althea's Aquatic is structured as a decoupled application. The PHP backend expos
 The PHP backend handles all business logic, database access, authentication, and file uploads — returning JSON responses exclusively. The React frontend handles all rendering, routing (via React Router), and user interaction. This separation keeps concerns clean, makes the frontend independently testable, and allows future native app or third-party integrations to consume the same API.
 
 **Decision #2 — Tailwind CSS (Utility-First Styling)**  
-Tailwind CSS is used for all frontend styling. It is included via the CDN Play script during development and compiled via the Vite + Tailwind plugin for production. No custom CSS file is maintained — all styles are composed from Tailwind utility classes directly in JSX.
+Tailwind CSS is used for all frontend styling. It is included via the CDN Play script during development and compiled via the Vite + Tailwind plugin for production. All styling strictly follows the **Aquatic Palette** defined in `frontend/tailwind.config.js`:
+- **Teal**: `500` (Primary/Buttons), `600` (Hover/Footer), `100` (Light fills).
+- **Mint**: `300` (CTA/Links/Focus), `100` (Badge bg).
+- **Cream**: `300` (Headings on dark bg).
+- **Sage**: `50` (Page bg), `100` (Borders/Dividers), `300` (Muted text), `500` (Body text).
+- **Functional**: `coral-500` (Error), `emerald-500` (Success), `amber-500` (Warning).
+No custom CSS file is maintained — all styles are composed from Tailwind utility classes directly in JSX.
 
 **Decision #3 — Session-Based Authentication (Not JWT)**  
 PHP native sessions with HttpOnly, Secure, and SameSite=Strict cookies are used for authentication. The session cookie is sent automatically with every API request (credentials: 'include' in fetch). This avoids the complexity of token refresh flows and keeps the auth model simple for a single-shop application.
@@ -73,8 +79,9 @@ Recording a delivery in the Supplier module immediately adds the received quanti
 
 **Storefront Pages:**
 - 🏠 **Home** — Hero banner, product grid, category filter tabs
-- 📄 **Product Detail** — Image, description, price, quantity selector, add-to-cart
+- 📄 **Product Detail** — Image, description, price, quantity selector, add-to-cart (triggers login modal if guest)
 - 🛒 **Cart & Checkout** — Cart summary, customer info form, stock validation, order submission
+- 🔐 **Login Modal** — Customer-facing login form with automatic post-login actions (like adding to cart)
 - ✅ **Order Confirmation** — Order ID, itemised summary, thank-you message
 
 ### Backend — PHP REST API
@@ -154,6 +161,7 @@ altheas-aquatic/
 │   │   │   │   └── ProductCard.jsx
 │   │   │   └── shared/
 │   │   │       ├── ProtectedRoute.jsx      # Redirects to /admin/login if not authenticated
+│   │   │       ├── LoginModal.jsx          # Portable login modal with post-login action support
 │   │   │       ├── LoadingSpinner.jsx
 │   │   │       ├── ErrorMessage.jsx
 │   │   │       └── ConfirmDialog.jsx
@@ -250,6 +258,7 @@ Successful responses return data directly at the top level or under a relevant k
 GET  /api/csrf-token                    → AuthController::csrfToken()
 
 # Authentication
++ POST /api/login                       → AuthController::customerLogin()
 POST /api/admin/login                   → AuthController::login()
 POST /api/admin/logout                  → AuthController::logout()
 GET  /api/admin/me                      → AuthController::me()
