@@ -2,20 +2,26 @@ export default function ConfirmDialog({ isOpen, title, message, onConfirm, onCan
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
-      <div className="bg-white rounded-lg p-6 max-w-sm w-full shadow-xl">
-        <h3 className="text-lg font-bold mb-2">{title || 'Confirm Action'}</h3>
-        <p className="text-gray-600 mb-6">{message || 'Are you sure you want to proceed?'}</p>
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+      {/* Backdrop */}
+      <div className="absolute inset-0 bg-teal-600/60 backdrop-blur-sm" onClick={onCancel} />
+      
+      {/* Modal */}
+      <div className="relative bg-white rounded-3xl p-8 max-w-sm w-full shadow-2xl animate-in fade-in zoom-in duration-200">
+        <h3 className="text-xl font-bold mb-2 text-teal-600">{title || 'Confirm Action'}</h3>
+        <p className="text-sage-500 font-medium mb-8 leading-relaxed">
+          {message || 'Are you sure you want to proceed?'}
+        </p>
         <div className="flex justify-end gap-3">
           <button
             onClick={onCancel}
-            className="px-4 py-2 text-gray-700 hover:bg-gray-100 rounded transition"
+            className="px-6 py-2.5 text-sage-500 font-bold hover:bg-sage-50 rounded-xl transition-all"
           >
             Cancel
           </button>
           <button
             onClick={onConfirm}
-            className="px-4 py-2 bg-red-600 text-white hover:bg-red-700 rounded transition"
+            className="px-6 py-2.5 bg-coral-500 text-white font-bold hover:bg-coral-600 rounded-xl transition-all shadow-lg shadow-coral-500/20 active:scale-[0.98]"
           >
             Confirm
           </button>

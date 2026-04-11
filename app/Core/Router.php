@@ -53,6 +53,9 @@ class Router
         }
 
         // Authentication
+        if ($method === 'POST' && $path === 'login') {
+            $this->call('AuthController', 'customerLogin');
+        }
         if ($method === 'POST' && $path === 'admin/login') {
             $this->call('AuthController', 'login');
         }

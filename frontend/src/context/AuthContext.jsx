@@ -6,6 +6,8 @@ const AuthContext = createContext();
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
+  const [pendingAction, setPendingAction] = useState(null);
 
   const hydrateUser = async () => {
     try {
@@ -22,8 +24,14 @@ export function AuthProvider({ children }) {
     hydrateUser();
   }, []);
 
-  const login = async (username, password) => {
-    await apiLogin(username, password);
+  const login = async (username, password, isAdmin = false) => {
+    if (isAdmin) {
+      await apiLogin(username, password);
+    } else {
+      // We need a customer login API wrapper
+      const { customerLogin } = await import('../api/auth');
+      await customerLogin(username, password);
+    }
     await hydrateUser();
   };
 
@@ -32,8 +40,28 @@ export function AuthProvider({ children }) {
     setUser(null);
   };
 
+  const openLoginModal = (action = null) => {
+    setPendingAction(action);
+    setIsLoginModalOpen(true);
+  };
+
+  const closeLoginModal = () => {
+    setIsLoginModalOpen(false);
+    setPendingAction(null);
+  };
+
   return (
-    <AuthContext.Provider value={{ user, loading, login, logout }}>
+    <AuthContext.Provider value={{ 
+      user, 
+      loading, 
+      login, 
+      logout,
+      isLoginModalOpen,
+      openLoginModal,
+      closeLoginModal,
+      pendingAction,
+      setPendingAction
+    }}>
       {children}
     </AuthContext.Provider>
   );
