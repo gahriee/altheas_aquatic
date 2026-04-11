@@ -1,0 +1,16 @@
+config/.env
+storage/products/*
+!storage/products/.gitkeep
+public/dist/*
+!public/dist/.gitkeep
+node_modules/
+*.log
+
+# AI Generated Files
+.agents/
+.agents/*
+.claude/
+.claude/*
+/docs/tickets/
+/AGENTS.md
+/CLAUDE.md

@@ -1,0 +1,12 @@
+RewriteEngine On
+
+# Route /api/* and /image.php to public/index.php or public/image.php
+RewriteCond %{REQUEST_URI} ^/api/ [NC]
+RewriteRule ^(.*)$ public/index.php [L,QSA]
+
+RewriteCond %{REQUEST_URI} ^/image\.php [NC]
+RewriteRule ^(.*)$ public/image.php [L,QSA]
+
+# All other paths — serve React SPA shell
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteRule ^(.*)$ public/dist/index.html [L]
