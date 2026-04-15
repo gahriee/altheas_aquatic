@@ -1,6 +1,6 @@
 # Project Status: Althea's Aquatic
 
-**Last Updated:** 2026-04-11
+**Last Updated:** 2026-04-15
 **Current Phase:** Phase 1 — Core Foundation
 
 > **AI Agent Instructions:** Always read this file before generating code. Update this file when a task is completed. Do not implement features assigned to future phases.
@@ -17,7 +17,7 @@
 - [x] Shared UI Components: implement reusable Button, Input, and Label components (Ticket: `2026-04-11-04`)
 - [x] Inventory Module: product CRUD, image upload, soft delete, low-stock display (Ticket: `2026-04-11-03`)
 - [x] Trash Management: unique titles, restore deactivated products (Ticket: `2026-04-12-01`)
-- [ ] Supplier Module: supplier CRUD, record delivery, auto stock update (Ticket: `2026-04-12-02`)
+- [x] Supplier Module: supplier CRUD, record delivery, auto stock update (Ticket: `2026-04-12-02`)
 - [ ] Customer Storefront: home page, product detail, category filter
 - [ ] Cart & Checkout: session cart, customer info form, atomic stock deduction, order confirmation
 
@@ -47,7 +47,7 @@
 | **Database Schema** | `[x]` | All 7 tables: users, categories, products, suppliers, deliveries, orders, order_items, rate_limit_log |
 | **Authentication** | `[x]` | Multi-role login (customer/admin), bcrypt verify, session regeneration, logout, rate limiting |
 | **Inventory Module** | `[x]` | Product CRUD, image upload, soft delete, low-stock query |
-| **Supplier Module** | `[ ]` | Supplier CRUD, delivery form, auto stock deduction |
+| **Supplier Module** | `[x]` | Supplier CRUD, delivery form, auto stock deduction |
 | **Order Module** | `[ ]` | Atomic checkout, order creation, order_items insert, stock deduction |
 | **Reports Module** | `[ ]` | Date-range sales query, inventory status, supplier summaries, CSV export |
 | **Rate Limit Logic** | `[x]` | rate_limit_log insert/check — 5 attempts per IP per 10 minutes |
@@ -62,7 +62,7 @@
 | **Login Page** | `[x]` | Credential form, error message, rate-limit feedback |
 | **Admin Dashboard** | `[ ]` | Summary cards, quick-action buttons, navigation sidebar |
 | **Inventory Management** | `[x]` | Sortable product table, add/edit form, image preview, low-stock highlights, pagination |
-| **Supplier Management** | `[ ]` | Supplier list, add/edit form, record delivery form, per-supplier history |
+| **Supplier Management** | `[x]` | Supplier list, add/edit form, record delivery form, per-supplier history |
 | **Sales / Orders** | `[ ]` | Orders table with status filter, order detail view, status update, date-range filter |
 | **Reports** | `[ ]` | Date picker, sales summary table, inventory status table, supplier delivery summary, CSV export |
 | **Storefront — Home** | `[ ]` | Hero banner, featured product grid, category filter tabs, product cards |
@@ -117,17 +117,19 @@
 
 ### 🏭 Priority 4: Supplier Module (Ticket: `2026-04-12-02`)
 
-- [ ] **Supplier List** (`SupplierController::index`): table of all suppliers with contact info; add/edit inline or modal; delivery count badge per supplier
-- [ ] **Add/Edit Supplier** (`SupplierController::store` / `update`): name (required), contact_person, phone, email, address; CSRF-protected POST
-- [ ] **Record Delivery** (`SupplierController::recordDelivery`): supplier dropdown, product dropdown, qty_received, unit_cost (optional), notes; inserts `deliveries` row; `UPDATE products SET stock_qty = stock_qty + ?` in same transaction
-- [ ] **Supplier Delivery History**: per-supplier view listing all past deliveries with date, product, qty, unit_cost
+- [x] **Supplier List** (`SupplierController::index`): table of all suppliers with contact info; add/edit inline or modal; delivery count badge per supplier
+- [x] **Add/Edit Supplier** (`SupplierController::store` / `update`): name (required), contact_person, phone, email, address; CSRF-protected POST
+- [x] **Record Delivery** (`SupplierController::recordDelivery`): supplier dropdown, product dropdown, qty_received, unit_cost (optional), notes; inserts `deliveries` row; `UPDATE products SET stock_qty = stock_qty + ?` in same transaction
+- [x] **Supplier Delivery History**: per-supplier view listing all past deliveries with date, product, qty, unit_cost
 
 ---
 
 ### 🛒 Priority 5: Storefront & Checkout
 
-- [ ] **Home Page** (`StorefrontController::home`): hero banner; product grid filtered by `is_active = 1`; category filter tabs (all + per category); product cards with image, name, price, Buy Now / Add to Cart
-- [ ] **Product Detail** (`StorefrontController::detail`): full image, name, description, price; quantity selector (max = stock_qty); Add to Cart button; related products by category
+- [x] **Home Page** (`StorefrontController::home`): hero banner; product grid filtered by `is_active = 1`; category filter tabs (all + per category); product cards with image, name, price, Buy Now / Add to Cart (redirects to Login if guest)
+- [x] **User Sign-Up** (`AuthController::register`): registration form for customers; creates user with `role = 'customer'`; redirects to login
+- [x] **Modal Removal**: removed `LoginModal` in favor of dedicated `/login` page; updated all guest interaction flows to redirect to login
+- [x] **Product Detail** (`StorefrontController::detail`): full image, name, description, price; quantity selector (max = stock_qty); Add to Cart button (redirects to Login if guest); related products by category
 - [ ] **Session Cart**: `app/Core/Cart.php` — `add(product_id, qty)`, `remove(product_id)`, `update(product_id, qty)`, `getItems()`, `getTotal()`; stored in `$_SESSION['cart']`; validates qty does not exceed current stock
 - [ ] **Cart View** (`CartController::index`): item list with subtotals, quantity update, remove item, order total; proceed to checkout button
 - [ ] **Checkout Form** (`OrderController::checkoutForm`): customer name (required), email, phone, notes; order summary panel; CSRF token

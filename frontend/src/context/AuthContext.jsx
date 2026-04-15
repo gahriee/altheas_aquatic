@@ -6,7 +6,6 @@ const AuthContext = createContext();
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
   const [pendingAction, setPendingAction] = useState(null);
 
   const hydrateUser = async () => {
@@ -40,16 +39,6 @@ export function AuthProvider({ children }) {
     setUser(null);
   };
 
-  const openLoginModal = (action = null) => {
-    setPendingAction(action);
-    setIsLoginModalOpen(true);
-  };
-
-  const closeLoginModal = () => {
-    setIsLoginModalOpen(false);
-    setPendingAction(null);
-  };
-
   return (
     <AuthContext.Provider value={{ 
       user, 
@@ -57,9 +46,6 @@ export function AuthProvider({ children }) {
       loading, 
       login, 
       logout,
-      isLoginModalOpen,
-      openLoginModal,
-      closeLoginModal,
       pendingAction,
       setPendingAction
     }}>

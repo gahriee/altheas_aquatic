@@ -1,20 +1,22 @@
 import { ShoppingCart } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useCart } from '../../context/CartContext';
 import { useAuth } from '../../context/AuthContext';
 
 export default function ProductCard({ id, name, price, imagePath }) {
   const { addItem } = useCart();
-  const { user, openLoginModal } = useAuth();
+  const { user, setPendingAction } = useAuth();
+  const navigate = useNavigate();
 
   const handleAddToCart = (e) => {
     e.preventDefault();
     
     if (!user) {
-      openLoginModal({
+      setPendingAction({
         type: 'ADD_TO_CART',
         payload: { id, name, price }
       });
+      navigate('/login');
       return;
     }
 
@@ -22,27 +24,27 @@ export default function ProductCard({ id, name, price, imagePath }) {
   };
 
   return (
-    <div className="group bg-white rounded-2xl border border-sage-100 overflow-hidden hover:shadow-xl transition-shadow duration-300">
-      <Link to={`/product/${id}`} className="block relative aspect-square overflow-hidden bg-sage-50">
+    <div className="group bg-white rounded-[32px] border border-sage-100 overflow-hidden hover:shadow-2xl hover:shadow-teal-500/10 transition-all duration-500 hover:-translate-y-1">
+      <Link to={`/product/${id}`} className="block relative aspect-square overflow-hidden bg-sage-50 group-hover:after:opacity-100 after:opacity-0 after:absolute after:inset-0 after:bg-teal-500/10 after:transition-opacity after:duration-500">
         <img
           src={imagePath ? `/image.php?file=${imagePath}` : 'https://placehold.co/400x400?text=No+Image'}
           alt={name}
-          className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+          className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-1000"
         />
         <div className="absolute inset-0 bg-black/5 group-hover:bg-transparent transition-colors" />
       </Link>
       
-      <div className="p-5">
-        <Link to={`/product/${id}`} className="block mb-1 group-hover:text-teal-500 transition-colors decoration-transparent text-teal-600">
-          <h3 className="text-lg font-bold truncate">{name}</h3>
+      <div className="p-6">
+        <Link to={`/product/${id}`} className="block mb-1 group-hover:text-teal-600 transition-colors decoration-transparent text-sage-800">
+          <h3 className="text-xl font-black truncate tracking-tight">{name}</h3>
         </Link>
-        <p className="text-2xl font-bold text-teal-600 mb-4">£{Number(price).toFixed(2)}</p>
+        <p className="text-2xl font-black text-teal-600 mb-6 tracking-tight">£{Number(price).toFixed(2)}</p>
         
         <button
           onClick={handleAddToCart}
-          className="w-full flex items-center justify-center gap-2 bg-teal-500 hover:bg-teal-600 text-white font-bold py-3 rounded-xl transition shadow-lg shadow-teal-100"
+          className="w-full flex items-center justify-center gap-2 bg-teal-500 hover:bg-teal-600 text-white font-black py-4 rounded-2xl transition shadow-lg shadow-teal-500/20 active:scale-95"
         >
-          <ShoppingCart size={18} />
+          <ShoppingCart size={20} />
           <span>Add to Cart</span>
         </button>
       </div>

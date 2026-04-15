@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useNavigate, useParams, Link } from 'react-router-dom';
-import { ArrowLeft, Upload, Save, AlertCircle, Loader2 } from 'lucide-react';
+import { ArrowLeft, Upload, Save, AlertCircle, Loader2, Package, Hash, StickyNote } from 'lucide-react';
 import { useDropzone } from 'react-dropzone';
 import { getAllCategories } from '../../../api/categories';
 import { getProductById, createProduct, updateProduct } from '../../../api/products';
@@ -156,172 +156,209 @@ export default function ProductForm() {
   return (
     <div className="max-w-4xl mx-auto space-y-8">
       <div className="flex items-center justify-between">
-        <Link 
-          to="/admin/inventory" 
-          className="flex items-center gap-2 text-sage-400 hover:text-teal-600 transition font-bold group"
-        >
-          <ArrowLeft size={20} className="group-hover:-translate-x-1 transition-transform" />
-          Back to Inventory
-        </Link>
-        <h1 className="text-2xl font-bold text-teal-600">
-          {id ? 'Edit Product' : 'Add New Product'}
-        </h1>
+        <div className="flex items-center gap-4">
+          <Link 
+            to="/admin/inventory" 
+            className="p-3 bg-white border border-sage-100 rounded-2xl text-sage-400 hover:text-teal-600 hover:border-teal-100 transition-all shadow-sm"
+          >
+            <ArrowLeft size={20} />
+          </Link>
+          <div>
+            <h1 className="text-2xl font-black text-sage-800 tracking-tight">
+              {id ? 'Edit Product' : 'Add New Product'}
+            </h1>
+            <p className="text-sm text-sage-400 font-medium">
+              {id ? 'Update aquatic species specifications' : 'Register a new addition to the catalog'}
+            </p>
+          </div>
+        </div>
       </div>
 
-      <form onSubmit={handleSubmit} className="bg-white rounded-3xl shadow-sm border border-sage-100 p-8 space-y-8 transition-all duration-500">
-        {error && (
-          <div className="p-4 bg-coral-50 text-coral-500 rounded-2xl border border-coral-100 flex items-center gap-2 animate-in slide-in-from-top-2">
-            <AlertCircle size={20} />
-            <span className="font-bold text-sm">{error}</span>
-          </div>
-        )}
+      <form onSubmit={handleSubmit} className="bg-white rounded-[32px] border border-sage-100 shadow-xl shadow-teal-500/5 overflow-hidden">
+        <div className="p-8 md:p-12 space-y-12">
+          {error && (
+            <div className="p-4 bg-coral-50 text-coral-500 rounded-2xl border border-coral-100 flex items-center gap-2 animate-in slide-in-from-top-2">
+              <AlertCircle size={20} />
+              <span className="font-bold text-sm tracking-tight">{error}</span>
+            </div>
+          )}
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-          {/* Left Column: Image Upload Dropzone */}
-          <div className="space-y-4">
-            <Label>Product Image</Label>
-            <div 
-              {...getRootProps()}
-              className={`relative aspect-square rounded-[2rem] border-2 border-dashed transition-all duration-300 flex flex-col items-center justify-center cursor-pointer group overflow-hidden ${
-                isDragActive 
-                  ? 'border-teal-500 bg-teal-50/50 scale-[1.02] shadow-xl shadow-teal-500/10' 
-                  : 'border-sage-100 bg-sage-50/50 hover:border-mint-300 hover:bg-white'
-              }`}
-            >
-              <input {...getInputProps()} />
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
+            {/* Left Column: Visuals */}
+            <section className="space-y-6">
+              <div className="flex items-center gap-2 text-teal-600">
+                <Upload size={18} />
+                <h3 className="font-bold uppercase text-[10px] tracking-widest">Product Visuals</h3>
+              </div>
               
-              {imagePreview ? (
-                <>
-                  <img src={imagePreview} alt="Preview" className="w-full h-full object-cover" />
-                  <div className={`absolute inset-0 bg-teal-600/60 backdrop-blur-[2px] flex flex-col items-center justify-center transition-opacity duration-300 ${isDragActive ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'}`}>
-                    <Upload size={40} className="text-white animate-bounce" />
-                    <span className="text-white font-black text-sm uppercase tracking-widest mt-2 px-4 py-2 bg-black/20 rounded-full">
-                      {isDragActive ? 'Drop to Update' : 'Change Image'}
-                    </span>
+              <div 
+                {...getRootProps()}
+                className={`relative aspect-square rounded-[2.5rem] border-2 border-dashed transition-all duration-300 flex flex-col items-center justify-center cursor-pointer group overflow-hidden ${
+                  isDragActive 
+                    ? 'border-teal-500 bg-teal-50/50 scale-[1.02] shadow-xl shadow-teal-500/10' 
+                    : 'border-sage-100 bg-sage-50/50 hover:border-teal-300 hover:bg-white'
+                }`}
+              >
+                <input {...getInputProps()} />
+                
+                {imagePreview ? (
+                  <>
+                    <img src={imagePreview} alt="Preview" className="w-full h-full object-cover" />
+                    <div className={`absolute inset-0 bg-teal-600/60 backdrop-blur-[2px] flex flex-col items-center justify-center transition-opacity duration-300 ${isDragActive ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'}`}>
+                      <Upload size={40} className="text-white animate-bounce" />
+                      <span className="text-white font-black text-xs uppercase tracking-widest mt-2 px-6 py-2 bg-black/20 rounded-full">
+                        {isDragActive ? 'Drop to Update' : 'Change Image'}
+                      </span>
+                    </div>
+                  </>
+                ) : (
+                  <div className="text-center p-6 flex flex-col items-center gap-6">
+                    <div className={`p-8 rounded-[2rem] transition-all duration-300 ${isDragActive ? 'bg-teal-100 text-teal-600 scale-110' : 'bg-white text-sage-200 shadow-sm border border-sage-50 group-hover:text-teal-300 group-hover:scale-110'}`}>
+                      <Upload size={48} />
+                    </div>
+                    <div>
+                      <p className={`text-sm font-black uppercase tracking-widest transition-colors ${isDragActive ? 'text-teal-600' : 'text-sage-400'}`}>
+                        {isDragActive ? 'Drop it here!' : 'Drag & Drop Image'}
+                      </p>
+                      <p className="text-[10px] text-sage-300 uppercase font-black tracking-widest mt-2 opacity-60">or click to browse local files</p>
+                    </div>
                   </div>
-                </>
-              ) : (
-                <div className="text-center p-6 flex flex-col items-center gap-4">
-                  <div className={`p-6 rounded-3xl transition-all duration-300 ${isDragActive ? 'bg-teal-100 text-teal-600 scale-110' : 'bg-white text-sage-200 shadow-sm border border-sage-50 group-hover:text-mint-300 group-hover:scale-110'}`}>
-                    <Upload size={48} />
+                )}
+              </div>
+            </section>
+
+            {/* Right Column: Key Specifications */}
+            <div className="space-y-12">
+              <section className="space-y-6">
+                <div className="flex items-center gap-2 text-teal-600">
+                  <Package size={18} />
+                  <h3 className="font-bold uppercase text-[10px] tracking-widest">Key Specifications</h3>
+                </div>
+
+                <div className="space-y-6">
+                  <div className="space-y-2">
+                    <Label htmlFor="name" required>Product Name</Label>
+                    <Input 
+                      id="name" 
+                      name="name" 
+                      value={formData.name} 
+                      onChange={handleChange} 
+                      placeholder="e.g. Java Fern Mini" 
+                      required 
+                      className="bg-sage-50/50"
+                    />
                   </div>
-                  <div>
-                    <p className={`text-sm font-black uppercase tracking-widest transition-colors ${isDragActive ? 'text-teal-600' : 'text-sage-400'}`}>
-                      {isDragActive ? 'Drop it here!' : 'Drag & Drop Image'}
-                    </p>
-                    <p className="text-[10px] text-sage-300 uppercase font-black tracking-tighter mt-1 opacity-60">or click to browse local files</p>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="category_id" required>Category</Label>
+                    <Select
+                      id="category_id"
+                      name="category_id"
+                      options={categoryOptions}
+                      value={formData.category_id}
+                      onChange={handleChange}
+                      placeholder="Select category"
+                      required={true}
+                    />
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-6">
+                    <div className="space-y-2">
+                      <Label htmlFor="price" required>Price ($)</Label>
+                      <Input 
+                        id="price" 
+                        name="price" 
+                        type="number" 
+                        step="0.01" 
+                        value={formData.price} 
+                        onChange={handleChange} 
+                        placeholder="0.00" 
+                        required 
+                        className="bg-sage-50/50"
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label>Online Status</Label>
+                      <Switch
+                        id="is_active"
+                        name="is_active"
+                        variant="segmented"
+                        offLabel="Hidden"
+                        onLabel="Visible"
+                        checked={formData.is_active === '1'}
+                        onChange={handleChange}
+                        className="mt-1"
+                      />
+                    </div>
                   </div>
                 </div>
-              )}
+              </section>
+
+              <section className="space-y-6">
+                <div className="flex items-center gap-2 text-teal-600">
+                  <Hash size={18} />
+                  <h3 className="font-bold uppercase text-[10px] tracking-widest">Inventory Settings</h3>
+                </div>
+
+                <div className="grid grid-cols-2 gap-6">
+                  <div className="space-y-2">
+                    <Label htmlFor="stock_qty" required>Current Stock</Label>
+                    <Input 
+                      id="stock_qty" 
+                      name="stock_qty" 
+                      type="number" 
+                      value={formData.stock_qty} 
+                      onChange={handleChange} 
+                      required 
+                      className="bg-sage-50/50"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="low_stock_threshold" required>Low Stock Alert</Label>
+                    <Input 
+                      id="low_stock_threshold" 
+                      name="low_stock_threshold" 
+                      type="number" 
+                      value={formData.low_stock_threshold} 
+                      onChange={handleChange} 
+                      required 
+                      className="bg-sage-50/50"
+                    />
+                  </div>
+                </div>
+              </section>
             </div>
           </div>
 
-          {/* Right Column: Key Details */}
-          <div className="space-y-6">
-            <div className="space-y-2">
-              <Label htmlFor="name">Product Name</Label>
-              <Input 
-                id="name" 
-                name="name" 
-                value={formData.name} 
-                onChange={handleChange} 
-                placeholder="e.g. Java Fern Mini" 
-                required 
-              />
+          <section className="space-y-6">
+            <div className="flex items-center gap-2 text-teal-600">
+              <StickyNote size={18} />
+              <h3 className="font-bold uppercase text-[10px] tracking-widest">Detailed Description</h3>
             </div>
-
             <div className="space-y-2">
-              <Label htmlFor="category_id">Category</Label>
-              <Select
-                id="category_id"
-                name="category_id"
-                options={categoryOptions}
-                value={formData.category_id}
+              <Label htmlFor="description">Species Overview & Care</Label>
+              <Textarea
+                id="description"
+                name="description"
+                value={formData.description}
                 onChange={handleChange}
-                placeholder="Select category"
-                required={true}
+                placeholder="Describe biological traits, maintenance level, water parameter requirements, etc."
+                rows="5"
+                className="bg-sage-50/50"
               />
             </div>
-
-            <div className="grid grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <Label htmlFor="price">Price ($)</Label>
-                <Input 
-                  id="price" 
-                  name="price" 
-                  type="number" 
-                  step="0.01" 
-                  value={formData.price} 
-                  onChange={handleChange} 
-                  placeholder="0.00" 
-                  required 
-                />
-              </div>
-              <div className="space-y-2">
-                <Label>Status</Label>
-                <Switch
-                  id="is_active"
-                  name="is_active"
-                  variant="segmented"
-                  offLabel="Inactive"
-                  onLabel="Active"
-                  checked={formData.is_active === '1'}
-                  onChange={handleChange}
-                  className="mt-2"
-                />
-              </div>
-            </div>
-
-            <div className="grid grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <Label htmlFor="stock_qty">Current Stock</Label>
-                <Input 
-                  id="stock_qty" 
-                  name="stock_qty" 
-                  type="number" 
-                  value={formData.stock_qty} 
-                  onChange={handleChange} 
-                  required 
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="low_stock_threshold">Low Stock Alert</Label>
-                <Input 
-                  id="low_stock_threshold" 
-                  name="low_stock_threshold" 
-                  type="number" 
-                  value={formData.low_stock_threshold} 
-                  onChange={handleChange} 
-                  required 
-                />
-              </div>
-            </div>
-          </div>
+          </section>
         </div>
 
-        <div className="space-y-2">
-          <Label htmlFor="description">Description</Label>
-          <Textarea
-            id="description"
-            name="description"
-            value={formData.description}
-            onChange={handleChange}
-            placeholder="Describe the species, care requirements, etc."
-            rows="6"
-          ></Textarea>
-        </div>
-
-        <div className="pt-4">
+        <div className="px-8 md:px-12 py-8 bg-sage-50/50 border-t border-sage-100 flex items-center justify-end">
           <Button 
             type="submit" 
             variant="primary" 
-            className="w-full py-4 text-lg"
-            isLoading={submitting}
+            disabled={submitting}
+            className="flex items-center gap-2 py-4 px-10 shadow-lg shadow-teal-500/20 min-w-[200px]"
           >
-            <div className="flex items-center justify-center gap-2">
-              <Save size={24} />
-              {id ? 'Update Product' : 'Create Product'}
-            </div>
+            {submitting ? <Loader2 className="animate-spin" size={20} /> : <Save size={20} />}
+            {id ? 'Update Product' : 'Register Product'}
           </Button>
         </div>
       </form>

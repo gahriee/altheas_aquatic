@@ -14,6 +14,13 @@ export async function customerLogin(username, password) {
   });
 }
 
+export async function register(data) {
+  return apiFetch('/api/register', {
+    method: 'POST',
+    body: data,
+  });
+}
+
 export async function logout() {
   return apiFetch('/api/admin/logout', {
     method: 'POST',

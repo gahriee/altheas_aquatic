@@ -79,9 +79,10 @@ Recording a delivery in the Supplier module immediately adds the received quanti
 
 **Storefront Pages:**
 - 🏠 **Home** — Hero banner, product grid, category filter tabs
+- 🔐 **Sign Up Page** — Account creation form for customers
 - 📄 **Product Detail** — Image, description, price, quantity selector, add-to-cart (triggers login modal if guest)
 - 🛒 **Cart & Checkout** — Cart summary, customer info form, stock validation, order submission
-- 🔐 **Login Modal** — Customer-facing login form with automatic post-login actions (like adding to cart)
+- 🔐 **Login Page** — Dedicated customer login page
 - ✅ **Order Confirmation** — Order ID, itemised summary, thank-you message
 
 ### Backend — PHP REST API
@@ -165,7 +166,6 @@ altheas-aquatic/
 │   │   │   │   └── Label.jsx
 │   │   │   └── shared/
 │   │   │       ├── ProtectedRoute.jsx      # Redirects to /admin/login if not authenticated
-│   │   │       ├── LoginModal.jsx          # Portable login modal with post-login action support
 │   │   │       ├── LoadingSpinner.jsx
 │   │   │       ├── ErrorMessage.jsx
 │   │   │       └── ConfirmDialog.jsx
@@ -263,6 +263,7 @@ GET  /api/csrf-token                    → AuthController::csrfToken()
 
 # Authentication
 + POST /api/login                       → AuthController::customerLogin()
+POST /api/register                    → AuthController::register()
 POST /api/admin/login                   → AuthController::login()
 POST /api/admin/logout                  → AuthController::logout()
 GET  /api/admin/me                      → AuthController::me()

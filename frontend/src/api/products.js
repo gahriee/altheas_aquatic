@@ -2,28 +2,49 @@ import { apiFetch } from './client';
 
 /**
  * ----------------------------------------
- * getAllProducts
+ * STOREFRONT API
  * ----------------------------------------
- * Fetch all products (admin view).
+ */
+
+/**
+ * Fetch all active products (storefront view).
+ * Can be filtered by categoryId.
+ */
+export const getProducts = async (categoryId = null) => {
+  const url = categoryId ? `/api/storefront/list?category=${categoryId}` : '/api/storefront/list';
+  const response = await apiFetch(url);
+  return response.products;
+};
+
+/**
+ * Fetch a single active product by ID (storefront view).
+ */
+export const getProductDetails = async (id) => {
+  const response = await apiFetch(`/api/storefront/detail/${id}`);
+  return response.product;
+};
+
+/**
+ * ----------------------------------------
+ * ADMIN API
+ * ----------------------------------------
+ */
+
+/**
+ * Fetch all products (admin inventory view).
  */
 export async function getAllProducts() {
   return await apiFetch('/api/admin/inventory');
 }
 
 /**
- * ----------------------------------------
- * getProductById
- * ----------------------------------------
- * Fetch a single product by ID.
+ * Fetch a single product by ID (admin view).
  */
 export async function getProductById(id) {
   return await apiFetch(`/api/admin/inventory/${id}`);
 }
 
 /**
- * ----------------------------------------
- * createProduct
- * ----------------------------------------
  * Create a new product. Uses FormData for image upload.
  */
 export async function createProduct(formData) {
@@ -34,9 +55,6 @@ export async function createProduct(formData) {
 }
 
 /**
- * ----------------------------------------
- * updateProduct
- * ----------------------------------------
  * Update an existing product. Uses FormData for image upload.
  */
 export async function updateProduct(id, formData) {
@@ -47,9 +65,6 @@ export async function updateProduct(id, formData) {
 }
 
 /**
- * ----------------------------------------
- * deactivateProduct
- * ----------------------------------------
  * Soft delete a product.
  */
 export async function deactivateProduct(id) {
@@ -59,9 +74,6 @@ export async function deactivateProduct(id) {
 }
 
 /**
- * ----------------------------------------
- * getInactiveProducts
- * ----------------------------------------
  * Fetch all soft-deleted products.
  */
 export async function getInactiveProducts() {
@@ -69,9 +81,6 @@ export async function getInactiveProducts() {
 }
 
 /**
- * ----------------------------------------
- * restoreProduct
- * ----------------------------------------
  * Restore a soft-deleted product.
  */
 export async function restoreProduct(id) {
@@ -81,9 +90,6 @@ export async function restoreProduct(id) {
 }
 
 /**
- * ----------------------------------------
- * hardDeleteProduct
- * ----------------------------------------
  * Permanently delete a product.
  */
 export async function hardDeleteProduct(id) {

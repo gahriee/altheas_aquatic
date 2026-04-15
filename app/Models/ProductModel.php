@@ -127,6 +127,24 @@ class ProductModel
 
     /**
      * ----------------------------------------
+     * fetchByCategory
+     * ----------------------------------------
+     * Fetch all active products within a specific category.
+     */
+    public function fetchByCategory(int $categoryId): array
+    {
+        $sql = "SELECT p.*, c.name as category_name 
+                FROM products p 
+                JOIN categories c ON p.category_id = c.category_id 
+                WHERE p.category_id = :category_id AND p.is_active = 1
+                ORDER BY p.created_at DESC";
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute([':category_id' => $categoryId]);
+        return $stmt->fetchAll();
+    }
+
+    /**
+     * ----------------------------------------
      * fetchInactive
      * ----------------------------------------
      * Fetch all soft-deleted products.
@@ -154,6 +172,22 @@ class ProductModel
         $sql = "UPDATE products SET is_active = 1 WHERE product_id = :id";
         $stmt = $this->db->prepare($sql);
         return $stmt->execute([':id' => $id]);
+    }
+
+    /**
+     * ----------------------------------------
+     * incrementStock
+     * ----------------------------------------
+     * Atomically increment product stock.
+     */
+    public function incrementStock(int $id, int $qty): bool
+    {
+        $sql = "UPDATE products SET stock_qty = stock_qty + :qty WHERE product_id = :id";
+        $stmt = $this->db->prepare($sql);
+        return $stmt->execute([
+            ':id' => $id,
+            ':qty' => $qty
+        ]);
     }
 
     /**

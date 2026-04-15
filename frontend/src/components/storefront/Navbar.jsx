@@ -1,11 +1,12 @@
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { ShoppingCart, Waves, LogIn, LogOut, LayoutDashboard } from 'lucide-react';
 import { useCart } from '../../context/CartContext';
 import { useAuth } from '../../context/AuthContext';
 
 export default function Navbar() {
   const { count } = useCart();
-  const { user, openLoginModal, logout } = useAuth();
+  const { user, logout } = useAuth();
+  const navigate = useNavigate();
 
   return (
     <nav className="bg-white border-b border-sage-100 h-20 sticky top-0 z-30 shadow-sm">
@@ -51,7 +52,7 @@ export default function Navbar() {
               </div>
             ) : (
               <button
-                onClick={() => openLoginModal()}
+                onClick={() => navigate('/login')}
                 className="flex items-center gap-2 px-4 py-2 text-sage-500 hover:text-teal-500 font-bold transition rounded-xl hover:bg-white"
               >
                 <LogIn size={20} />

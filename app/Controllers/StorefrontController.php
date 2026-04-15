@@ -3,6 +3,9 @@
 namespace App\Controllers;
 
 use App\Core\Response;
+use App\Core\Database;
+use App\Models\ProductModel;
+use App\Models\CategoryModel;
 
 class StorefrontController
 {
@@ -14,8 +17,18 @@ class StorefrontController
      */
     public function list(): void
     {
-        // Simple mock for now, will be implemented with ProductModel in Priority 5
-        Response::json(['products' => []]);
+        $db = Database::getInstance();
+        $productModel = new ProductModel($db);
+        
+        $categoryId = isset($_GET['category']) ? (int)$_GET['category'] : null;
+        
+        if ($categoryId) {
+            $products = $productModel->fetchByCategory($categoryId);
+        } else {
+            $products = $productModel->fetchAll();
+        }
+
+        Response::json(['products' => $products]);
     }
 
     /**
@@ -26,7 +39,15 @@ class StorefrontController
      */
     public function detail(int $id): void
     {
-        Response::error('Not Implemented', 501);
+        $db = Database::getInstance();
+        $productModel = new ProductModel($db);
+        $product = $productModel->getById($id);
+
+        if (!$product || (int)$product['is_active'] === 0) {
+            Response::error('Product not found or unavailable', 404);
+        }
+
+        Response::json(['product' => $product]);
     }
 
     /**
@@ -37,7 +58,10 @@ class StorefrontController
      */
     public function categories(): void
     {
-        // Simple mock for now, will be implemented with CategoryModel in Priority 5
-        Response::json(['categories' => []]);
+        $db = Database::getInstance();
+        $categoryModel = new CategoryModel($db);
+        $categories = $categoryModel->fetchAll();
+        
+        Response::json(['categories' => $categories]);
     }
 }

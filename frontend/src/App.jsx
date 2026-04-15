@@ -9,6 +9,8 @@ import ProductDetail from './pages/storefront/ProductDetail';
 import Cart from './pages/storefront/Cart';
 import Checkout from './pages/storefront/Checkout';
 import OrderConfirmation from './pages/storefront/OrderConfirmation';
+import Register from './pages/storefront/Register';
+import StorefrontLogin from './pages/storefront/Login';
 
 // Admin Pages
 import Login from './pages/admin/Login';
@@ -32,6 +34,8 @@ export default function App() {
         <Route path="cart" element={<Cart />} />
         <Route path="checkout" element={<Checkout />} />
         <Route path="order-confirmation/:id" element={<OrderConfirmation />} />
+        <Route path="register" element={<Register />} />
+        <Route path="login" element={<StorefrontLogin />} />
       </Route>
 
       {/* Admin Login */}

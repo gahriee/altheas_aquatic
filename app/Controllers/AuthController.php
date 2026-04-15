@@ -151,6 +151,57 @@ class AuthController
 
     /**
      * ----------------------------------------
+     * register
+     * ----------------------------------------
+     * Handle customer account registration.
+     */
+    public function register(): void
+    {
+        // CSRF verification is required for all state-changing endpoints
+        Csrf::verifyHeader();
+        
+        $input = json_decode(file_get_contents('php://input'), true);
+        if (!$input) {
+            Response::error('No data provided', 400);
+        }
+        
+        $username = trim($input['username'] ?? '');
+        $password = $input['password'] ?? '';
+        
+        if (empty($username) || empty($password)) {
+            Response::error('Username and password are required', 400);
+        }
+        
+        if (strlen($password) < 6) {
+            Response::error('Password must be at least 6 characters long', 400);
+        }
+        
+        $db = \App\Core\Database::getInstance()->getConnection();
+        $userModel = new \App\Models\UserModel($db);
+        
+        try {
+            $id = $userModel->create([
+                'username' => $username,
+                'password' => $password,
+                'role' => 'customer'
+            ]);
+            
+            Response::json([
+                'id' => $id,
+                'message' => 'Account created successfully. Please login to continue.'
+            ], 201);
+        } catch (\PDOException $e) {
+            if ($e->getCode() === '23000') {
+                Response::error('This username is already taken', 409);
+            }
+            Response::error('Failed to create account', 500);
+        } catch (\Exception $e) {
+            Response::error('An unexpected error occurred', 500);
+        }
+    }
+
+    /**
+     * ----------------------------------------
      * logout
      * ----------------------------------------
      * End the current user session.
