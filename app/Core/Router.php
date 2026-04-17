@@ -154,13 +154,13 @@ class Router
         }
 
         // Storefront (Public)
-        if ($method === 'GET' && $path === 'products') {
+        if ($method === 'GET' && $path === 'storefront/list') {
             $this->call('StorefrontController', 'list');
         }
-        if ($method === 'GET' && preg_match('/^products\/(\d+)$/', $path, $matches)) {
+        if ($method === 'GET' && preg_match('/^storefront\/detail\/(\d+)$/', $path, $matches)) {
             $this->call('StorefrontController', 'detail', [(int)$matches[1]]);
         }
-        if ($method === 'GET' && $path === 'categories') {
+        if ($method === 'GET' && $path === 'storefront/categories') {
             $this->call('StorefrontController', 'categories');
         }
 

@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { History as HistoryIcon, Package, Calendar, Hash, DollarSign, Loader2 } from 'lucide-react';
+import { History as HistoryIcon, Package, Calendar, Hash, Coins, Loader2 } from 'lucide-react';
 import { getDeliveries } from '../../../api/deliveries';
 
 export default function SupplierDeliveryTable({ supplierId }) {
@@ -24,9 +24,9 @@ export default function SupplierDeliveryTable({ supplierId }) {
   }, [supplierId]);
 
   const formatCurrency = (val) => {
-    return new Intl.NumberFormat('en-US', {
+    return new Intl.NumberFormat('en-PH', {
       style: 'currency',
-      currency: 'USD',
+      currency: 'PHP',
     }).format(val || 0);
   };
 
@@ -84,7 +84,7 @@ export default function SupplierDeliveryTable({ supplierId }) {
             </th>
             <th className="px-6 py-4 text-right">
               <div className="flex items-center justify-end gap-2 text-sage-400">
-                <DollarSign size={12} />
+                <Coins size={12} />
                 <span className="text-[10px] font-bold uppercase tracking-widest">Cost (Unit / Total)</span>
               </div>
             </th>

@@ -111,7 +111,7 @@ export default function ProductDetail() {
               {product.name}
             </h1>
             <p className="text-3xl font-black text-teal-600">
-              £{Number(product.price).toFixed(2)}
+              ₱{Number(product.price).toFixed(2)}
             </p>
           </div>
 

@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, useLocation, Link } from 'react-router-dom';
-import { ArrowLeft, Save, Truck, Package, Hash, DollarSign, StickyNote, Loader2, AlertCircle } from 'lucide-react';
+import { ArrowLeft, Save, Truck, Package, Hash, Coins, StickyNote, Loader2, AlertCircle } from 'lucide-react';
 import { getSuppliers } from '../../../api/suppliers';
 import { recordDelivery } from '../../../api/deliveries';
 import { getAllProducts } from '../../../api/products';
@@ -172,11 +172,11 @@ export default function DeliveryForm() {
 
             <div className="space-y-6">
               <div className="flex items-center gap-2 text-teal-600">
-                <DollarSign size={18} />
+                <Coins size={18} />
                 <h3 className="font-bold uppercase text-[10px] tracking-widest">Cost (Optional)</h3>
               </div>
               <div className="space-y-2">
-                <Label htmlFor="unit_cost">Unit Cost ($)</Label>
+                <Label htmlFor="unit_cost">Unit Cost (₱)</Label>
                 <Input 
                   id="unit_cost"
                   name="unit_cost"

@@ -31,7 +31,6 @@ class ProductModel
         $sql = "SELECT p.*, c.name as category_name 
                 FROM products p 
                 JOIN categories c ON p.category_id = c.category_id 
-                WHERE p.is_active = 1
                 ORDER BY p.created_at DESC";
         $stmt = $this->db->prepare($sql);
         $stmt->execute();
@@ -140,6 +139,24 @@ class ProductModel
                 ORDER BY p.created_at DESC";
         $stmt = $this->db->prepare($sql);
         $stmt->execute([':category_id' => $categoryId]);
+        return $stmt->fetchAll();
+    }
+
+    /**
+     * ----------------------------------------
+     * fetchAllActive
+     * ----------------------------------------
+     * Fetch all currently active products.
+     */
+    public function fetchAllActive(): array
+    {
+        $sql = "SELECT p.*, c.name as category_name 
+                FROM products p 
+                JOIN categories c ON p.category_id = c.category_id 
+                WHERE p.is_active = 1
+                ORDER BY p.created_at DESC";
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute();
         return $stmt->fetchAll();
     }
 

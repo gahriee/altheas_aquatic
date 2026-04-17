@@ -38,7 +38,7 @@ export default function ProductCard({ id, name, price, imagePath }) {
         <Link to={`/product/${id}`} className="block mb-1 group-hover:text-teal-600 transition-colors decoration-transparent text-sage-800">
           <h3 className="text-xl font-black truncate tracking-tight">{name}</h3>
         </Link>
-        <p className="text-2xl font-black text-teal-600 mb-6 tracking-tight">£{Number(price).toFixed(2)}</p>
+        <p className="text-2xl font-black text-teal-600 mb-6 tracking-tight">₱{Number(price).toFixed(2)}</p>
         
         <button
           onClick={handleAddToCart}

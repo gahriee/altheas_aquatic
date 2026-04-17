@@ -264,7 +264,7 @@ export default function ProductForm() {
 
                   <div className="grid grid-cols-2 gap-6">
                     <div className="space-y-2">
-                      <Label htmlFor="price" required>Price ($)</Label>
+                      <Label htmlFor="price" required>Price (₱)</Label>
                       <Input 
                         id="price" 
                         name="price" 

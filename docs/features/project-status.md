@@ -18,7 +18,7 @@
 - [x] Inventory Module: product CRUD, image upload, soft delete, low-stock display (Ticket: `2026-04-11-03`)
 - [x] Trash Management: unique titles, restore deactivated products (Ticket: `2026-04-12-01`)
 - [x] Supplier Module: supplier CRUD, record delivery, auto stock update (Ticket: `2026-04-12-02`)
-- [ ] Customer Storefront: home page, product detail, category filter
+- [x] Customer Storefront: home page, product detail, category filter (Ticket: `2026-04-15-03`)
 - [ ] Cart & Checkout: session cart, customer info form, atomic stock deduction, order confirmation
 
 ### Phase 2: Admin Operations (Weeks 3–4)
@@ -65,8 +65,8 @@
 | **Supplier Management** | `[x]` | Supplier list, add/edit form, record delivery form, per-supplier history |
 | **Sales / Orders** | `[ ]` | Orders table with status filter, order detail view, status update, date-range filter |
 | **Reports** | `[ ]` | Date picker, sales summary table, inventory status table, supplier delivery summary, CSV export |
-| **Storefront — Home** | `[ ]` | Hero banner, featured product grid, category filter tabs, product cards |
-| **Storefront — Product Detail** | `[ ]` | Image, description, price, quantity selector, add-to-cart |
+| **Storefront — Home** | `[x]` | Hero banner, featured product grid, category filter tabs, product cards |
+| **Storefront — Product Detail** | `[x]` | Image, description, price, quantity selector, add-to-cart |
 | **Storefront — Cart & Checkout** | `[ ]` | Cart list, subtotals, customer info form, out-of-stock protection |
 | **Order Confirmation** | `[ ]` | Order ID, itemised summary, thank-you message, return-to-shop link |
 
@@ -126,10 +126,8 @@
 
 ### 🛒 Priority 5: Storefront & Checkout
 
-- [x] **Home Page** (`StorefrontController::home`): hero banner; product grid filtered by `is_active = 1`; category filter tabs (all + per category); product cards with image, name, price, Buy Now / Add to Cart (redirects to Login if guest)
-- [x] **User Sign-Up** (`AuthController::register`): registration form for customers; creates user with `role = 'customer'`; redirects to login
-- [x] **Modal Removal**: removed `LoginModal` in favor of dedicated `/login` page; updated all guest interaction flows to redirect to login
-- [x] **Product Detail** (`StorefrontController::detail`): full image, name, description, price; quantity selector (max = stock_qty); Add to Cart button (redirects to Login if guest); related products by category
+- [x] **Home Page** (`StorefrontController::list`): hero banner; product grid filtered by `is_active = 1` via `fetchAllActive()`; category filter tabs; product cards (Ticket: `2026-04-15-03`)
+- [x] **Product Detail** (`StorefrontController::detail`): full image, name, description, price; quantity selector; related products by category (Ticket: `2026-04-15-03`)
 - [ ] **Session Cart**: `app/Core/Cart.php` — `add(product_id, qty)`, `remove(product_id)`, `update(product_id, qty)`, `getItems()`, `getTotal()`; stored in `$_SESSION['cart']`; validates qty does not exceed current stock
 - [ ] **Cart View** (`CartController::index`): item list with subtotals, quantity update, remove item, order total; proceed to checkout button
 - [ ] **Checkout Form** (`OrderController::checkoutForm`): customer name (required), email, phone, notes; order summary panel; CSRF token

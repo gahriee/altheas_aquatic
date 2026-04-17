@@ -17,7 +17,7 @@ class StorefrontController
      */
     public function list(): void
     {
-        $db = Database::getInstance();
+        $db = Database::getInstance()->getConnection();
         $productModel = new ProductModel($db);
         
         $categoryId = isset($_GET['category']) ? (int)$_GET['category'] : null;
@@ -25,7 +25,7 @@ class StorefrontController
         if ($categoryId) {
             $products = $productModel->fetchByCategory($categoryId);
         } else {
-            $products = $productModel->fetchAll();
+            $products = $productModel->fetchAllActive();
         }
 
         Response::json(['products' => $products]);
@@ -39,7 +39,7 @@ class StorefrontController
      */
     public function detail(int $id): void
     {
-        $db = Database::getInstance();
+        $db = Database::getInstance()->getConnection();
         $productModel = new ProductModel($db);
         $product = $productModel->getById($id);
 
@@ -58,7 +58,7 @@ class StorefrontController
      */
     public function categories(): void
     {
-        $db = Database::getInstance();
+        $db = Database::getInstance()->getConnection();
         $categoryModel = new CategoryModel($db);
         $categories = $categoryModel->fetchAll();
         

@@ -121,7 +121,7 @@ export default function InventoryList() {
       key: 'price',
       label: 'Price',
       sortable: true,
-      render: (p) => <span className="font-black text-teal-600">${parseFloat(p.price).toFixed(2)}</span>
+      render: (p) => <span className="font-black text-teal-600">₱{parseFloat(p.price).toFixed(2)}</span>
     },
     {
       key: 'stock_qty',

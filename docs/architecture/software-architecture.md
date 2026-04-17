@@ -46,7 +46,7 @@ Because the frontend is a React SPA making fetch() calls, traditional hidden-for
 A `rate_limit_log` table in MySQL tracks failed login attempts per IP. This is sufficient for brute-force protection on a single-shop application without adding Redis infrastructure.
 
 **Decision #6 — Soft Delete & Trash Management**  
-Products are never permanently removed from the database. Deactivating a product (`is_active = 0`) hides it from the default storefront and admin inventory views, but preserves all linked `order_items` records. Deactivated products are managed via a "Trash" interface in the admin panel, where they can be reviewed and restored (`is_active = 1`). This maintains data integrity and complete sales history while keeping the active inventory clean.
+Products are never permanently removed from the database. Deactivating a product (`is_active = 0`) hides it from the storefront by splitting the `ProductModel` fetch logic into `fetchAll()` (Admin - returns everything) and `fetchAllActive()` (Storefront - returns only active). Deactivated products are managed via a "Trash" interface in the admin panel, where they can be reviewed and restored (`is_active = 1`). This maintains data integrity and complete sales history while keeping the active inventory clean.
 
 **Decision #7 — Atomic Stock Deduction at Checkout**  
 Stock deduction and order creation happen inside a single MySQL transaction with a SELECT FOR UPDATE lock. This eliminates race conditions and prevents overselling even under concurrent checkouts.
@@ -304,9 +304,9 @@ GET  /api/admin/reports/suppliers       → ReportController::suppliers()
 GET  /api/admin/reports/export          → ReportController::exportCsv()
 
 # Storefront (Public)
-GET  /api/products                      → StorefrontController::list()
-GET  /api/products/{id}                 → StorefrontController::detail()
-GET  /api/categories                    → StorefrontController::categories()
+GET  /api/storefront/list                → StorefrontController::list()
+GET  /api/storefront/detail/{id}          → StorefrontController::detail()
+GET  /api/storefront/categories            → StorefrontController::categories()
 
 # Cart (Session-backed)
 GET  /api/cart                          → CartController::index()
