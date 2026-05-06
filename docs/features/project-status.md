@@ -1,7 +1,7 @@
 # Project Status: Althea's Aquatic
 
-**Last Updated:** 2026-04-15
-**Current Phase:** Phase 1 — Core Foundation
+**Last Updated:** 2026-04-19
+**Current Phase:** Phase 2 — Admin Operations
 
 > **AI Agent Instructions:** Always read this file before generating code. Update this file when a task is completed. Do not implement features assigned to future phases.
 
@@ -14,19 +14,23 @@
 - [x] Database schema: all 7 tables with InnoDB + FK constraints, seed categories
 - [x] Authentication: login form, bcrypt verify, session management, logout, brute-force protection
 - [x] Apply Aquatic Theme: update all frontend components to strictly follow `tailwind.config.js` palette (Ticket: `2026-04-11-02`)
+- [x] Core Library Migration: replaced custom router and auth with `bramus/router` and `delight-im/auth` (Ticket: `2026-04-19-01`)
 - [x] Shared UI Components: implement reusable Button, Input, and Label components (Ticket: `2026-04-11-04`)
 - [x] Inventory Module: product CRUD, image upload, soft delete, low-stock display (Ticket: `2026-04-11-03`)
 - [x] Trash Management: unique titles, restore deactivated products (Ticket: `2026-04-12-01`)
 - [x] Supplier Module: supplier CRUD, record delivery, auto stock update (Ticket: `2026-04-12-02`)
 - [x] Customer Storefront: home page, product detail, category filter (Ticket: `2026-04-15-03`)
-- [ ] Cart & Checkout: session cart, customer info form, atomic stock deduction, order confirmation
+- [x] Cart & Checkout: session cart, customer info form, atomic stock deduction, order confirmation, PayMongo GCash integration
+- [x] Persistent Cart: transition to database-backed storage for authenticated users (Ticket: `2026-04-18-03`)
 
-### Phase 2: Admin Operations (Weeks 3–4)
-- [ ] Sales / Orders Module: order list with status filter, order detail view, status update control
+### Phase 2: Order Management & Alerts (Week 3)
+- [x] Admin Order Management: List view, status updates (Ticket: `2026-04-19-06`)
 - [ ] Reports Module: sales summary by date range, inventory status table, supplier delivery summary
 - [ ] CSV Export: export sales and inventory reports as downloadable CSV files
 - [ ] Admin Dashboard: summary cards (total products, low-stock count, today's sales, pending orders)
 - [ ] Low-stock alert panel: filtered view highlighting products at or below threshold
+- [x] Real-time Notifications: Pusher integration for order payments and stock alerts (Ticket: `2026-04-19-03`)
+- [x] Cart Animation Sync: Synchronized count update with fly-to-cart animation (Ticket: `2026-04-19-05`)
 
 ### Phase 3: Polish & Delivery (Week 4–Delivery)
 - [ ] Mobile responsiveness audit — all pages tested on phone viewport
@@ -44,16 +48,17 @@
 | Module | Status | Notes |
 | :--- | :---: | :--- |
 | **Project Scaffold** | `[x]` | MVC folder structure, front controller, autoloader, env config |
-| **Database Schema** | `[x]` | All 7 tables: users, categories, products, suppliers, deliveries, orders, order_items, rate_limit_log |
-| **Authentication** | `[x]` | Multi-role login (customer/admin), bcrypt verify, session regeneration, logout, rate limiting |
+| **Database Schema** | `[~]` | All 7 tables updated; adding `delight-im/auth` tables |
+| **Authentication** | `[~]` | Migrating to `delight-im/auth` for secure session/throttling |
 | **Inventory Module** | `[x]` | Product CRUD, image upload, soft delete, low-stock query |
 | **Supplier Module** | `[x]` | Supplier CRUD, delivery form, auto stock deduction |
-| **Order Module** | `[ ]` | Atomic checkout, order creation, order_items insert, stock deduction |
+| **Order Module** | `[x]` | Atomic checkout, order creation, order_items insert, stock deduction, PayMongo integration |
 | **Reports Module** | `[ ]` | Date-range sales query, inventory status, supplier summaries, CSV export |
 | **Rate Limit Logic** | `[x]` | rate_limit_log insert/check — 5 attempts per IP per 10 minutes |
 | **CSRF Protection** | `[x]` | Token generate/verify helper — applied to all state-changing forms |
 | **File Upload Handler** | `[x]` | MIME validation, random rename, outside-web-root storage, serve script |
 | **Login Modal** | `[x]` | Portable auth with aquatic theme and post-login action support |
+| **Order Expiry** | `[x]` | Auto stock restoration for unpaid orders older than 60 mins |
 
 ### 🖥️ Frontend Pages
 
@@ -67,8 +72,8 @@
 | **Reports** | `[ ]` | Date picker, sales summary table, inventory status table, supplier delivery summary, CSV export |
 | **Storefront — Home** | `[x]` | Hero banner, featured product grid, category filter tabs, product cards |
 | **Storefront — Product Detail** | `[x]` | Image, description, price, quantity selector, add-to-cart |
-| **Storefront — Cart & Checkout** | `[ ]` | Cart list, subtotals, customer info form, out-of-stock protection |
-| **Order Confirmation** | `[ ]` | Order ID, itemised summary, thank-you message, return-to-shop link |
+| **Storefront — Cart & Checkout** | `[x]` | Cart list, subtotals, customer info form, PayMongo GCash integration |
+| **Order Confirmation** | `[x]` | Order ID, itemised summary, payment status polling, return-to-shop link |
 
 *Key: `[x]` = Complete, `[~]` = In Progress, `[ ]` = Not Started, `[!]` = Blocked*
 
@@ -83,13 +88,16 @@
 
 ### ⚙️ Priority 1: Project Scaffold & Database
 
+- [x] **Real-time Notifications** (Ticket: `2026-04-19-03`): Added `notifications` table, Pusher SDK, `NotificationModel`, API routes, and frontend Admin feed UI.
+
 - [x] **MVC Folder Structure**: Create `app/Controllers/`, `app/Models/`, `app/Views/`, `public/`, `config/`, `uploads/` directories; configure `.htaccess` to route all requests through `public/index.php`
-- [x] **Front Controller**: `public/index.php` — parse URL segments, instantiate correct controller, call correct method; 404 fallback
+- [x] **Front Controller**: `public/index.php` — dispatches to `Router.php`
+- [x] **Routing Migration**: Replaced custom `Router` with `bramus/router` (Ticket: `2026-04-19-01`)
 - [x] **Autoloader**: PSR-4 style `spl_autoload_register` — maps `App\Controllers\` to `app/Controllers/`, etc.
 - [x] **Environment Config**: `config/config.php` — loads `.env` or defines constants for DB host, name, user, password; never committed to Git
 - [x] **Database Connection**: `app/Core/Database.php` — PDO singleton with `PDO::ATTR_ERRMODE => EXCEPTION` and `PDO::ATTR_DEFAULT_FETCH_MODE => ASSOC`
 - [x] **Schema Migration**: `database/schema.sql` — all 8 tables (`users`, `categories`, `products`, `suppliers`, `deliveries`, `orders`, `order_items`, `rate_limit_log`) with InnoDB, FK constraints, DATETIME timestamps
-- [x] **Seed Data**: `database/seed.sql` — default admin user (bcrypt hashed password), seed categories (Aquatic Life, Aquatic Plants, Accessories)
+- [x] **Seed Data**: `database/seed.sql` — default admin user (email-only), seed categories (Aquatic Life, Aquatic Plants, Accessories)
 
 ---
 
@@ -97,8 +105,7 @@
 
 - [x] **Login Form** (`AuthController::loginForm`): username + password form with CSRF token; error message display area; rate-limit feedback ("Too many attempts — try again in X minutes")
 - [x] **Login Handler** (`AuthController::login`): check `rate_limit_log` for IP threshold; `password_verify` against `password_hash`; `session_regenerate_id(true)` on success; set `$_SESSION['user_id']` and `role`; redirect to dashboard; on failure insert `rate_limit_log` row
-- [x] **Auth Middleware**: `app/Core/Auth.php` — `requireLogin()` method called at the top of every admin controller; redirects to `/admin/login` if session invalid
-- [x] **Logout Handler** (`AuthController::logout`): CSRF-verified POST; `session_destroy()`; clear session cookie; redirect to login
+- [x] **Auth Migration**: Replaced custom `Auth` with `delight-im/auth` and transitioned to **Email-Only** identification (Ticket: `2026-04-19-01`)
 - [x] **Session Config**: `session.cookie_httponly = 1`, `session.cookie_secure = 1`, `session.cookie_samesite = Strict`, `session.gc_maxlifetime = 1800` (30 minutes)
 
 ---
@@ -128,11 +135,13 @@
 
 - [x] **Home Page** (`StorefrontController::list`): hero banner; product grid filtered by `is_active = 1` via `fetchAllActive()`; category filter tabs; product cards (Ticket: `2026-04-15-03`)
 - [x] **Product Detail** (`StorefrontController::detail`): full image, name, description, price; quantity selector; related products by category (Ticket: `2026-04-15-03`)
-- [ ] **Session Cart**: `app/Core/Cart.php` — `add(product_id, qty)`, `remove(product_id)`, `update(product_id, qty)`, `getItems()`, `getTotal()`; stored in `$_SESSION['cart']`; validates qty does not exceed current stock
-- [ ] **Cart View** (`CartController::index`): item list with subtotals, quantity update, remove item, order total; proceed to checkout button
-- [ ] **Checkout Form** (`OrderController::checkoutForm`): customer name (required), email, phone, notes; order summary panel; CSRF token
-- [ ] **Checkout Submit** (`OrderController::submit`): open transaction; `SELECT stock_qty FOR UPDATE` per item; rollback + error if insufficient stock; deduct stock; insert `orders` + `order_items`; commit; clear cart; redirect to confirmation
-- [ ] **Order Confirmation** (`OrderController::confirmation`): order ID, itemised summary, total amount, thank-you message, return-to-shop link
+- [x] **Session Cart**: `app/Core/Cart.php` — `add(product_id, qty)`, `remove(product_id)`, `update(product_id, qty)`, `getItems()`, `getTotal()`; stored in `$_SESSION['cart']`; validates qty does not exceed current stock
+- [x] **Cart View** (`CartController::index`): item list with subtotals, quantity update, remove item, order total; proceed to checkout button
+- [x] **Checkout Form** (`Checkout.jsx`): customer name (required), email, phone, notes; order summary panel; CSRF token
+- [x] **Checkout Submit** (`PaymentController::createIntent`): open transaction; `SELECT stock_qty FOR UPDATE` per item; rollback + error if insufficient stock; deduct stock; insert `orders` + `order_items`; create PayMongo intent + method; commit; clear cart; redirect
+- [x] **Order Confirmation** (`OrderConfirmation.jsx`): order ID, itemised summary, total amount, payment status polling, return-to-shop link
+- [x] **Order Expiry**: `OrderModel::cleanupExpiredOrders` restores stock for unpaid orders > 1 hour.
+- [ ] **Persistent Cart** (`CartModel`): implement DB storage and session merging for authenticated customers (Ticket: `2026-04-18-03`)
 
 ---
 
@@ -167,9 +176,10 @@
 - **Tailwind CSS v3** — all styling strictly follows the theme palette in `tailwind.config.js`; no external CSS files
 - **Never hard-delete products** — always use `is_active = 0`; this preserves order history
 - **All stock deductions are atomic** — always use a MySQL transaction with `SELECT FOR UPDATE`
-- **Never store passwords in plaintext** — always `password_hash()` with `PASSWORD_BCRYPT`; verify with `password_verify()`
+- **Email-Only Authentication** — Users are identified solely by email; no username is required or used in app logic.
+- **Never store passwords in plaintext** — always `password_hash()` with `PASSWORD_BCRYPT` (managed by `delight-im/auth`); verify with `password_verify()`
 - **CSRF tokens on every state-changing form** — generate in controller, verify before processing POST
 - **Images are stored outside the web root** — never place uploaded files inside `public/`; always serve through `public/image.php`
 - **Rate limiting uses the DB table** — no Redis; use `rate_limit_log` for brute-force protection
 - **Reports include completed orders only** — never include pending or cancelled orders in revenue totals
-- **Do not implement Phase 3 features** (mobile app, payment gateway integration, email notifications) unless explicitly instructed
+- **Implement PayMongo GCash Integration** — ensure PaymentIntent and Webhook flow are secure and atomic

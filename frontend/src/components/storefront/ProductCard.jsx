@@ -1,17 +1,21 @@
-import { ShoppingCart } from 'lucide-react';
+import { useState } from 'react';
+import { ShoppingCart, Check } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useCart } from '../../context/CartContext';
 import { useAuth } from '../../context/AuthContext';
+import { useFlyToCart } from '../../hooks/useFlyToCart';
 
 export default function ProductCard({ id, name, price, imagePath }) {
+  const [added, setAdded] = useState(false);
   const { addItem } = useCart();
-  const { user, setPendingAction } = useAuth();
+  const { isAuthenticated, setPendingAction } = useAuth();
   const navigate = useNavigate();
+  const fly = useFlyToCart();
 
-  const handleAddToCart = (e) => {
+  const handleAddToCart = async (e) => {
     e.preventDefault();
     
-    if (!user) {
+    if (!isAuthenticated()) {
       setPendingAction({
         type: 'ADD_TO_CART',
         payload: { id, name, price }
@@ -20,7 +24,11 @@ export default function ProductCard({ id, name, price, imagePath }) {
       return;
     }
 
+    setAdded(true);
+    await fly(e.currentTarget);
     addItem(id, 1);
+    
+    setTimeout(() => setAdded(false), 1500);
   };
 
   return (
@@ -36,16 +44,22 @@ export default function ProductCard({ id, name, price, imagePath }) {
       
       <div className="p-6">
         <Link to={`/product/${id}`} className="block mb-1 group-hover:text-teal-600 transition-colors decoration-transparent text-sage-800">
-          <h3 className="text-xl font-black truncate tracking-tight">{name}</h3>
+          <h3 className="text-xl font-bold font-display truncate tracking-tight">{name}</h3>
         </Link>
-        <p className="text-2xl font-black text-teal-600 mb-6 tracking-tight">₱{Number(price).toFixed(2)}</p>
+        <p className="text-2xl font-bold font-display text-teal-600 mb-6 tracking-tight">₱{Number(price).toFixed(2)}</p>
         
         <button
           onClick={handleAddToCart}
-          className="w-full flex items-center justify-center gap-2 bg-teal-500 hover:bg-teal-600 text-white font-black py-4 rounded-2xl transition shadow-lg shadow-teal-500/20 active:scale-95"
+          className={`w-full flex items-center justify-center gap-3 font-semibold py-4 rounded-2xl transition-all duration-300 shadow-lg active:scale-95 ${
+            added
+              ? 'bg-emerald-500 shadow-emerald-500/20 scale-[0.97]'
+              : 'bg-teal-500 hover:bg-teal-600 shadow-teal-500/20'
+          }`}
         >
-          <ShoppingCart size={20} />
-          <span>Add to Cart</span>
+          <span className={`transition-all duration-300 ${added ? 'scale-125' : 'scale-100'}`}>
+            {added ? <Check size={20} strokeWidth={3} className="text-white" /> : <ShoppingCart size={20} className="text-white" />}
+          </span>
+          <span className="text-white">{added ? 'Added!' : 'Add to Cart'}</span>
         </button>
       </div>
     </div>

@@ -4,6 +4,8 @@ storage/products/*
 public/dist/*
 !public/dist/.gitkeep
 node_modules/
+vendor/
+frontend/.env
 *.log
 
 # AI Generated Files

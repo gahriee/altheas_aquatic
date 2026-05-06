@@ -1,4 +1,5 @@
-import { Toaster } from 'react-hot-toast';
+import { Toaster, ToastBar, toast } from 'react-hot-toast';
+import { X } from 'lucide-react';
 
 export default function Toast() {
   return (
@@ -12,13 +13,15 @@ export default function Toast() {
         // Default options for all toasts
         duration: 4000,
         style: {
-          padding: '16px 24px',
-          color: '#3B4D4B', // Sage 700ish
-          borderRadius: '0px',
-          fontWeight: '700',
+          padding: '12px 18px',
+          color: '#3B4D4B', // Sage 700
+          borderRadius: '20px',
+          fontWeight: '600',
           fontSize: '14px',
+          fontFamily: "'Inter', sans-serif",
           border: '1px solid #E6EEED', // Sage 100
           boxShadow: '0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1)',
+          maxWidth: '400px',
         },
 
         // Custom success styling
@@ -47,6 +50,40 @@ export default function Toast() {
           },
         },
       }}
-    />
+    >
+      {(t) => (
+        <ToastBar 
+          toast={t}
+          style={{
+            ...t.style,
+            animation: t.visible ? 'toast-enter 0.3s ease-out forwards' : 'toast-exit 0.3s ease-in forwards',
+          }}
+        >
+          {({ icon, message }) => (
+            <>
+              <div 
+                className="flex items-center gap-2 cursor-pointer active:scale-95 transition-transform"
+                onClick={() => toast.dismiss(t.id)}
+              >
+                {icon}
+                <div className="flex-1">{message}</div>
+              </div>
+              {t.type !== 'loading' && (
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    toast.dismiss(t.id);
+                  }}
+                  className="ml-4 p-1 rounded-full hover:bg-black/5 text-sage-300 hover:text-sage-500 transition-colors"
+                  aria-label="Dismiss"
+                >
+                  <X size={14} strokeWidth={3} />
+                </button>
+              )}
+            </>
+          )}
+        </ToastBar>
+      )}
+    </Toaster>
   );
 }

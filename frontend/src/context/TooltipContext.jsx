@@ -77,7 +77,7 @@ function GlobalTooltip({ tooltip, active }) {
     <div 
       className={`
         fixed z-[9999] px-3 py-1.5 
-        bg-teal-600/95 backdrop-blur-md text-white text-[10px] font-black uppercase tracking-widest
+        bg-teal-600/95 backdrop-blur-md text-white text-[10px] font-bold uppercase tracking-widest
         rounded-lg pointer-events-none whitespace-nowrap
         shadow-xl shadow-teal-600/20 border border-white/5
         transition-all duration-200 ease-out

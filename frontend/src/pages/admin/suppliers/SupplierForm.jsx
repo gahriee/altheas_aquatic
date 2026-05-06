@@ -90,7 +90,7 @@ export default function SupplierForm() {
     return (
       <div className="flex flex-col items-center justify-center py-20 gap-4">
         <Loader2 className="animate-spin text-teal-600" size={32} />
-        <p className="text-sage-400 font-bold uppercase text-[10px] tracking-widest">Loading Supplier...</p>
+        <p className="text-sage-400 font-semibold uppercase text-[10px] tracking-widest">Loading Supplier...</p>
       </div>
     );
   }
@@ -106,7 +106,7 @@ export default function SupplierForm() {
             <ArrowLeft size={20} />
           </Link>
           <div>
-            <h1 className="text-2xl font-black text-sage-800 tracking-tight">
+            <h1 className="text-2xl font-bold font-display text-sage-800 tracking-tight">
               {isEdit ? 'Edit Supplier' : 'Add New Supplier'}
             </h1>
             <p className="text-sm text-sage-400 font-medium">
@@ -119,7 +119,7 @@ export default function SupplierForm() {
       {error && (
         <div className="p-4 bg-coral-50 text-coral-500 rounded-2xl border border-coral-100 flex items-center gap-2">
           <AlertCircle size={20} />
-          <span className="font-bold text-sm tracking-tight">{error}</span>
+          <span className="font-semibold text-sm tracking-tight">{error}</span>
         </div>
       )}
 
@@ -128,7 +128,7 @@ export default function SupplierForm() {
           <section className="space-y-6">
             <div className="flex items-center gap-2 text-teal-600">
               <Truck size={18} />
-              <h3 className="font-bold uppercase text-[10px] tracking-widest">Business Identity</h3>
+              <h3 className="font-semibold uppercase text-[10px] tracking-widest">Business Identity</h3>
             </div>
             
             <div className="space-y-2">
@@ -148,7 +148,7 @@ export default function SupplierForm() {
           <section className="space-y-6">
             <div className="flex items-center gap-2 text-teal-600">
               <User size={18} />
-              <h3 className="font-bold uppercase text-[10px] tracking-widest">Primary Contact</h3>
+              <h3 className="font-semibold uppercase text-[10px] tracking-widest">Primary Contact</h3>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -192,7 +192,7 @@ export default function SupplierForm() {
           <section className="space-y-6">
             <div className="flex items-center gap-2 text-teal-600">
               <MapPin size={18} />
-              <h3 className="font-bold uppercase text-[10px] tracking-widest">Location</h3>
+              <h3 className="font-semibold uppercase text-[10px] tracking-widest">Location</h3>
             </div>
             <div className="space-y-2">
               <Label htmlFor="address">Full Address</Label>

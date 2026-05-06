@@ -2,6 +2,8 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import StorefrontLayout from './components/storefront/StorefrontLayout';
 import AdminLayout from './components/admin/AdminLayout';
 import ProtectedRoute from './components/shared/ProtectedRoute';
+import { ToastProvider } from './context/ToastContext';
+import Toast from './components/ui/Toast';
 
 // Storefront Pages
 import Home from './pages/storefront/Home';
@@ -26,40 +28,43 @@ import Reports from './pages/admin/reports/Reports';
 
 export default function App() {
   return (
-    <Routes>
-      {/* Storefront Routes */}
-      <Route path="/" element={<StorefrontLayout />}>
-        <Route index element={<Home />} />
-        <Route path="product/:id" element={<ProductDetail />} />
-        <Route path="cart" element={<Cart />} />
-        <Route path="checkout" element={<Checkout />} />
-        <Route path="order-confirmation/:id" element={<OrderConfirmation />} />
-        <Route path="register" element={<Register />} />
-        <Route path="login" element={<StorefrontLogin />} />
-      </Route>
-
-      {/* Admin Login */}
-      <Route path="/admin/login" element={<Login />} />
-
-      {/* Admin Routes (Protected) */}
-      <Route path="/admin" element={<ProtectedRoute />}>
-        <Route element={<AdminLayout />}>
-          <Route index element={<Dashboard />} />
-          <Route path="inventory" element={<InventoryList />} />
-          <Route path="inventory/add" element={<ProductForm />} />
-          <Route path="inventory/edit/:id" element={<ProductForm />} />
-          <Route path="suppliers" element={<SupplierList />} />
-          <Route path="suppliers/add" element={<SupplierForm />} />
-          <Route path="suppliers/edit/:id" element={<SupplierForm />} />
-          <Route path="suppliers/delivery" element={<DeliveryForm />} />
-          <Route path="orders" element={<OrderList />} />
-          <Route path="orders/:id" element={<OrderDetail />} />
-          <Route path="reports" element={<Reports />} />
+    <ToastProvider>
+      <Routes>
+        {/* Storefront Routes */}
+        <Route path="/" element={<StorefrontLayout />}>
+          <Route index element={<Home />} />
+          <Route path="product/:id" element={<ProductDetail />} />
+          <Route path="cart" element={<Cart />} />
+          <Route path="checkout" element={<Checkout />} />
+          <Route path="order-confirmation/:id" element={<OrderConfirmation />} />
+          <Route path="register" element={<Register />} />
+          <Route path="login" element={<StorefrontLogin />} />
         </Route>
-      </Route>
 
-      {/* 404 Fallback */}
-      <Route path="*" element={<Navigate to="/" replace />} />
-    </Routes>
+        {/* Admin Login */}
+        <Route path="/admin/login" element={<Login />} />
+
+        {/* Admin Routes (Protected) */}
+        <Route path="/admin" element={<ProtectedRoute />}>
+          <Route element={<AdminLayout />}>
+            <Route index element={<Dashboard />} />
+            <Route path="inventory" element={<InventoryList />} />
+            <Route path="inventory/add" element={<ProductForm />} />
+            <Route path="inventory/edit/:id" element={<ProductForm />} />
+            <Route path="suppliers" element={<SupplierList />} />
+            <Route path="suppliers/add" element={<SupplierForm />} />
+            <Route path="suppliers/edit/:id" element={<SupplierForm />} />
+            <Route path="suppliers/delivery" element={<DeliveryForm />} />
+            <Route path="orders" element={<OrderList />} />
+            <Route path="orders/:id" element={<OrderDetail />} />
+            <Route path="reports" element={<Reports />} />
+          </Route>
+        </Route>
+
+        {/* 404 Fallback */}
+        <Route path="*" element={<Navigate to="/" replace />} />
+      </Routes>
+      <Toast />
+    </ToastProvider>
   );
 }

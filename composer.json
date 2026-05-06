@@ -1,0 +1,8 @@
+{
+    "require": {
+        "payrex/payrex-php": "^1.8",
+        "bramus/router": "^1.6",
+        "delight-im/auth": "^9.0",
+        "pusher/pusher-php-server": "^7.2"
+    }
+}

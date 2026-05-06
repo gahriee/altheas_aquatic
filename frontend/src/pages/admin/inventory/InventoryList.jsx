@@ -104,7 +104,7 @@ export default function InventoryList() {
             <div>
               <p className="font-bold text-sage-800">{product.name}</p>
               {isLowStock && !isInactive && (
-                <span className="text-[9px] text-coral-500 font-black uppercase tracking-widest bg-coral-50 px-1.5 py-0.5 rounded-md border border-coral-100">Low Stock</span>
+                <span className="text-[9px] text-coral-500 font-bold uppercase tracking-widest bg-coral-50 px-1.5 py-0.5 rounded-md border border-coral-100">Low Stock</span>
               )}
             </div>
           </div>
@@ -121,7 +121,7 @@ export default function InventoryList() {
       key: 'price',
       label: 'Price',
       sortable: true,
-      render: (p) => <span className="font-black text-teal-600">₱{parseFloat(p.price).toFixed(2)}</span>
+      render: (p) => <span className="font-bold font-display text-teal-600">₱{parseFloat(p.price).toFixed(2)}</span>
     },
     {
       key: 'stock_qty',
@@ -131,7 +131,7 @@ export default function InventoryList() {
       render: (p) => {
         const isLowStock = p.stock_qty <= p.low_stock_threshold;
         return (
-          <span className={`inline-block px-3 py-1 rounded-xl text-xs font-black ${
+          <span className={`inline-block px-3 py-1 rounded-xl text-xs font-bold ${
             isLowStock ? 'bg-coral-500 text-white shadow-lg shadow-coral-500/20' : 'bg-mint-100 text-teal-600'
           }`}>
             {p.stock_qty}
@@ -145,11 +145,11 @@ export default function InventoryList() {
       sortable: true,
       align: 'center',
       render: (p) => p.is_active ? (
-        <span className="inline-flex items-center gap-1 text-emerald-500 font-black text-[10px] uppercase tracking-widest px-2 py-1 bg-emerald-50 rounded-lg border border-emerald-100">
+        <span className="inline-flex items-center gap-1 text-emerald-500 font-bold text-[10px] uppercase tracking-widest px-2 py-1 bg-emerald-50 rounded-lg border border-emerald-100">
           <CheckCircle size={12} /> Active
         </span>
       ) : (
-        <span className="text-sage-300 font-black text-[10px] uppercase tracking-widest px-2 py-1 bg-sage-50 rounded-lg border border-sage-100">Inactive</span>
+        <span className="text-sage-300 font-bold text-[10px] uppercase tracking-widest px-2 py-1 bg-sage-50 rounded-lg border border-sage-100">Inactive</span>
       )
     },
     {
@@ -275,11 +275,11 @@ export default function InventoryList() {
               <div className="bg-white p-6 rounded-2xl border border-sage-100 shadow-sm space-y-4">
                 <div className="flex justify-between items-center text-sm">
                   <span className="text-sage-400 font-bold">Low Stock Threshold</span>
-                  <span className="text-sage-700 font-black">{product.low_stock_threshold}</span>
+                  <span className="text-sage-700 font-bold">{product.low_stock_threshold}</span>
                 </div>
                 <div className="flex justify-between items-center text-sm">
                   <span className="text-sage-400 font-bold">Total Sales (placeholder)</span>
-                  <span className="text-sage-700 font-black">0</span>
+                  <span className="text-sage-700 font-bold">0</span>
                 </div>
               </div>
             </div>

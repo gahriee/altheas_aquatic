@@ -164,7 +164,7 @@ export default function ProductForm() {
             <ArrowLeft size={20} />
           </Link>
           <div>
-            <h1 className="text-2xl font-black text-sage-800 tracking-tight">
+            <h1 className="text-2xl font-bold font-display text-sage-800 tracking-tight">
               {id ? 'Edit Product' : 'Add New Product'}
             </h1>
             <p className="text-sm text-sage-400 font-medium">
@@ -188,7 +188,7 @@ export default function ProductForm() {
             <section className="space-y-6">
               <div className="flex items-center gap-2 text-teal-600">
                 <Upload size={18} />
-                <h3 className="font-bold uppercase text-[10px] tracking-widest">Product Visuals</h3>
+                <h3 className="font-semibold uppercase text-[10px] tracking-widest">Product Visuals</h3>
               </div>
               
               <div 
@@ -206,7 +206,7 @@ export default function ProductForm() {
                     <img src={imagePreview} alt="Preview" className="w-full h-full object-cover" />
                     <div className={`absolute inset-0 bg-teal-600/60 backdrop-blur-[2px] flex flex-col items-center justify-center transition-opacity duration-300 ${isDragActive ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'}`}>
                       <Upload size={40} className="text-white animate-bounce" />
-                      <span className="text-white font-black text-xs uppercase tracking-widest mt-2 px-6 py-2 bg-black/20 rounded-full">
+                      <span className="text-white font-bold text-xs uppercase tracking-[0.2em] mt-2 px-6 py-2 bg-black/20 rounded-full">
                         {isDragActive ? 'Drop to Update' : 'Change Image'}
                       </span>
                     </div>
@@ -217,10 +217,10 @@ export default function ProductForm() {
                       <Upload size={48} />
                     </div>
                     <div>
-                      <p className={`text-sm font-black uppercase tracking-widest transition-colors ${isDragActive ? 'text-teal-600' : 'text-sage-400'}`}>
+                      <p className={`text-sm font-bold uppercase tracking-widest transition-colors ${isDragActive ? 'text-teal-600' : 'text-sage-400'}`}>
                         {isDragActive ? 'Drop it here!' : 'Drag & Drop Image'}
                       </p>
-                      <p className="text-[10px] text-sage-300 uppercase font-black tracking-widest mt-2 opacity-60">or click to browse local files</p>
+                      <p className="text-[10px] text-sage-300 uppercase font-semibold tracking-widest mt-2 opacity-60">or click to browse local files</p>
                     </div>
                   </div>
                 )}
@@ -232,7 +232,7 @@ export default function ProductForm() {
               <section className="space-y-6">
                 <div className="flex items-center gap-2 text-teal-600">
                   <Package size={18} />
-                  <h3 className="font-bold uppercase text-[10px] tracking-widest">Key Specifications</h3>
+                  <h3 className="font-semibold uppercase text-[10px] tracking-widest">Key Specifications</h3>
                 </div>
 
                 <div className="space-y-6">
@@ -297,7 +297,7 @@ export default function ProductForm() {
               <section className="space-y-6">
                 <div className="flex items-center gap-2 text-teal-600">
                   <Hash size={18} />
-                  <h3 className="font-bold uppercase text-[10px] tracking-widest">Inventory Settings</h3>
+                  <h3 className="font-semibold uppercase text-[10px] tracking-widest">Inventory Settings</h3>
                 </div>
 
                 <div className="grid grid-cols-2 gap-6">
@@ -333,7 +333,7 @@ export default function ProductForm() {
           <section className="space-y-6">
             <div className="flex items-center gap-2 text-teal-600">
               <StickyNote size={18} />
-              <h3 className="font-bold uppercase text-[10px] tracking-widest">Detailed Description</h3>
+              <h3 className="font-semibold uppercase text-[10px] tracking-widest">Detailed Description</h3>
             </div>
             <div className="space-y-2">
               <Label htmlFor="description">Species Overview & Care</Label>

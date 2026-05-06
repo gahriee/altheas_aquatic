@@ -37,7 +37,14 @@ $defaults = [
     'DB_USER' => 'root',
     'DB_PASS' => '',
     'APP_URL' => 'http://localhost:8000',
-    'APP_ENV' => 'development'
+    'APP_ENV' => 'development',
+    'PAYMONGO_PUBLIC_KEY' => '',
+    'PAYMONGO_SECRET_KEY' => '',
+    'PAYMONGO_WEBHOOK_SECRET' => '',
+    'PUSHER_APP_ID' => '',
+    'PUSHER_APP_KEY' => '',
+    'PUSHER_APP_SECRET' => '',
+    'PUSHER_APP_CLUSTER' => 'ap1'
 ];
 
 foreach ($defaults as $key => $value) {

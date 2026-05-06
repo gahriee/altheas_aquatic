@@ -2,15 +2,15 @@ import { apiFetch } from './client';
 
 export async function getOrders(params = {}) {
   const query = new URLSearchParams(params).toString();
-  return apiFetch(`/api/orders?${query}`);
+  return apiFetch(`/api/admin/orders?${query}`);
 }
 
 export async function getOrder(id) {
-  return apiFetch(`/api/orders/${id}`);
+  return apiFetch(`/api/admin/orders/${id}`);
 }
 
 export async function updateOrderStatus(id, status) {
-  return apiFetch(`/api/orders/${id}/status`, {
+  return apiFetch(`/api/admin/orders/${id}/status`, {
     method: 'POST',
     body: { status },
   });

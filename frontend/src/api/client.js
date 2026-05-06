@@ -1,7 +1,8 @@
 import { toast } from 'react-hot-toast';
+import { getGlobalToastsEnabled } from '../context/ToastContext';
 
 /**
- * Althea's Aquatic API Client
+ * Althea's Aquatic Farm API Client
  * Handles CSRF tokens, JSON parsing, and error handling.
  */
 
@@ -68,7 +69,9 @@ export async function apiFetch(path, options = {}) {
     }
     
     const message = errorData.error || response.statusText;
-    if (showToast !== false) toast.error(message);
+    if (showToast === true || (showToast !== false && getGlobalToastsEnabled())) {
+      toast.error(message);
+    }
     throw new Error(message);
   }
 
@@ -84,8 +87,11 @@ export async function apiFetch(path, options = {}) {
 
   // Automatic success toast for creation/updating
   if (showToast === true || (showToast === null && ['POST', 'PUT', 'PATCH', 'DELETE'].includes(method))) {
-    const successMsg = result.message || 'Operation successful';
-    toast.success(successMsg);
+    // Only toast if globally enabled OR explicitly forced
+    if (getGlobalToastsEnabled() || showToast === true) {
+      const successMsg = result.message || 'Operation successful';
+      toast.success(successMsg);
+    }
   }
 
   return result;

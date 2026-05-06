@@ -7,7 +7,7 @@ import Input from '../../components/ui/Input';
 import Button from '../../components/ui/Button';
 
 export default function Login() {
-  const [username, setUsername] = useState('');
+  const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -29,7 +29,7 @@ export default function Login() {
     setIsSubmitting(true);
 
     try {
-      await login(username, password, true);
+      await login(email, password, true);
     } catch (err) {
       setError(err.message || 'Login failed. Please try again.');
     } finally {
@@ -40,8 +40,11 @@ export default function Login() {
   return (
     <div className="min-h-screen bg-sage-50 flex flex-col justify-center py-12 sm:px-6 lg:px-8 font-sans">
       <div className="sm:mx-auto sm:w-full sm:max-w-md text-center">
-        <h2 className="mt-6 text-center text-3xl font-extrabold text-teal-600">
-          Althea's Aquatic
+        <div className="mx-auto h-24 w-24 bg-white rounded-[2rem] flex items-center justify-center shadow-2xl shadow-teal-600/10 border border-teal-50 p-3 mb-8">
+           <img src="/logo_nobg.svg" alt="Logo" className="w-full h-full object-contain" />
+        </div>
+        <h2 className="text-center text-4xl font-bold font-display text-teal-600 tracking-tight uppercase">
+          Althea's <span className="block text-teal-400 text-2xl mt-1 tracking-[0.3em]">Aquatic Farm</span>
         </h2>
         <p className="mt-2 text-center text-sm text-sage-500 font-medium">
           Admin Portal Login
@@ -54,18 +57,19 @@ export default function Login() {
 
           <form className="space-y-6" onSubmit={handleSubmit}>
             <div>
-              <Label htmlFor="username">
-                Username
+              <Label htmlFor="email">
+                Email Address
               </Label>
               <div className="mt-1">
                 <Input
-                  id="username"
-                  name="username"
-                  autoComplete="username"
+                  id="email"
+                  name="email"
+                  type="email"
+                  autoComplete="email"
                   required
-                  value={username}
-                  onChange={(e) => setUsername(e.target.value)}
-                  placeholder="Admin username"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  placeholder="admin@example.com"
                 />
               </div>
             </div>

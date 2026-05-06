@@ -2,223 +2,136 @@
 
 namespace App\Core;
 
+use Bramus\Router\Router as BramusRouter;
+
 class Router
 {
+    private BramusRouter $router;
+
+    /**
+     * ----------------------------------------
+     * __construct
+     * ----------------------------------------
+     * Initialize the Bramus Router.
+     */
+    public function __construct()
+    {
+        $this->router = new BramusRouter();
+    }
+
     /**
      * ----------------------------------------
      * dispatch
      * ----------------------------------------
-     * Parse the request URL and method, match against routes, and call the controller.
+     * Define all routes and run the router.
      */
     public function dispatch(): void
     {
-        $method = $_SERVER['REQUEST_METHOD'];
-        $uri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
-        $uri = trim($uri, '/');
+        // Set up the base namespace for controllers
+        $this->router->setNamespace('App\Controllers');
 
-        // Handle OPTIONS preflight for CORS
-        if ($method === 'OPTIONS') {
+        // CORS Handle (Options) - already handled in index.php but good for safety
+        $this->router->options('/.*', function () {
             http_response_code(204);
             exit;
+        });
+
+        // Development Frontend Redirect (for non-API routes when using php -S)
+        if (defined('APP_ENV') && APP_ENV === 'development') {
+            $this->router->get('/((?!api|image\.php|vendor).*)', function () {
+                $path = $_SERVER['REQUEST_URI'];
+                header("Location: http://localhost:5173" . $path);
+                exit;
+            });
         }
 
-        // All routes must start with api/
-        if (!str_starts_with($uri, 'api')) {
+        // API group
+        $this->router->mount('/api', function () {
+
+            // CSRF
+            $this->router->get('/csrf-token', 'AuthController@csrfToken');
+
+            // Authentication (Public)
+            $this->router->post('/login', 'AuthController@customerLogin');
+            $this->router->post('/register', 'AuthController@register');
+            $this->router->post('/admin/login', 'AuthController@login');
+
+            // Admin Group
+            $this->router->mount('/admin', function () {
+                $this->router->post('/logout', 'AuthController@logout');
+                $this->router->get('/me', 'AuthController@me');
+                $this->router->get('/dashboard', 'DashboardController@index');
+
+                // Inventory
+                $this->router->get('/inventory', 'InventoryController@index');
+                $this->router->post('/inventory', 'InventoryController@store');
+                $this->router->get('/inventory/trash', 'InventoryController@trash');
+                $this->router->get('/inventory/(\d+)', 'InventoryController@show');
+                $this->router->post('/inventory/(\d+)', 'InventoryController@update');
+                $this->router->post('/inventory/(\d+)/deactivate', 'InventoryController@deactivate');
+                $this->router->post('/inventory/(\d+)/restore', 'InventoryController@restore');
+                $this->router->delete('/inventory/(\d+)', 'InventoryController@destroy');
+
+                // Categories
+                $this->router->get('/categories', 'CategoryController@index');
+                $this->router->post('/categories', 'CategoryController@store');
+                $this->router->post('/categories/(\d+)/delete', 'CategoryController@delete');
+
+                // Suppliers
+                $this->router->get('/suppliers', 'SupplierController@index');
+                $this->router->post('/suppliers', 'SupplierController@store');
+                $this->router->post('/suppliers/(\d+)', 'SupplierController@update');
+                $this->router->get('/suppliers/(\d+)/deliveries', 'SupplierController@deliveries');
+                $this->router->post('/suppliers/delivery', 'SupplierController@recordDelivery');
+
+                // Orders
+                $this->router->get('/orders', 'OrderController@index');
+                $this->router->get('/orders/(\d+)', 'OrderController@show');
+                $this->router->post('/orders/(\d+)/status', 'OrderController@updateStatus');
+                $this->router->post('/orders/cleanup-expired', 'OrderController@cleanupExpired');
+
+                // Reports
+                $this->router->get('/reports/sales', 'ReportController@sales');
+                $this->router->get('/reports/inventory', 'ReportController@inventory');
+                $this->router->get('/reports/suppliers', 'ReportController@suppliers');
+                $this->router->get('/reports/export', 'ReportController@exportCsv');
+
+                // Notifications
+                $this->router->get('/notifications', 'NotificationController@index');
+                $this->router->get('/notifications/unread-count', 'NotificationController@unreadCount');
+                $this->router->post('/notifications/(\d+)/read', 'NotificationController@markRead');
+                $this->router->post('/notifications/read-all', 'NotificationController@markAllRead');
+            });
+
+            // Storefront (Public)
+            $this->router->get('/storefront/list', 'StorefrontController@list');
+            $this->router->get('/storefront/detail/(\d+)', 'StorefrontController@detail');
+            $this->router->get('/storefront/categories', 'StorefrontController@categories');
+
+            // Cart
+            $this->router->get('/cart', 'CartController@index');
+            $this->router->post('/cart/add', 'CartController@add');
+            $this->router->post('/cart/update', 'CartController@update');
+            $this->router->post('/cart/remove', 'CartController@remove');
+            $this->router->post('/cart/clear', 'CartController@clear');
+
+            // Checkout
+            $this->router->post('/checkout', 'PaymentController@createIntent');
+            $this->router->get('/order-confirmation/(\d+)', 'OrderController@confirmation');
+            $this->router->get('/orders/(\d+)/confirmation', 'OrderController@confirmation');
+
+            // Payments
+            $this->router->post('/payments/create-intent', 'PaymentController@createIntent');
+            $this->router->get('/payments/status/([^/]+)', 'PaymentController@checkStatus');
+            $this->router->post('/webhooks/paymongo', 'PaymentController@handleWebhook');
+        });
+
+        // 404 Fallback
+        $this->router->set404(function () {
             Response::error('Not Found', 404);
-        }
+        });
 
-        // Strip 'api/' from the start
-        $path = preg_replace('/^api\/?/', '', $uri);
-        $segments = explode('/', $path);
-        
-        // Basic routing table logic
-        $this->resolve($method, $path, $segments);
-    }
-
-    /**
-     * ----------------------------------------
-     * resolve
-     * ----------------------------------------
-     * Resolve the route to a controller and method.
-     *
-     * @param string $method The HTTP method.
-     * @param string $path The URL path after /api/.
-     * @param array $segments The split URL segments.
-     */
-    private function resolve(string $method, string $path, array $segments): void
-    {
-        // CSRF
-        if ($method === 'GET' && $path === 'csrf-token') {
-            $this->call('AuthController', 'csrfToken');
-        }
-
-        // Authentication
-        if ($method === 'POST' && $path === 'login') {
-            $this->call('AuthController', 'customerLogin');
-        }
-        if ($method === 'POST' && $path === 'register') {
-            $this->call('AuthController', 'register');
-        }
-        if ($method === 'POST' && $path === 'admin/login') {
-            $this->call('AuthController', 'login');
-        }
-        if ($method === 'POST' && $path === 'admin/logout') {
-            $this->call('AuthController', 'logout');
-        }
-        if ($method === 'GET' && $path === 'admin/me') {
-            $this->call('AuthController', 'me');
-        }
-
-        // Admin Dashboard
-        if ($method === 'GET' && $path === 'admin/dashboard') {
-            $this->call('DashboardController', 'index');
-        }
-
-        // Inventory
-        if ($method === 'GET' && $path === 'admin/inventory') {
-            $this->call('InventoryController', 'index');
-        }
-        if ($method === 'POST' && $path === 'admin/inventory') {
-            $this->call('InventoryController', 'store');
-        }
-        if ($method === 'GET' && preg_match('/^admin\/inventory\/(\d+)$/', $path, $matches)) {
-            $this->call('InventoryController', 'show', [(int)$matches[1]]);
-        }
-        if ($method === 'POST' && preg_match('/^admin\/inventory\/(\d+)$/', $path, $matches)) {
-            $this->call('InventoryController', 'update', [(int)$matches[1]]);
-        }
-        if ($method === 'POST' && preg_match('/^admin\/inventory\/(\d+)\/deactivate$/', $path, $matches)) {
-            $this->call('InventoryController', 'deactivate', [(int)$matches[1]]);
-        }
-        if ($method === 'POST' && preg_match('/^admin\/inventory\/(\d+)\/restore$/', $path, $matches)) {
-            $this->call('InventoryController', 'restore', [(int) $matches[1]]);
-        }
-        if ($method === 'GET' && $path === 'admin/inventory/trash') {
-            $this->call('InventoryController', 'trash');
-        }
-        if ($method === 'DELETE' && preg_match('/^admin\/inventory\/(\d+)$/', $path, $matches)) {
-            $this->call('InventoryController', 'destroy', [(int)$matches[1]]);
-        }
-
-        // Categories
-        if ($method === 'GET' && $path === 'admin/categories') {
-            $this->call('CategoryController', 'index');
-        }
-        if ($method === 'POST' && $path === 'admin/categories') {
-            $this->call('CategoryController', 'store');
-        }
-        if ($method === 'POST' && preg_match('/^admin\/categories\/(\d+)\/delete$/', $path, $matches)) {
-            $this->call('CategoryController', 'delete', [(int)$matches[1]]);
-        }
-
-        // Suppliers
-        if ($method === 'GET' && $path === 'admin/suppliers') {
-            $this->call('SupplierController', 'index');
-        }
-        if ($method === 'POST' && $path === 'admin/suppliers') {
-            $this->call('SupplierController', 'store');
-        }
-        if ($method === 'POST' && preg_match('/^admin\/suppliers\/(\d+)$/', $path, $matches)) {
-            $this->call('SupplierController', 'update', [(int)$matches[1]]);
-        }
-        if ($method === 'GET' && preg_match('/^admin\/suppliers\/(\d+)\/deliveries$/', $path, $matches)) {
-            $this->call('SupplierController', 'deliveries', [(int)$matches[1]]);
-        }
-        if ($method === 'POST' && $path === 'admin/suppliers/delivery') {
-            $this->call('SupplierController', 'recordDelivery');
-        }
-
-        // Orders (Admin)
-        if ($method === 'GET' && $path === 'admin/orders') {
-            $this->call('OrderController', 'index');
-        }
-        if ($method === 'GET' && preg_match('/^admin\/orders\/(\d+)$/', $path, $matches)) {
-            $this->call('OrderController', 'show', [(int)$matches[1]]);
-        }
-        if ($method === 'POST' && preg_match('/^admin\/orders\/(\d+)\/status$/', $path, $matches)) {
-            $this->call('OrderController', 'updateStatus', [(int)$matches[1]]);
-        }
-
-        // Reports
-        if ($method === 'GET' && $path === 'admin/reports/sales') {
-            $this->call('ReportController', 'sales');
-        }
-        if ($method === 'GET' && $path === 'admin/reports/inventory') {
-            $this->call('ReportController', 'inventory');
-        }
-        if ($method === 'GET' && $path === 'admin/reports/suppliers') {
-            $this->call('ReportController', 'suppliers');
-        }
-        if ($method === 'GET' && $path === 'admin/reports/export') {
-            $this->call('ReportController', 'exportCsv');
-        }
-
-        // Storefront (Public)
-        if ($method === 'GET' && $path === 'storefront/list') {
-            $this->call('StorefrontController', 'list');
-        }
-        if ($method === 'GET' && preg_match('/^storefront\/detail\/(\d+)$/', $path, $matches)) {
-            $this->call('StorefrontController', 'detail', [(int)$matches[1]]);
-        }
-        if ($method === 'GET' && $path === 'storefront/categories') {
-            $this->call('StorefrontController', 'categories');
-        }
-
-        // Cart
-        if ($method === 'GET' && $path === 'cart') {
-            $this->call('CartController', 'index');
-        }
-        if ($method === 'POST' && $path === 'cart/add') {
-            $this->call('CartController', 'add');
-        }
-        if ($method === 'POST' && $path === 'cart/update') {
-            $this->call('CartController', 'update');
-        }
-        if ($method === 'POST' && $path === 'cart/remove') {
-            $this->call('CartController', 'remove');
-        }
-        if ($method === 'POST' && $path === 'cart/clear') {
-            $this->call('CartController', 'clear');
-        }
-
-        // Checkout
-        if ($method === 'POST' && $path === 'checkout') {
-            $this->call('OrderController', 'submit');
-        }
-        if ($method === 'GET' && preg_match('/^order-confirmation\/(\d+)$/', $path, $matches)) {
-            $this->call('OrderController', 'confirmation', [(int)$matches[1]]);
-        }
-
-        // Fallback
-        Response::error('Not Found', 404);
-    }
-
-    /**
-     * ----------------------------------------
-     * call
-     * ----------------------------------------
-     * Instantiate the controller and call the method.
-     *
-     * @param string $controllerName The controller class name.
-     * @param string $methodName The method name to call.
-     * @param array $params The numeric parameters to pass to the method.
-     */
-    private function call(string $controllerName, string $methodName, array $params = []): void
-    {
-        $controllerClass = "App\\Controllers\\$controllerName";
-        
-        if (!class_exists($controllerClass)) {
-            Response::error('Controller not found', 500);
-        }
-
-        $controller = new $controllerClass();
-        
-        if (!method_exists($controller, $methodName)) {
-            Response::error('Endpoint not implemented', 500);
-        }
-
-        // Call method with unpacked parameters
-        call_user_func_array([$controller, $methodName], $params);
-        exit;
+        // Run the router
+        $this->router->run();
     }
 }

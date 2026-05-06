@@ -111,10 +111,10 @@ export default function DataTable({
               <tr>
                 {renderExpanded && <th className="w-12 px-6 py-4" />}
                 {columns.map((col) => (
-                  <th 
-                    key={col.key}
-                    onClick={() => handleSort(col.key, col.sortable)}
-                    className={`px-6 py-4 text-[10px] font-bold text-white uppercase tracking-widest border-b border-teal-600/50 ${
+                    <th 
+                      key={col.key}
+                      onClick={() => handleSort(col.key, col.sortable)}
+                      className={`px-6 py-4 text-[10px] font-bold font-display text-white uppercase tracking-widest border-b border-teal-600/50 ${
                       col.sortable ? 'cursor-pointer hover:bg-teal-600/50 transition' : ''
                     } ${col.align === 'center' ? 'text-center' : col.align === 'right' ? 'text-right' : ''}`}
                   >
@@ -146,8 +146,8 @@ export default function DataTable({
                         <div className="absolute inset-0 bg-teal-600/10 blur-xl rounded-full animate-pulse" />
                       </div>
                       <div className="text-center space-y-1">
-                        <p className="text-sage-800 font-black text-xs uppercase tracking-widest">Hydrating Catalog</p>
-                        <p className="text-sage-400 font-bold text-[10px] uppercase tracking-[0.2em]">Syncing aquatic records...</p>
+                        <p className="text-sage-800 font-bold text-xs uppercase tracking-widest">Hydrating Catalog</p>
+                        <p className="text-sage-400 font-semibold text-[10px] uppercase tracking-[0.2em]">Syncing aquatic records...</p>
                       </div>
                     </div>
                   </td>
@@ -207,7 +207,7 @@ export default function DataTable({
                 <PackageSearch size={40} />
               </div>
               <div className="space-y-1">
-                <p className="text-sage-800 font-black text-xl tracking-tight">Vast & Empty</p>
+                <p className="text-sage-800 font-bold font-display text-xl tracking-tight">Vast & Empty</p>
                 <p className="text-sage-400 font-medium text-sm max-w-[280px] mx-auto">None of our aquatic species matches your current filter criteria.</p>
               </div>
             </div>
@@ -216,7 +216,7 @@ export default function DataTable({
 
         {/* Integrated Pagination Footer */}
         <div className="flex items-center justify-between px-6 py-4 bg-sage-50/50 border-t border-sage-100">
-          <div className="text-[10px] font-bold text-sage-400 uppercase tracking-widest">
+          <div className="text-[10px] font-semibold text-sage-400 uppercase tracking-widest">
             Showing {((currentPage - 1) * pageSize) + 1} to {Math.min(currentPage * pageSize, sortedData.length)} of {sortedData.length} records
           </div>
           <div className="flex items-center gap-1">
@@ -238,7 +238,7 @@ export default function DataTable({
             </Button>
 
             <div className="flex items-center px-4 bg-white border border-sage-100 rounded-xl h-10 font-bold text-teal-600 text-[11px] shadow-sm">
-              {currentPage} <span className="mx-2 text-sage-200">/</span> {totalPages}
+              {currentPage} <span className="mx-2 text-sage-100 font-medium">/</span> {totalPages}
             </div>
 
             <Button

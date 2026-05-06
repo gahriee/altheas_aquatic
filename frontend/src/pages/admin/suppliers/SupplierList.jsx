@@ -53,21 +53,21 @@ export default function SupplierList() {
           <div className="w-10 h-10 rounded-xl bg-teal-50 flex items-center justify-center text-teal-600 border border-teal-100 shadow-sm relative group-hover:scale-105 transition-transform">
             <Truck size={20} />
             {s.delivery_count > 0 && (
-              <div className="absolute -top-1.5 -right-1.5 px-1.5 py-0.5 bg-emerald-500 text-white text-[8px] font-black rounded-full border-2 border-white shadow-sm animate-in zoom-in duration-300">
+              <div className="absolute -top-1.5 -right-1.5 px-1.5 py-0.5 bg-emerald-500 text-white text-[8px] font-bold rounded-full border-2 border-white shadow-sm animate-in zoom-in duration-300">
                 {s.delivery_count}
               </div>
             )}
           </div>
           <div>
             <div className="flex items-center gap-2">
-              <p className="font-bold text-sage-800">{s.name}</p>
+              <p className="font-bold font-display text-sage-800 tracking-tight">{s.name}</p>
               {s.delivery_count > 0 && (
-                <span className="px-1.5 py-0.5 bg-teal-50 text-teal-600 text-[8px] font-black uppercase tracking-tighter rounded-md border border-teal-100">
+                <span className="px-1.5 py-0.5 bg-teal-50 text-teal-600 text-[8px] font-bold uppercase tracking-tighter rounded-md border border-teal-100">
                   {s.delivery_count} Deliveries
                 </span>
               )}
             </div>
-            <p className="text-[10px] text-sage-400 font-bold uppercase tracking-wider">ID: #{s.supplier_id}</p>
+            <p className="text-[10px] text-sage-400 font-semibold uppercase tracking-wider">ID: #{s.supplier_id}</p>
           </div>
         </div>
       )
@@ -167,13 +167,13 @@ export default function SupplierList() {
               <div className="space-y-4">
                 <div className="flex items-center gap-2 text-teal-600">
                   <Info size={18} />
-                  <h4 className="font-bold uppercase text-[10px] tracking-widest">Supplier Details</h4>
+                  <h4 className="font-semibold uppercase text-[10px] tracking-widest">Supplier Details</h4>
                 </div>
                 <div className="bg-white p-6 rounded-2xl border border-sage-100 shadow-sm space-y-4">
                   <div className="flex items-start gap-3">
                     <MapPin size={18} className="text-sage-300 mt-0.5" />
                     <div>
-                      <p className="text-[10px] font-bold text-sage-400 uppercase tracking-widest mb-1">Address</p>
+                      <p className="text-[10px] font-semibold text-sage-400 uppercase tracking-widest mb-1">Address</p>
                       <p className="text-sage-600 font-medium leading-relaxed">{s.address || 'No address provided'}</p>
                     </div>
                   </div>
@@ -181,14 +181,14 @@ export default function SupplierList() {
                     <div className="flex items-start gap-3">
                       <User size={18} className="text-sage-300 mt-0.5" />
                       <div>
-                        <p className="text-[10px] font-bold text-sage-400 uppercase tracking-widest mb-1">Contact Person</p>
+                        <p className="text-[10px] font-semibold text-sage-400 uppercase tracking-widest mb-1">Contact Person</p>
                         <p className="text-sage-600 font-medium">{s.contact_person || 'N/A'}</p>
                       </div>
                     </div>
                     <div className="flex items-start gap-3">
                       <Mail size={18} className="text-sage-300 mt-0.5" />
                       <div>
-                        <p className="text-[10px] font-bold text-sage-400 uppercase tracking-widest mb-1">Email</p>
+                        <p className="text-[10px] font-semibold text-sage-400 uppercase tracking-widest mb-1">Email</p>
                         <p className="text-sage-600 font-medium break-all">{s.email || 'N/A'}</p>
                       </div>
                     </div>
@@ -198,26 +198,26 @@ export default function SupplierList() {
               <div className="space-y-4">
                 <div className="flex items-center gap-2 text-teal-600">
                   <Mail size={18} />
-                  <h4 className="font-bold uppercase text-[10px] tracking-widest">Communication</h4>
+                  <h4 className="font-semibold uppercase text-[10px] tracking-widest">Communication</h4>
                 </div>
                 <div className="bg-white p-6 rounded-2xl border border-sage-100 shadow-sm space-y-4">
                   <div className="flex items-start gap-3">
                     <Phone size={18} className="text-sage-300 mt-0.5" />
                     <div>
-                      <p className="text-[10px] font-bold text-sage-400 uppercase tracking-widest mb-1">Phone Number</p>
+                      <p className="text-[10px] font-semibold text-sage-400 uppercase tracking-widest mb-1">Phone Number</p>
                       <p className="text-sage-600 font-medium">{s.phone || 'N/A'}</p>
                     </div>
                   </div>
                   <div className="flex items-center gap-2 pt-2">
                     <a 
                       href={`mailto:${s.email}`} 
-                      className={`flex-1 flex items-center justify-center gap-2 py-3 bg-teal-50 text-teal-600 rounded-xl font-bold text-xs hover:bg-teal-100 transition-colors ${!s.email && 'pointer-events-none opacity-50'}`}
+                      className={`flex-1 flex items-center justify-center gap-2 py-3 bg-teal-50 text-teal-600 rounded-xl font-semibold text-xs hover:bg-teal-100 transition-colors ${!s.email && 'pointer-events-none opacity-50'}`}
                     >
                       <Mail size={14} /> Send Email
                     </a>
                     <a 
                       href={`tel:${s.phone}`} 
-                      className={`flex-1 flex items-center justify-center gap-2 py-3 bg-sage-50 text-sage-600 rounded-xl font-bold text-xs hover:bg-sage-100 transition-colors ${!s.phone && 'pointer-events-none opacity-50'}`}
+                      className={`flex-1 flex items-center justify-center gap-2 py-3 bg-sage-50 text-sage-600 rounded-xl font-semibold text-xs hover:bg-sage-100 transition-colors ${!s.phone && 'pointer-events-none opacity-50'}`}
                     >
                       <Phone size={14} /> Call Now
                     </a>
@@ -229,7 +229,7 @@ export default function SupplierList() {
             <div className="space-y-4">
               <div className="flex items-center gap-2 text-teal-600">
                 <HistoryIcon size={18} />
-                <h4 className="font-bold uppercase text-[10px] tracking-widest">Recent Deliveries</h4>
+                <h4 className="font-semibold uppercase text-[10px] tracking-widest">Recent Deliveries</h4>
               </div>
               <SupplierDeliveryTable supplierId={s.supplier_id} />
             </div>

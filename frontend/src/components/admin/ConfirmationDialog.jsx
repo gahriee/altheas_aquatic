@@ -62,7 +62,7 @@ export default function ConfirmationDialog({
               {theme.icon}
             </div>
             <div className="space-y-2">
-              <h2 className="text-xl font-black text-sage-800 tracking-tight">{title}</h2>
+              <h2 className="text-xl font-bold font-display text-sage-800 tracking-tight">{title}</h2>
               <p className="text-sm font-medium text-sage-400 leading-relaxed px-4">
                 {message}
               </p>

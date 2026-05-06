@@ -21,56 +21,23 @@ class UserModel
 
     /**
      * ----------------------------------------
-     * getByUsername
+     * getByEmail
      * ----------------------------------------
-     * Fetch a user record by their username.
+     * Fetch a user record by their email address.
      *
-     * @param string $username The username to search for.
+     * @param string $email The email to search for.
      * @return array|null The user record or null if not found.
      */
-    public function getByUsername(string $username): ?array
+    public function getByEmail(string $email): ?array
     {
         try {
-            $stmt = $this->db->prepare("SELECT * FROM users WHERE username = :username");
-            $stmt->execute(['username' => $username]);
+            $stmt = $this->db->prepare("SELECT * FROM users WHERE email = :email");
+            $stmt->execute(['email' => $email]);
             $user = $stmt->fetch();
             return $user ?: null;
         } catch (\PDOException $e) {
-            error_log("UserModel::getByUsername failed: " . $e->getMessage());
+            error_log("UserModel::getByEmail failed: " . $e->getMessage());
             return null;
-        }
-    }
-
-    /**
-     * ----------------------------------------
-     * create
-     * ----------------------------------------
-     * Insert a new user into the database.
-     *
-     * @param array $data The user data (username, password).
-     * @return int The ID of the newly created user.
-     * @throws \Exception if creation fails or username exists.
-     */
-    public function create(array $data): int
-    {
-        try {
-            $sql = "INSERT INTO users (username, password_hash, role, created_at) 
-                    VALUES (:username, :password_hash, :role, NOW())";
-            
-            $stmt = $this->db->prepare($sql);
-            
-            $passwordHash = password_hash($data['password'], PASSWORD_BCRYPT, ['cost' => 12]);
-            
-            $stmt->execute([
-                ':username' => $data['username'],
-                ':password_hash' => $passwordHash,
-                ':role' => $data['role'] ?? 'customer'
-            ]);
-            
-            return (int)$this->db->lastInsertId();
-        } catch (\PDOException $e) {
-            // Rethrow and let controller handle error mapping (e.g., 409 Conflict)
-            throw $e;
         }
     }
 }

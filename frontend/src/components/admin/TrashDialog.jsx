@@ -88,8 +88,8 @@ export default function TrashDialog({ isOpen, onClose, onRestored }) {
               <Trash2 size={24} />
             </div>
             <div>
-              <h2 className="text-xl font-black text-sage-800 tracking-tight">Product Trash</h2>
-              <p className="text-xs font-bold text-sage-400 uppercase tracking-widest">Restore deleted items to active inventory</p>
+              <h2 className="text-xl font-bold font-display text-sage-800 tracking-tight">Product Trash</h2>
+              <p className="text-xs font-semibold text-sage-400 uppercase tracking-[0.1em]">Restore deleted items to active inventory</p>
             </div>
           </div>
           <button 
@@ -105,16 +105,16 @@ export default function TrashDialog({ isOpen, onClose, onRestored }) {
           {loading ? (
             <div className="py-20 flex flex-col items-center justify-center gap-4">
               <Loader2 className="animate-spin text-teal-600" size={40} />
-              <p className="text-sage-400 font-bold uppercase text-[10px] tracking-widest">Searching deep sea archives...</p>
+              <p className="text-sage-400 font-semibold uppercase text-[10px] tracking-[0.2em]">Searching deep sea archives...</p>
             </div>
           ) : products.length > 0 ? (
             <div className="bg-sage-50/30 rounded-3xl border border-sage-100 overflow-hidden">
               <table className="w-full text-left border-collapse">
                 <thead>
                   <tr className="bg-sage-50/80 border-b border-sage-100">
-                    <th className="px-6 py-4 text-[10px] font-black text-sage-400 uppercase tracking-widest">Product</th>
-                    <th className="px-6 py-4 text-[10px] font-black text-sage-400 uppercase tracking-widest">Category</th>
-                    <th className="px-6 py-4 text-[10px] font-black text-sage-400 uppercase tracking-widest text-right">Action</th>
+                    <th className="px-6 py-4 text-[10px] font-bold text-sage-400 uppercase tracking-widest">Product</th>
+                    <th className="px-6 py-4 text-[10px] font-bold text-sage-400 uppercase tracking-widest">Category</th>
+                    <th className="px-6 py-4 text-[10px] font-bold text-sage-400 uppercase tracking-widest text-right">Action</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-sage-100">
@@ -139,7 +139,7 @@ export default function TrashDialog({ isOpen, onClose, onRestored }) {
                         </div>
                       </td>
                       <td className="px-6 py-4">
-                        <span className="text-xs font-black text-sage-400 uppercase tracking-widest">{p.category_name}</span>
+                        <span className="text-xs font-bold text-sage-400 uppercase tracking-widest">{p.category_name}</span>
                       </td>
                       <td className="px-6 py-4 text-right">
                         <div className="flex justify-end gap-1">
@@ -182,7 +182,7 @@ export default function TrashDialog({ isOpen, onClose, onRestored }) {
                 <Trash2 size={32} />
               </div>
               <div className="space-y-1">
-                <p className="text-sage-700 font-black">Archive is empty</p>
+                <p className="text-sage-700 font-bold font-display tracking-tight text-lg">Archive is empty</p>
                 <p className="text-sm text-sage-400 font-medium">No soft-deleted products found.</p>
               </div>
             </div>

@@ -36,6 +36,10 @@ export default {
           500: '#F2C94C', // warning
         },
       },
+      fontFamily: {
+        sans: ['Inter', 'sans-serif'],
+        display: ['Outfit', 'sans-serif'],
+      },
     },
   },
   plugins: [],

@@ -33,8 +33,8 @@ export default function ImageCropperModal({ image, onSave, onCancel }) {
         {/* Header */}
         <div className="px-8 py-6 flex items-center justify-between border-b border-sage-50 bg-sage-50/30">
           <div>
-            <h2 className="text-xl font-black text-teal-600 tracking-tight leading-none">Crop Product Image</h2>
-            <p className="text-[10px] text-sage-400 font-bold uppercase tracking-widest mt-1">Locked to 1:1 Aspect Ratio</p>
+            <h2 className="text-xl font-bold font-display text-teal-600 tracking-tight leading-none">Crop Product Image</h2>
+            <p className="text-[10px] text-sage-400 font-semibold uppercase tracking-[0.1em] mt-1">Locked to 1:1 Aspect Ratio</p>
           </div>
           <button 
             onClick={onCancel}
@@ -96,7 +96,7 @@ export default function ImageCropperModal({ image, onSave, onCancel }) {
             >
               <div className="flex items-center justify-center gap-3">
                 <Check size={24} />
-                <span className="font-bold text-lg">Save Crop</span>
+                <span className="font-semibold text-lg">Save Crop</span>
               </div>
             </Button>
           </div>

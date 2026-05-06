@@ -23,13 +23,13 @@ export function AuthProvider({ children }) {
     hydrateUser();
   }, []);
 
-  const login = async (username, password, isAdmin = false) => {
+  const login = async (email, password, isAdmin = false) => {
     if (isAdmin) {
-      await apiLogin(username, password);
+      await apiLogin(email, password);
     } else {
       // We need a customer login API wrapper
       const { customerLogin } = await import('../api/auth');
-      await customerLogin(username, password);
+      await customerLogin(email, password);
     }
     await hydrateUser();
   };
@@ -42,7 +42,8 @@ export function AuthProvider({ children }) {
   return (
     <AuthContext.Provider value={{ 
       user, 
-      isAuthenticated: !!user,
+      isAuthenticated: () => !!user, // Provided as a function
+      userIsAuthenticated: !!user, // Kept as boolean for backward compatibility if needed
       loading, 
       login, 
       logout,

@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { User, Lock, ArrowRight, Loader2, Sparkles } from 'lucide-react';
+import { Mail, Lock, ArrowRight, Loader2, Sparkles } from 'lucide-react';
 import { register } from '../../api/auth';
 import Label from '../../components/ui/Label';
 import Input from '../../components/ui/Input';
@@ -9,7 +9,7 @@ import ErrorMessage from '../../components/shared/ErrorMessage';
 
 export default function Register() {
   const [formData, setFormData] = useState({
-    username: '',
+    email: '',
     password: '',
     confirmPassword: ''
   });
@@ -41,7 +41,7 @@ export default function Register() {
 
     try {
       await register({
-        username: formData.username,
+        email: formData.email,
         password: formData.password
       });
       // Redirect to login on success
@@ -56,13 +56,13 @@ export default function Register() {
   };
 
   return (
-    <div className="min-h-screen bg-sage-50 flex flex-col justify-center py-12 sm:px-6 lg:px-8 font-sans">
+    <div className="bg-sage-50 flex flex-col py-12 sm:px-6 lg:px-8 font-sans">
       <div className="sm:mx-auto sm:w-full sm:max-w-md text-center">
-        <div className="mx-auto h-16 w-16 bg-teal-100 rounded-2xl flex items-center justify-center text-teal-600 shadow-sm border border-teal-200 animate-bounce-subtle">
-           <Sparkles size={32} />
+        <div className="mx-auto h-20 w-20 bg-white rounded-3xl flex items-center justify-center shadow-xl border border-sage-100 p-2">
+           <img src="/logo_nobg.svg" alt="Logo" className="w-full h-full object-contain" />
         </div>
-        <h2 className="mt-6 text-center text-3xl font-black text-sage-800 tracking-tight">
-          Join Althea's Aquatic
+        <h2 className="mt-6 text-center text-3xl font-bold font-display text-sage-800 tracking-tight">
+          Join Althea's Aquatic Farm
         </h2>
         <p className="mt-2 text-center text-sm text-sage-500 font-medium lowercase tracking-wide">
           Start your aquatic journey today
@@ -78,17 +78,18 @@ export default function Register() {
 
           <form className="space-y-6 relative z-10" onSubmit={handleSubmit}>
             <div className="space-y-2">
-              <Label htmlFor="username">Choose a Username</Label>
+              <Label htmlFor="email">Email Address</Label>
               <div className="relative group">
-                <User className="absolute left-4 top-1/2 -translate-y-1/2 text-sage-300 group-focus-within:text-teal-500 transition-colors" size={18} />
+                <Mail className="absolute left-4 top-1/2 -translate-y-1/2 text-sage-300 group-focus-within:text-teal-500 transition-colors" size={18} />
                 <Input
-                  id="username"
-                  name="username"
+                  id="email"
+                  name="email"
+                  type="email"
                   required
                   className="pl-12 bg-sage-50/50"
-                  value={formData.username}
+                  value={formData.email}
                   onChange={handleChange}
-                  placeholder="e.g. fishlover123"
+                  placeholder="name@example.com"
                 />
               </div>
             </div>
@@ -108,7 +109,7 @@ export default function Register() {
                   placeholder="••••••••"
                 />
               </div>
-              <p className="text-[10px] text-sage-400 font-bold uppercase tracking-widest pl-1">Min. 6 characters</p>
+              <p className="text-[10px] text-sage-400 font-semibold uppercase tracking-widest pl-1">Min. 6 characters</p>
             </div>
 
             <div className="space-y-2">
@@ -150,7 +151,7 @@ export default function Register() {
           <div className="mt-8 pt-8 border-t border-sage-50 text-center">
             <p className="text-sm text-sage-500 font-medium">
               Already have an account?{' '}
-              <Link to="/login" className="text-teal-600 font-black hover:text-teal-700 transition-colors underline decoration-teal-100 underline-offset-4 decoration-2">
+              <Link to="/login" className="text-teal-600 font-bold hover:text-teal-700 transition-colors underline decoration-teal-100 underline-offset-4 decoration-2">
                 Sign in here
               </Link>
             </p>
@@ -158,7 +159,7 @@ export default function Register() {
         </div>
         
         <div className="mt-8 text-center px-4">
-          <p className="text-[10px] text-sage-300 font-bold uppercase tracking-[0.2em] leading-relaxed">
+          <p className="text-[10px] text-sage-300 font-semibold uppercase tracking-[0.2em] leading-relaxed">
             By creating an account, you agree to our<br />
             Terms of Service & Privacy Policy
           </p>

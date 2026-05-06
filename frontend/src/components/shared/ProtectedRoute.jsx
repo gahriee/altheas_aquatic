@@ -13,7 +13,7 @@ export default function ProtectedRoute() {
     );
   }
 
-  if (!isAuthenticated) {
+  if (!isAuthenticated()) {
     return <Navigate to="/admin/login" replace />;
   }
 

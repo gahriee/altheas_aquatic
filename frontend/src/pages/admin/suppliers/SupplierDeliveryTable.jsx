@@ -42,7 +42,7 @@ export default function SupplierDeliveryTable({ supplierId }) {
     return (
       <div className="flex flex-col items-center justify-center py-12 gap-3 text-sage-400">
         <Loader2 className="animate-spin" size={24} />
-        <p className="text-[10px] font-bold uppercase tracking-widest">Hydrating History...</p>
+        <p className="text-[10px] font-semibold uppercase tracking-[0.2em]">Hydrating History...</p>
       </div>
     );
   }
@@ -53,8 +53,8 @@ export default function SupplierDeliveryTable({ supplierId }) {
         <div className="w-12 h-12 rounded-full bg-white flex items-center justify-center text-sage-200 mb-4 shadow-sm">
           <HistoryIcon size={24} />
         </div>
-        <p className="font-bold text-sage-400 text-sm">No delivery records found</p>
-        <p className="text-sage-300 text-[10px] uppercase font-bold tracking-wider mt-1">Start by recording a new delivery</p>
+        <p className="font-bold font-display text-sage-400 text-sm tracking-tight">No delivery records found</p>
+        <p className="text-sage-300 text-[10px] uppercase font-semibold tracking-[0.1em] mt-1">Start by recording a new delivery</p>
       </div>
     );
   }
@@ -67,25 +67,25 @@ export default function SupplierDeliveryTable({ supplierId }) {
             <th className="px-6 py-4">
               <div className="flex items-center gap-2 text-sage-400">
                 <Calendar size={12} />
-                <span className="text-[10px] font-bold uppercase tracking-widest">Date</span>
+                <span className="text-[10px] font-semibold uppercase tracking-widest">Date</span>
               </div>
             </th>
             <th className="px-6 py-4">
               <div className="flex items-center gap-2 text-sage-400">
                 <Package size={12} />
-                <span className="text-[10px] font-bold uppercase tracking-widest">Product</span>
+                <span className="text-[10px] font-semibold uppercase tracking-widest">Product</span>
               </div>
             </th>
             <th className="px-6 py-4">
               <div className="flex items-center gap-2 text-sage-400">
                 <Hash size={12} />
-                <span className="text-[10px] font-bold uppercase tracking-widest">Qty</span>
+                <span className="text-[10px] font-semibold uppercase tracking-widest">Qty</span>
               </div>
             </th>
             <th className="px-6 py-4 text-right">
               <div className="flex items-center justify-end gap-2 text-sage-400">
                 <Coins size={12} />
-                <span className="text-[10px] font-bold uppercase tracking-widest">Cost (Unit / Total)</span>
+                <span className="text-[10px] font-semibold uppercase tracking-widest">Cost (Unit / Total)</span>
               </div>
             </th>
           </tr>
@@ -97,7 +97,7 @@ export default function SupplierDeliveryTable({ supplierId }) {
                 {formatDate(delivery.delivered_at)}
               </td>
               <td className="px-6 py-4">
-                <p className="text-sm font-bold text-sage-800 group-hover:text-teal-600 transition-colors">
+                <p className="text-sm font-bold font-display text-sage-800 group-hover:text-teal-600 transition-colors">
                   {delivery.product_name}
                 </p>
                 {delivery.notes && (
@@ -107,12 +107,12 @@ export default function SupplierDeliveryTable({ supplierId }) {
                 )}
               </td>
               <td className="px-6 py-4">
-                <span className="inline-flex items-center justify-center px-2 py-1 rounded-lg bg-teal-50 text-teal-600 text-xs font-bold min-w-[32px]">
+                <span className="inline-flex items-center justify-center px-2 py-1 rounded-lg bg-teal-50 text-teal-600 text-xs font-semibold min-w-[32px]">
                   {delivery.qty_received}
                 </span>
               </td>
               <td className="px-6 py-4 text-right">
-                <p className="text-sm font-bold text-sage-800">
+                <p className="text-sm font-bold font-display text-sage-800">
                   {formatCurrency(delivery.unit_cost * delivery.qty_received)}
                 </p>
                 <p className="text-[10px] text-sage-400 font-medium">

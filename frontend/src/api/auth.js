@@ -1,16 +1,16 @@
 import { apiFetch } from './client';
 
-export async function login(username, password) {
+export async function login(email, password) {
   return apiFetch('/api/admin/login', {
     method: 'POST',
-    body: { username, password },
+    body: { email, password },
   });
 }
 
-export async function customerLogin(username, password) {
+export async function customerLogin(email, password) {
   return apiFetch('/api/login', {
     method: 'POST',
-    body: { username, password },
+    body: { email, password },
   });
 }
 

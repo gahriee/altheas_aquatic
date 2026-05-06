@@ -77,7 +77,7 @@ export default function DeliveryForm() {
     return (
       <div className="flex flex-col items-center justify-center py-20 gap-4">
         <Loader2 className="animate-spin text-teal-600" size={32} />
-        <p className="text-sage-400 font-bold uppercase text-[10px] tracking-widest">Hydrating Form...</p>
+        <p className="text-sage-400 font-semibold uppercase text-[10px] tracking-widest">Hydrating Form...</p>
       </div>
     );
   }
@@ -93,7 +93,7 @@ export default function DeliveryForm() {
             <ArrowLeft size={20} />
           </Link>
           <div>
-            <h1 className="text-2xl font-black text-sage-800 tracking-tight">Record Delivery</h1>
+            <h1 className="text-2xl font-bold font-display text-sage-800 tracking-tight">Record Delivery</h1>
             <p className="text-sm text-sage-400 font-medium">Log incoming stock and update inventory automatically</p>
           </div>
         </div>
@@ -102,7 +102,7 @@ export default function DeliveryForm() {
       {error && (
         <div className="p-4 bg-coral-50 text-coral-500 rounded-2xl border border-coral-100 flex items-center gap-2">
           <AlertCircle size={20} />
-          <span className="font-bold text-sm tracking-tight">{error}</span>
+          <span className="font-semibold text-sm tracking-tight">{error}</span>
         </div>
       )}
 
@@ -112,7 +112,7 @@ export default function DeliveryForm() {
             <div className="space-y-6">
               <div className="flex items-center gap-2 text-teal-600">
                 <Truck size={18} />
-                <h3 className="font-bold uppercase text-[10px] tracking-widest">Source</h3>
+                <h3 className="font-semibold uppercase text-[10px] tracking-widest">Source</h3>
               </div>
               <div className="space-y-2">
                 <Label htmlFor="supplier_id" required>Select Supplier</Label>
@@ -131,7 +131,7 @@ export default function DeliveryForm() {
             <div className="space-y-6">
               <div className="flex items-center gap-2 text-teal-600">
                 <Package size={18} />
-                <h3 className="font-bold uppercase text-[10px] tracking-widest">Inventory Item</h3>
+                <h3 className="font-semibold uppercase text-[10px] tracking-widest">Inventory Item</h3>
               </div>
               <div className="space-y-2">
                 <Label htmlFor="product_id" required>Select Product</Label>
@@ -152,7 +152,7 @@ export default function DeliveryForm() {
             <div className="space-y-6">
               <div className="flex items-center gap-2 text-teal-600">
                 <Hash size={18} />
-                <h3 className="font-bold uppercase text-[10px] tracking-widest">Quantity</h3>
+                <h3 className="font-semibold uppercase text-[10px] tracking-widest">Quantity</h3>
               </div>
               <div className="space-y-2">
                 <Label htmlFor="qty_received" required>Quantity Received</Label>
@@ -173,7 +173,7 @@ export default function DeliveryForm() {
             <div className="space-y-6">
               <div className="flex items-center gap-2 text-teal-600">
                 <Coins size={18} />
-                <h3 className="font-bold uppercase text-[10px] tracking-widest">Cost (Optional)</h3>
+                <h3 className="font-semibold uppercase text-[10px] tracking-widest">Cost (Optional)</h3>
               </div>
               <div className="space-y-2">
                 <Label htmlFor="unit_cost">Unit Cost (₱)</Label>
@@ -195,7 +195,7 @@ export default function DeliveryForm() {
           <section className="space-y-6">
             <div className="flex items-center gap-2 text-teal-600">
               <StickyNote size={18} />
-              <h3 className="font-bold uppercase text-[10px] tracking-widest">Additional Info</h3>
+              <h3 className="font-semibold uppercase text-[10px] tracking-widest">Additional Info</h3>
             </div>
             <div className="space-y-2">
               <Label htmlFor="notes">Delivery Notes</Label>

@@ -25,7 +25,7 @@ Althea's Aquatic is structured as a decoupled application. The PHP backend expos
 ### Key Architecture Decisions
 
 **Decision #1 — Decoupled PHP API + React SPA**  
-The PHP backend handles all business logic, database access, authentication, and file uploads — returning JSON responses exclusively. The React frontend handles all rendering, routing (via React Router), and user interaction. This separation keeps concerns clean, makes the frontend independently testable, and allows future native app or third-party integrations to consume the same API.
+The PHP backend handles all business logic, database access, authentication, and file uploads — returning JSON responses exclusively. The mapping of requests to controllers is managed by the **`bramus/router`** library. The React frontend handles all rendering, routing (via React Router), and user interaction. This separation keeps concerns clean, makes the frontend independently testable, and allows future native app or third-party integrations to consume the same API.
 
 **Decision #2 — Tailwind CSS (Utility-First Styling)**  
 Tailwind CSS is used for all frontend styling. It is included via the CDN Play script during development and compiled via the Vite + Tailwind plugin for production. All styling strictly follows the **Aquatic Palette** defined in `frontend/tailwind.config.js`:
@@ -36,14 +36,14 @@ Tailwind CSS is used for all frontend styling. It is included via the CDN Play s
 - **Functional**: `coral-500` (Error), `emerald-500` (Success), `amber-500` (Warning).
 No custom CSS file is maintained — all styles are composed from Tailwind utility classes directly in JSX.
 
-**Decision #3 — Session-Based Authentication (Not JWT)**  
-PHP native sessions with HttpOnly, Secure, and SameSite=Strict cookies are used for authentication. The session cookie is sent automatically with every API request (credentials: 'include' in fetch). This avoids the complexity of token refresh flows and keeps the auth model simple for a single-shop application.
+**Decision #3 — Robust Library-Based Authentication**  
+The application uses the **`delight-im/auth`** library for all authentication and authorization logic. This replaces manual session handling with a battle-tested implementation that uses PHP native sessions and HttpOnly/Secure/SameSite=Strict cookies. The system supports multi-role access (Admin/Staff/Customer) and registration requires a valid **Email** and **Password**.
 
 **Decision #4 — Header-Based CSRF (Double Submit)**  
 Because the frontend is a React SPA making fetch() calls, traditional hidden-form CSRF tokens are replaced with a header-based pattern. The React app fetches a CSRF token from `GET /api/csrf-token` on initialisation and stores it in memory. Every state-changing request (POST, PUT, DELETE) sends this token as an `X-CSRF-Token` request header. The PHP backend verifies the header value against the value stored in the session.
 
-**Decision #5 — DB-Based Rate Limiting (No Redis)**  
-A `rate_limit_log` table in MySQL tracks failed login attempts per IP. This is sufficient for brute-force protection on a single-shop application without adding Redis infrastructure.
+**Decision #5 — Professional Throttling (Brute-Force Protection)**  
+Authentication endpoints (login, register, reset) are protected by **`delight-im/auth`**'s built-in throttling mechanism. This uses the `users_throttles` table to track and delay failed attempts per IP and per account, providing superior protection over manual rate-limiting logs.
 
 **Decision #6 — Soft Delete & Trash Management**  
 Products are never permanently removed from the database. Deactivating a product (`is_active = 0`) hides it from the storefront by splitting the `ProductModel` fetch logic into `fetchAll()` (Admin - returns everything) and `fetchAllActive()` (Storefront - returns only active). Deactivated products are managed via a "Trash" interface in the admin panel, where they can be reviewed and restored (`is_active = 1`). This maintains data integrity and complete sales history while keeping the active inventory clean.
@@ -53,6 +53,27 @@ Stock deduction and order creation happen inside a single MySQL transaction with
 
 **Decision #8 — Automatic Delivery Stock Update**  
 Recording a delivery in the Supplier module immediately adds the received quantity to the product's `stock_qty` in the same transaction. There is no manual restock step — the delivery record is the restock.
+
+**Decision #9 — PayMongo GCash Integration**  
+This platform uses **PayMongo** as the primary payment gateway for GCash. Checkout leverages the **PaymentIntent + PaymentMethod (PIPM)** workflow:
+1. Backend creates a PaymentIntent and a PaymentMethod (GCash) server-side.
+2. Backend attaches the PaymentMethod to the PaymentIntent to generate a secure PayMongo-hosted GCash redirect URL.
+3. Order stock is deducted atomically *before* the payment intent is created to ensure availability.
+4. The frontend redirects the user to the generated PayMongo URL; the user completes payment on GCash.
+5. The frontend confirmation page polls `GET /api/payments/status/{id}` for real-time status updates.
+6. Webhooks at `/api/webhooks/paymongo` handle asynchronous status updates (`payment.paid`, `payment.failed`).
+7. **Security**: Webhook requests are verified using HMAC-SHA256 signatures with the `PAYMONGO_WEBHOOK_SECRET`. All API calls happen server-side using the Secret Key.
+
+**Decision #10 — Persistent Database-Backed Cart**  
+To prevent loss of user data between sessions and across devices, the cart is transitioned from purely session-based to a database-persisted model for authenticated customers.
+- Guest users continue to use `$_SESSION['cart']`.
+- Upon login, any items in the guest session are merged into the `cart_items` table.
+- Logged-in customers' carts are stored in the `cart_items` table, allowing them to resume shopping on any device.
+
+**Decision #11 — Real-time Admin Notifications via Pusher**
+To provide immediate visibility into critical events (e.g. successful payments, payment failures, low stock warnings), the backend triggers a Pusher event (`pusher/pusher-php-server`). 
+1. `PaymentController` (or another module) handles the domain logic, inserts a row into the `notifications` table, and broadcasts a `notification.created` event via Pusher to a private admin channel.
+2. The React frontend (`AdminLayout`) subscribes to the channel via `pusher-js` to render the red bell icon dot and pop up the activity in real-time.
 
 ---
 
@@ -79,7 +100,7 @@ Recording a delivery in the Supplier module immediately adds the received quanti
 
 **Storefront Pages:**
 - 🏠 **Home** — Hero banner, product grid, category filter tabs
-- 🔐 **Sign Up Page** — Account creation form for customers
+- 🔐 **Sign Up Page** — Account creation form for customers (Email, Password)
 - 📄 **Product Detail** — Image, description, price, quantity selector, add-to-cart (triggers login modal if guest)
 - 🛒 **Cart & Checkout** — Cart summary, customer info form, stock validation, order submission
 - 🔐 **Login Page** — Dedicated customer login page
@@ -94,10 +115,10 @@ Recording a delivery in the Supplier module immediately adds the received quanti
 | Routing | Front controller (`index.php`) | All `/api/*` requests dispatched to controllers |
 | Database | MySQL 8.x (InnoDB) | Relational integrity via FK constraints; ACID transactions |
 | ORM / Query | PDO with prepared statements | SQL injection prevention; no ORM overhead |
-| Auth | PHP Sessions + bcrypt | Session cookie auth; `session_regenerate_id()` on login |
+| Auth | `delight-im/auth` | Battle-tested lifecycle (login, reset, throttling) |
 | CSRF | Header-based (`X-CSRF-Token`) | Compatible with SPA fetch() calls |
 | File Uploads | PHP `move_uploaded_file` | Images stored outside web root; served via `public/image.php` |
-| Rate Limiting | `rate_limit_log` DB table | Max 5 failed attempts per IP per 10 minutes |
+| Rate Limiting | `users_throttles` table | Built-in library-managed brute-force protection |
 
 ---
 
@@ -131,7 +152,7 @@ altheas-aquatic/
 │       ├── Router.php                      # URL dispatcher — /api/* routing
 │       ├── Auth.php                        # Session guard, requireLogin(), isLoggedIn()
 │       ├── Csrf.php                        # Token generate, header verify
-│       ├── Cart.php                        # Session-backed cart operations
+│       ├── Cart.php                        # Cart service — handles session-to-DB logic
 │       ├── Uploader.php                    # MIME validation, rename, store outside web root
 │       └── Response.php                    # JSON response helper (json, error, unauthorized)
 │
@@ -308,7 +329,7 @@ GET  /api/storefront/list                → StorefrontController::list()
 GET  /api/storefront/detail/{id}          → StorefrontController::detail()
 GET  /api/storefront/categories            → StorefrontController::categories()
 
-# Cart (Session-backed)
+# Cart (Persistent / Session fallback)
 GET  /api/cart                          → CartController::index()
 POST /api/cart/add                      → CartController::add()
 POST /api/cart/update                   → CartController::update()
@@ -321,6 +342,11 @@ GET  /api/order-confirmation/{id}       → OrderController::confirmation()
 
 # Images
 GET  /image.php?file={filename}         → image.php (standalone script)
+
+# Payments (PayMongo)
+POST /api/payments/create-intent        → PaymentController::createIntent()
+GET  /api/payments/status/{id}          → PaymentController::checkStatus()
+POST /api/webhooks/paymongo             → PaymentController::handleWebhook()
 ```
 
 ### Business Logic Flow
@@ -352,16 +378,24 @@ GET  /image.php?file={filename}         → image.php (standalone script)
 
 ## Database Schema
 
-### users
+### users (delight-im/auth)
 
 | Field | Type | Constraints | Notes |
 | :--- | :--- | :--- | :--- |
-| `user_id` | INT | PK, AUTO_INCREMENT | |
-| `username` | VARCHAR(80) | UNIQUE, NOT NULL | Login identifier |
-| `password_hash` | VARCHAR(255) | NOT NULL | bcrypt hash — never plaintext |
-| `role` | ENUM | DEFAULT 'customer' | admin \| staff \| customer |
-| `created_at` | DATETIME | DEFAULT NOW() | |
-| `last_login` | DATETIME | NULLABLE | Updated on successful login |
+| `id` | INT | PK, AUTO_INCREMENT | |
+| `email` | VARCHAR(249) | UNIQUE, NOT NULL | Primary identifier for delight-im/auth |
+| `password` | VARCHAR(255) | NOT NULL | Hashed by library (password_verify compatible) |
+| `username` | VARCHAR(100) | NULLABLE | Display name / secondary login |
+| `status` | TINYINT | NOT NULL | Library status code (DEFAULT 0) |
+| `verified` | TINYINT | NOT NULL | 0=Unverified, 1=Verified |
+| `resettable` | TINYINT | NOT NULL | DEFAULT 1 |
+| `roles_mask` | INT | NOT NULL | Bitmask for roles |
+| `registered` | INT | NOT NULL | Creation timestamp (Unix) |
+| `last_login` | INT | NULLABLE | Last login timestamp (Unix) |
+| `force_logout` | MEDIUMINT | NOT NULL | DEFAULT 0 |
+| `role_label` | ENUM | DEFAULT 'customer' | Custom field ('admin', 'staff', 'customer') |
+
+> **Note:** The `delight-im/auth` library manages several internal tables: `users_confirmations`, `users_remembered`, `users_resets`, `users_throttling` (used for brute-force rate-limiting), `users_audit_log`, `users_otps`, and `users_2fa`.
 
 ### categories
 
@@ -435,14 +469,30 @@ GET  /image.php?file={filename}         → image.php (standalone script)
 | `unit_price` | DECIMAL(10,2) | NOT NULL | Price at time of sale |
 | `subtotal` | DECIMAL(10,2) | NOT NULL | qty × unit_price |
 
-### rate_limit_log
+
+
+### cart_items
+
+| Field | Type | Constraints | Notes |
+| :--- | :--- | :--- | :--- |
+| `item_id` | INT | PK, AUTO_INCREMENT | |
+| `user_id` | INT | FK → users, NOT NULL | |
+| `product_id` | INT | FK → products, NOT NULL | |
+| `qty` | INT | NOT NULL | |
+| `created_at` | DATETIME | DEFAULT NOW() | |
+| `updated_at` | DATETIME | DEFAULT NOW() ON UPDATE NOW() | |
+
+### notifications
 
 | Field | Type | Constraints | Notes |
 | :--- | :--- | :--- | :--- |
 | `id` | INT | PK, AUTO_INCREMENT | |
-| `ip_address` | VARCHAR(45) | NOT NULL | Supports IPv6 |
-| `endpoint` | VARCHAR(100) | NOT NULL | Route being rate-limited |
-| `attempted_at` | DATETIME | DEFAULT NOW() | |
+| `type` | ENUM | NOT NULL | `order_paid`, `order_failed`, `low_stock`, `new_customer` |
+| `title` | VARCHAR(150) | NOT NULL | Short summary |
+| `message` | TEXT | NOT NULL | Detailed message |
+| `is_read` | TINYINT(1) | DEFAULT 0 | 0 = Unread, 1 = Read |
+| `data_json` | TEXT | NULLABLE | Context payload (e.g. `{"order_id": 123}`) |
+| `created_at` | DATETIME | DEFAULT NOW() | |
 
 ---
 
@@ -456,7 +506,7 @@ GET  /image.php?file={filename}         → image.php (standalone script)
 | **SQL Injection Prevention** | PDO with prepared statements throughout; no dynamic SQL string concatenation with user input |
 | **XSS Prevention** | React escapes all dynamic values by default in JSX; PHP API responses use `json_encode()` which escapes special characters; `Content-Security-Policy` header restricts inline scripts |
 | **CORS** | Dev only: PHP emits `Access-Control-Allow-Origin: http://localhost:5173` and `Access-Control-Allow-Credentials: true`; Production: same origin, no CORS headers needed |
-| **Brute-Force Protection** | 5 failed login attempts per IP per 10-minute window via `rate_limit_log`; `429 Too Many Requests` returned after threshold |
+| **Brute-Force Protection** | Rate-limiting on login/register via `users_throttles` table (provided by `delight-im/auth`); automatically delays repeated failed attempts |
 | **File Upload Security** | MIME type validated server-side via `finfo_file()`; files renamed with `bin2hex(random_bytes(16))`; stored outside web root; max 2MB enforced |
 | **Data in Transit** | TLS enforced via server configuration (HTTPS only) |
 

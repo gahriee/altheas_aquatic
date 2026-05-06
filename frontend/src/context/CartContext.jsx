@@ -1,9 +1,11 @@
 import { createContext, useContext, useState, useEffect } from 'react';
 import { getCart, addToCart, updateCart, removeFromCart, clearCart as apiClearCart } from '../api/cart';
+import { useAuth } from './AuthContext';
 
 const CartContext = createContext();
 
 export function CartProvider({ children }) {
+  const { user } = useAuth();
   const [items, setItems] = useState([]);
   const [total, setTotal] = useState(0);
   const [count, setCount] = useState(0);
@@ -21,7 +23,7 @@ export function CartProvider({ children }) {
 
   useEffect(() => {
     fetchCart();
-  }, []);
+  }, [user]);
 
   const addItem = async (productId, qty = 1) => {
     await addToCart({ product_id: productId, qty });

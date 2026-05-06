@@ -2,61 +2,77 @@
 
 namespace App\Core;
 
+use App\Models\CartModel;
+use App\Core\Database;
+use App\Core\Auth;
+
 class Cart
 {
     /**
      * ----------------------------------------
+     * getModel
+     * ----------------------------------------
+     * Returns an instance of the CartModel.
+     */
+    private static function getModel(): CartModel
+    {
+        return new CartModel(Database::getInstance()->getConnection());
+    }
+
+    /**
+     * ----------------------------------------
      * add
      * ----------------------------------------
-     * Add or increment an item in the session cart.
-     *
-     * @param int $productId The ID of the product.
-     * @param int $qty The quantity to add.
-     * @param float $price The unit price at the time of adding.
-     * @param string $name The name of the product.
+     * Add or increment an item in the database cart.
+     * Requires the user to be logged in.
      */
-    public static function add(int $productId, int $qty, float $price, string $name): void
+    public static function add(int $productId, int $qty): void
     {
-        if (!isset($_SESSION['cart'])) {
-            $_SESSION['cart'] = [];
+        $userId = Auth::userId();
+        if ($userId) {
+            self::getModel()->addItem($userId, $productId, $qty);
         }
+    }
 
-        if (isset($_SESSION['cart'][$productId])) {
-            $_SESSION['cart'][$productId]['qty'] += $qty;
-        } else {
-            $_SESSION['cart'][$productId] = [
-                'id' => $productId,
-                'name' => $name,
-                'price' => $price,
-                'qty' => $qty
-            ];
+    /**
+     * ----------------------------------------
+     * getItemQty
+     * ----------------------------------------
+     * Get the current quantity of a specific product in the cart.
+     */
+    public static function getItemQty(int $productId): int
+    {
+        $userId = Auth::userId();
+        if ($userId) {
+            $items = self::getModel()->getItemsByUser($userId);
+            foreach ($items as $item) {
+                if ((int)$item['id'] === $productId) {
+                    return (int)$item['qty'];
+                }
+            }
         }
-
-        // recalculate subtotal
-        $_SESSION['cart'][$productId]['subtotal'] = $_SESSION['cart'][$productId]['qty'] * $_SESSION['cart'][$productId]['price'];
+        return 0;
     }
 
     /**
      * ----------------------------------------
      * remove
      * ----------------------------------------
-     * Remove an item from the session cart.
-     *
-     * @param int $productId The ID of the product.
+     * Remove an item from the database cart.
      */
     public static function remove(int $productId): void
     {
-        unset($_SESSION['cart'][$productId]);
+        $userId = Auth::userId();
+        if ($userId) {
+            self::getModel()->removeItem($userId, $productId);
+        }
     }
 
     /**
      * ----------------------------------------
      * update
      * ----------------------------------------
-     * Update the quantity of an item in the session cart.
-     *
-     * @param int $productId The ID of the product.
-     * @param int $qty The new quantity.
+     * Update the quantity of an item in the database cart.
      */
     public static function update(int $productId, int $qty): void
     {
@@ -65,9 +81,9 @@ class Cart
             return;
         }
 
-        if (isset($_SESSION['cart'][$productId])) {
-            $_SESSION['cart'][$productId]['qty'] = $qty;
-            $_SESSION['cart'][$productId]['subtotal'] = $_SESSION['cart'][$productId]['qty'] * $_SESSION['cart'][$productId]['price'];
+        $userId = Auth::userId();
+        if ($userId) {
+            self::getModel()->updateItem($userId, $productId, $qty);
         }
     }
 
@@ -75,28 +91,28 @@ class Cart
      * ----------------------------------------
      * getItems
      * ----------------------------------------
-     * Get all items currently in the cart.
-     *
-     * @return array The list of cart items.
+     * Get all items currently in the database cart.
      */
     public static function getItems(): array
     {
-        return $_SESSION['cart'] ?? [];
+        $userId = Auth::userId();
+        if ($userId) {
+            return self::getModel()->getItemsByUser($userId);
+        }
+        return [];
     }
 
     /**
      * ----------------------------------------
      * getTotal
      * ----------------------------------------
-     * Calculate the total amount for all items in the cart.
-     *
-     * @return float The total amount.
+     * Calculate the total amount for all items.
      */
     public static function getTotal(): float
     {
         $total = 0.0;
         foreach (self::getItems() as $item) {
-            $total += $item['subtotal'];
+            $total += (float)$item['subtotal'];
         }
         return $total;
     }
@@ -106,14 +122,12 @@ class Cart
      * getCount
      * ----------------------------------------
      * Count the total number of units in the cart.
-     *
-     * @return int The total unit count.
      */
     public static function getCount(): int
     {
         $count = 0;
         foreach (self::getItems() as $item) {
-            $count += $item['qty'];
+            $count += (int)$item['qty'];
         }
         return $count;
     }
@@ -122,10 +136,13 @@ class Cart
      * ----------------------------------------
      * clear
      * ----------------------------------------
-     * Clear all items from the cart.
+     * Clear all items from the database cart.
      */
     public static function clear(): void
     {
-        $_SESSION['cart'] = [];
+        $userId = Auth::userId();
+        if ($userId) {
+            self::getModel()->clearCart($userId);
+        }
     }
 }

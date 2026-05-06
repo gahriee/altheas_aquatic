@@ -51,7 +51,7 @@ export default function Select({
         type="button"
         id={id}
         onClick={() => setIsOpen(!isOpen)}
-        className={`flex items-center justify-between w-full px-5 py-3.5 border border-sage-100 rounded-2xl shadow-sm text-left transition-all focus:outline-none focus:ring-2 focus:ring-mint-300 focus:bg-white ${
+        className={`flex items-center justify-between w-full px-5 py-3.5 border border-sage-100 rounded-2xl shadow-sm text-left transition-all outline-none focus:ring-2 focus:ring-mint-300 focus:border-mint-300 focus:bg-white ${
           isOpen ? 'ring-2 ring-mint-300 bg-white border-mint-100 shadow-lg shadow-teal-500/5' : 'bg-sage-50'
         } ${className}`}
       >
@@ -75,7 +75,7 @@ export default function Select({
                 onClick={() => handleSelect(option.value)}
                 className={`w-full px-5 py-3 text-left transition-colors flex items-center justify-between group ${
                   option.value?.toString() === value?.toString() 
-                    ? 'bg-teal-50 text-teal-700 font-bold' 
+                    ? 'bg-teal-50 text-teal-700 font-semibold' 
                     : 'text-sage-500 hover:bg-sage-50 hover:text-teal-600'
                 }`}
               >

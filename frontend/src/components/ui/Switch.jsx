@@ -53,7 +53,7 @@ export default function Switch({
             />
             
             {/* Labels */}
-            <div className="relative flex w-full z-10 font-bold text-sm">
+            <div className="relative flex w-full z-10 font-semibold text-sm">
               <span className={`flex-1 text-center transition-colors duration-300 ${!isChecked ? 'text-white' : 'text-sage-400'}`}>
                 {offLabel}
               </span>
@@ -80,9 +80,9 @@ export default function Switch({
           onChange={handleChange}
           disabled={disabled}
         />
-        <div className="w-11 h-6 bg-sage-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-mint-300 rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-sage-200 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-teal-600 transition-colors"></div>
+        <div className="w-11 h-6 bg-sage-200 outline-none peer-focus:ring-4 peer-focus:ring-mint-300 rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-sage-200 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-teal-600 transition-colors"></div>
         {label && (
-          <span className="ms-3 text-sm font-bold text-sage-500 group-hover:text-teal-600 transition-colors">
+          <span className="ms-3 text-sm font-semibold text-sage-500 group-hover:text-teal-600 transition-colors">
             {label}
           </span>
         )}

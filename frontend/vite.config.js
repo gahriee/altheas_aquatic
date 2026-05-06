@@ -6,6 +6,7 @@ export default defineConfig({
   plugins: [react()],
   build: { outDir: '../public/dist', emptyOutDir: true },
   server: {
+    allowedHosts: ['.ngrok-free.dev'],
     proxy: {
       '/api': {
         target: 'http://localhost:8000',

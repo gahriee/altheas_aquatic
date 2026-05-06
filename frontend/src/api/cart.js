@@ -5,27 +5,28 @@ export async function getCart() {
 }
 
 export async function addToCart(data) {
-  return apiFetch('/api/cart', {
+  return apiFetch('/api/cart/add', {
     method: 'POST',
     body: data,
   });
 }
 
 export async function updateCart(data) {
-  return apiFetch('/api/cart', {
-    method: 'PUT',
+  return apiFetch('/api/cart/update', {
+    method: 'POST',
     body: data,
   });
 }
 
-export async function removeFromCart(id) {
-  return apiFetch(`/api/cart/${id}`, {
-    method: 'DELETE',
+export async function removeFromCart(productId) {
+  return apiFetch('/api/cart/remove', {
+    method: 'POST',
+    body: { product_id: productId },
   });
 }
 
 export async function clearCart() {
-  return apiFetch('/api/cart', {
-    method: 'DELETE',
+  return apiFetch('/api/cart/clear', {
+    method: 'POST',
   });
 }
