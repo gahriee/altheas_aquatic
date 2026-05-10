@@ -61,7 +61,7 @@ export default function Reports() {
           <p className="text-sage-500 mt-1">Business performance and analytics</p>
         </div>
         
-        <div className="flex space-x-4 items-center">
+        <div className="flex space-x-4 items-end">
           {activeTab !== 'inventory' && (
             <div className="flex space-x-2">
               <div className="w-40">

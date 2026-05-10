@@ -131,6 +131,7 @@ altheas-aquatic/
 │   ├── Controllers/                        # JSON response handlers — one per module
 │   │   ├── AuthController.php              # Login, logout, CSRF token endpoint
 │   │   ├── DashboardController.php         # Admin dashboard summary cards
+│   │   ├── UserController.php              # Admin user management CRUD
 │   │   ├── InventoryController.php         # Product CRUD, image upload, soft delete
 │   │   ├── SupplierController.php          # Supplier CRUD, delivery recording
 │   │   ├── OrderController.php             # Order list, detail, status update, checkout
@@ -166,7 +167,8 @@ altheas-aquatic/
 │   │   │   ├── suppliers.js
 │   │   │   ├── orders.js
 │   │   │   ├── cart.js
-│   │   │   └── reports.js
+│   │   │   ├── reports.js
+│   │   │   └── users.js
 │   │   │
 │   │   ├── context/
 │   │   │   ├── AuthContext.jsx             # Admin session state — user, login(), logout()
@@ -205,6 +207,9 @@ altheas-aquatic/
 │   │   │   │   ├── orders/
 │   │   │   │   │   ├── OrderList.jsx
 │   │   │   │   │   └── OrderDetail.jsx
+│   │   │   │   ├── users/
+│   │   │   │   │   ├── UserList.jsx
+│   │   │   │   │   └── UserForm.jsx
 │   │   │   │   └── reports/
 │   │   │   │       └── Reports.jsx
 │   │   │   └── storefront/
@@ -291,6 +296,12 @@ GET  /api/admin/me                      → AuthController::me()
 
 # Admin Dashboard
 GET  /api/admin/dashboard               → DashboardController::index()
+
+# Admin Users
+GET  /api/admin/users                   → UserController::index()
+POST /api/admin/users                   → UserController::store()
+POST /api/admin/users/{id}              → UserController::update()
+POST /api/admin/users/{id}/delete       → UserController::destroy()
 
 # Inventory
 GET  /api/admin/inventory               → InventoryController::index()

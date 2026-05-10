@@ -101,6 +101,12 @@ class Router
                 $this->router->get('/notifications/unread-count', 'NotificationController@unreadCount');
                 $this->router->post('/notifications/(\d+)/read', 'NotificationController@markRead');
                 $this->router->post('/notifications/read-all', 'NotificationController@markAllRead');
+
+                // Users
+                $this->router->get('/users', 'UserController@index');
+                $this->router->post('/users', 'UserController@store');
+                $this->router->post('/users/(\d+)', 'UserController@update');
+                $this->router->post('/users/(\d+)/delete', 'UserController@destroy');
             });
 
             // Storefront (Public)

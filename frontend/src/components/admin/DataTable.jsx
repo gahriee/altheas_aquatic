@@ -29,6 +29,7 @@ export default function DataTable({
   renderExpanded,
   loading = false,
   emptyMessage = 'No records found',
+  emptySubMessage = 'Try adjusting your filters or search criteria.',
   className = ''
 }) {
   const [sortKey, setSortKey] = useState(null);
@@ -207,8 +208,8 @@ export default function DataTable({
                 <PackageSearch size={40} />
               </div>
               <div className="space-y-1">
-                <p className="text-sage-800 font-bold font-display text-xl tracking-tight">Vast & Empty</p>
-                <p className="text-sage-400 font-medium text-sm max-w-[280px] mx-auto">None of our aquatic species matches your current filter criteria.</p>
+                <p className="text-sage-800 font-bold font-display text-xl tracking-tight">{emptyMessage}</p>
+                <p className="text-sage-400 font-medium text-sm max-w-[280px] mx-auto">{emptySubMessage}</p>
               </div>
             </div>
           )}

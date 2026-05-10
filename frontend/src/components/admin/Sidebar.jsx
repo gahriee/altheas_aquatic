@@ -1,9 +1,10 @@
 import { NavLink } from 'react-router-dom';
-import { LayoutDashboard, Package, Truck, ShoppingCart, BarChart3, ChevronLeft, ChevronRight } from 'lucide-react';
+import { LayoutDashboard, Package, Truck, ShoppingCart, BarChart3, Users, ChevronLeft, ChevronRight } from 'lucide-react';
 import Tooltip from '../ui/Tooltip';
 
 const navItems = [
   { path: '/admin', label: 'Dashboard', icon: LayoutDashboard },
+  { path: '/admin/users', label: 'Users', icon: Users },
   { path: '/admin/inventory', label: 'Inventory', icon: Package },
   { path: '/admin/suppliers', label: 'Suppliers', icon: Truck },
   { path: '/admin/orders', label: 'Orders', icon: ShoppingCart },

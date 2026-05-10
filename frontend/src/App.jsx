@@ -26,6 +26,9 @@ import OrderList from './pages/admin/orders/OrderList';
 import OrderDetail from './pages/admin/orders/OrderDetail';
 import Reports from './pages/admin/reports/Reports';
 
+import UserList from './pages/admin/users/UserList';
+import UserForm from './pages/admin/users/UserForm';
+
 export default function App() {
   return (
     <ToastProvider>
@@ -48,6 +51,9 @@ export default function App() {
         <Route path="/admin" element={<ProtectedRoute />}>
           <Route element={<AdminLayout />}>
             <Route index element={<Dashboard />} />
+            <Route path="users" element={<UserList />} />
+            <Route path="users/add" element={<UserForm />} />
+            <Route path="users/edit/:id" element={<UserForm />} />
             <Route path="inventory" element={<InventoryList />} />
             <Route path="inventory/add" element={<ProductForm />} />
             <Route path="inventory/edit/:id" element={<ProductForm />} />

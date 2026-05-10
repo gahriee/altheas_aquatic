@@ -40,4 +40,161 @@ class UserModel
             return null;
         }
     }
+    /**
+     * ----------------------------------------
+     * fetchAdmins
+     * ----------------------------------------
+     * Fetch all users where role_label IN ('admin', 'staff'), ordered by registered DESC.
+     * 
+     * @return array List of admin/staff users.
+     */
+    public function fetchAdmins(): array
+    {
+        try {
+            $stmt = $this->db->query("
+                SELECT id, email, username, role_label, roles_mask, status, verified, registered, last_login 
+                FROM users 
+                WHERE role_label IN ('admin', 'staff') 
+                ORDER BY registered DESC
+            ");
+            return $stmt->fetchAll();
+        } catch (\PDOException $e) {
+            error_log("UserModel::fetchAdmins failed: " . $e->getMessage());
+            return [];
+        }
+    }
+
+    /**
+     * ----------------------------------------
+     * fetchAllWithCounts
+     * ----------------------------------------
+     * Fetch users by type (admin_staff vs customer) and return role counts.
+     * 
+     * @param string $type The filter type ('admin_staff', 'customer', or 'all').
+     * @return array Array containing 'users' and 'counts'.
+     */
+    public function fetchAllWithCounts(string $type = 'all'): array
+    {
+        try {
+            // Fetch users based on type
+            $where = "";
+            if ($type === 'admin_staff') {
+                $where = " WHERE role_label IN ('admin', 'staff') ";
+            } elseif ($type === 'customer') {
+                $where = " WHERE role_label = 'customer' ";
+            }
+
+            $stmt = $this->db->query("
+                SELECT id, email, username, role_label, roles_mask, status, verified, registered, last_login 
+                FROM users 
+                $where
+                ORDER BY registered DESC
+            ");
+            $users = $stmt->fetchAll();
+
+            // Fetch counts
+            $counts = [
+                'admin_staff' => 0,
+                'customer' => 0,
+                'all' => 0
+            ];
+
+            $countStmt = $this->db->query("
+                SELECT role_label, COUNT(*) as count 
+                FROM users 
+                GROUP BY role_label
+            ");
+            $rows = $countStmt->fetchAll();
+
+            foreach ($rows as $row) {
+                if (in_array($row['role_label'], ['admin', 'staff'])) {
+                    $counts['admin_staff'] += (int) $row['count'];
+                } else {
+                    $counts['customer'] += (int) $row['count'];
+                }
+                $counts['all'] += (int) $row['count'];
+            }
+
+            return [
+                'users' => $users,
+                'counts' => $counts
+            ];
+        } catch (\PDOException $e) {
+            error_log("UserModel::fetchAllWithCounts failed: " . $e->getMessage());
+            return ['users' => [], 'counts' => ['admin_staff' => 0, 'customer' => 0, 'all' => 0]];
+        }
+    }
+
+    /**
+     * ----------------------------------------
+     * getById
+     * ----------------------------------------
+     * Fetch a single user by ID, excluding the password field.
+     * 
+     * @param int $id The user ID.
+     * @return array|null The user record or null if not found.
+     */
+    public function getById(int $id): ?array
+    {
+        try {
+            $stmt = $this->db->prepare("
+                SELECT id, email, username, role_label, roles_mask, status, verified, registered, last_login 
+                FROM users 
+                WHERE id = :id
+            ");
+            $stmt->execute(['id' => $id]);
+            $user = $stmt->fetch();
+            return $user ?: null;
+        } catch (\PDOException $e) {
+            error_log("UserModel::getById failed: " . $e->getMessage());
+            return null;
+        }
+    }
+
+    /**
+     * ----------------------------------------
+     * updateRoleLabel
+     * ----------------------------------------
+     * Update the role_label field for a given user ID.
+     * 
+     * @param int $id The user ID.
+     * @param string $roleLabel The new role label (admin or staff).
+     * @return bool True on success.
+     */
+    public function updateRoleLabel(int $id, string $roleLabel): bool
+    {
+        if (!in_array($roleLabel, ['admin', 'staff', 'customer'])) {
+            return false;
+        }
+
+        try {
+            $stmt = $this->db->prepare("UPDATE users SET role_label = :role_label WHERE id = :id");
+            return $stmt->execute([
+                'role_label' => $roleLabel,
+                'id' => $id
+            ]);
+        } catch (\PDOException $e) {
+            error_log("UserModel::updateRoleLabel failed: " . $e->getMessage());
+            return false;
+        }
+    }
+
+    /**
+     * ----------------------------------------
+     * countAdmins
+     * ----------------------------------------
+     * Count users where role_label = 'admin'.
+     * 
+     * @return int Number of admin users.
+     */
+    public function countAdmins(): int
+    {
+        try {
+            $stmt = $this->db->query("SELECT COUNT(*) FROM users WHERE role_label = 'admin'");
+            return (int) $stmt->fetchColumn();
+        } catch (\PDOException $e) {
+            error_log("UserModel::countAdmins failed: " . $e->getMessage());
+            return 0;
+        }
+    }
 }

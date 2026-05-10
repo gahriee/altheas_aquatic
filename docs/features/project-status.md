@@ -28,6 +28,7 @@
 - [x] Reports Module: sales summary by date range, inventory status table, supplier delivery summary (Ticket: `2026-05-07-01`)
 - [x] CSV Export: export sales and inventory reports as downloadable CSV files (Ticket: `2026-05-07-01`)
 - [x] Admin Dashboard: summary cards and sales trend chart (Ticket: `2026-05-07-02`)
+- [x] Admin Users Module: manage admin/staff roles and accounts (Ticket: `2026-05-10-02`)
 - [ ] Low-stock alert panel: filtered view highlighting products at or below threshold
 - [x] Real-time Notifications: Pusher integration for order payments and stock alerts (Ticket: `2026-04-19-03`)
 - [x] Cart Animation Sync: Synchronized count update with fly-to-cart animation (Ticket: `2026-04-19-05`)
@@ -59,6 +60,7 @@
 | **File Upload Handler** | `[x]` | MIME validation, random rename, outside-web-root storage, serve script |
 | **Login Modal** | `[x]` | Portable auth with aquatic theme and post-login action support |
 | **Order Expiry** | `[x]` | Auto stock restoration for unpaid orders older than 60 mins |
+| **Admin Users Module** | `[x]` | `UserController` with role-based CRUD using `delight-im/auth` admin methods |
 
 ### 🖥️ Frontend Pages
 
@@ -66,6 +68,7 @@
 | :--- | :---: | :--- |
 | **Login Page** | `[x]` | Credential form, error message, rate-limit feedback |
 | **Admin Dashboard** | `[x]` | Summary cards, sales trend chart, and quick actions |
+| **Users** | `[x]` | Admin/staff list, add/edit user form, role management |
 | **Inventory Management** | `[x]` | Sortable product table, add/edit form, image preview, low-stock highlights, pagination |
 | **Supplier Management** | `[x]` | Supplier list, add/edit form, record delivery form, per-supplier history |
 | **Sales / Orders** | `[x]` | Orders table with status filter, order detail view, status update, date-range filter |
