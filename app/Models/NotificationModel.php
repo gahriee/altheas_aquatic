@@ -85,13 +85,87 @@ class NotificationModel
 
     /**
      * ----------------------------------------
-     * markAllAsRead
+     * getPaginated
      * ----------------------------------------
-     * Marks all notifications as read.
+     * Fetches a paginated list of notifications with optional type and read status filters.
      */
-    public function markAllAsRead(): bool
+    public function getPaginated(int $page = 1, int $perPage = 20, ?string $type = null, ?int $isRead = null): array
     {
-        $stmt = $this->db->prepare("UPDATE notifications SET is_read = 1 WHERE is_read = 0");
-        return $stmt->execute();
+        $offset = ($page - 1) * $perPage;
+        $params = [];
+        $whereClauses = [];
+
+        if ($type !== null) {
+            $whereClauses[] = "type = :type";
+            $params[':type'] = $type;
+        }
+
+        if ($isRead !== null) {
+            $whereClauses[] = "is_read = :is_read";
+            $params[':is_read'] = $isRead;
+        }
+
+        $whereSql = '';
+        if (!empty($whereClauses)) {
+            $whereSql = 'WHERE ' . implode(' AND ', $whereClauses);
+        }
+
+        try {
+            // Get total count
+            $countSql = "SELECT COUNT(*) FROM notifications $whereSql";
+            $countStmt = $this->db->prepare($countSql);
+            $countStmt->execute($params);
+            $total = (int)$countStmt->fetchColumn();
+
+            // Get paginated data
+            $dataSql = "SELECT * FROM notifications $whereSql ORDER BY created_at DESC LIMIT :limit OFFSET :offset";
+            $dataStmt = $this->db->prepare($dataSql);
+            
+            foreach ($params as $key => $val) {
+                $dataStmt->bindValue($key, $val);
+            }
+            $dataStmt->bindValue(':limit', $perPage, PDO::PARAM_INT);
+            $dataStmt->bindValue(':offset', $offset, PDO::PARAM_INT);
+            $dataStmt->execute();
+            
+            $notifications = $dataStmt->fetchAll();
+
+            return [
+                'notifications' => $notifications,
+                'total'         => $total,
+                'page'          => $page,
+                'per_page'      => $perPage,
+                'total_pages'   => (int)ceil($total / $perPage)
+            ];
+        } catch (\PDOException $e) {
+            // Return empty result set on error
+            error_log("Database error in getPaginated: " . $e->getMessage());
+            return [
+                'notifications' => [],
+                'total'         => 0,
+                'page'          => $page,
+                'per_page'      => $perPage,
+                'total_pages'   => 0
+            ];
+        }
+    }
+
+    /**
+     * ----------------------------------------
+     * deleteOld
+     * ----------------------------------------
+     * Deletes notifications older than the specified number of days.
+     */
+    public function deleteOld(int $daysOld): int
+    {
+        try {
+            $stmt = $this->db->prepare("DELETE FROM notifications WHERE created_at < DATE_SUB(NOW(), INTERVAL :days DAY)");
+            $stmt->bindValue(':days', $daysOld, PDO::PARAM_INT);
+            $stmt->execute();
+            return $stmt->rowCount();
+        } catch (\PDOException $e) {
+            error_log("Database error in deleteOld: " . $e->getMessage());
+            return 0;
+        }
     }
 }

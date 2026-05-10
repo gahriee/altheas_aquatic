@@ -118,12 +118,15 @@ class PaymentController
                 'order_number' => $orderNumber
             ];
 
+            $userId = \App\Core\Auth::isLoggedIn() ? \App\Core\Auth::userId() : null;
+
             // Insert order into DB
             $stmt = $db->prepare("
-                INSERT INTO orders (customer_name, customer_email, customer_phone, delivery_address, total_amount, payment_method, notes, order_number)
-                VALUES (:customer_name, :customer_email, :customer_phone, :delivery_address, :total_amount, :payment_method, :notes, :order_number)
+                INSERT INTO orders (user_id, customer_name, customer_email, customer_phone, delivery_address, total_amount, payment_method, notes, order_number)
+                VALUES (:user_id, :customer_name, :customer_email, :customer_phone, :delivery_address, :total_amount, :payment_method, :notes, :order_number)
             ");
             $stmt->execute([
+                ':user_id' => $userId,
                 ':customer_name' => $orderData['customer_name'],
                 ':customer_email' => $orderData['customer_email'],
                 ':customer_phone' => $orderData['customer_phone'],

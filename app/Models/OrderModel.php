@@ -344,4 +344,64 @@ class OrderModel
         
         return array_merge(['all' => (int)$total], array_map('intval', $counts));
     }
+
+    /**
+     * ----------------------------------------
+     * getByUserId
+     * ----------------------------------------
+     * Fetches a customer's orders, with optional status filter.
+     */
+    public function getByUserId(int $userId, array $params = []): array
+    {
+        $sql = "
+            SELECT o.*, 
+                   (SELECT COUNT(*) FROM order_items WHERE order_id = o.order_id) as item_count 
+            FROM orders o 
+            WHERE o.user_id = :user_id
+        ";
+        $binds = [':user_id' => $userId];
+
+        if (!empty($params['status']) && $params['status'] !== 'all') {
+            $sql .= " AND o.status = :status";
+            $binds[':status'] = $params['status'];
+        }
+
+        $sql .= " ORDER BY o.ordered_at DESC";
+
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute($binds);
+        return $stmt->fetchAll();
+    }
+
+    /**
+     * ----------------------------------------
+     * getDetailForUser
+     * ----------------------------------------
+     * Fetches a single order and its items, only if it belongs to the given user.
+     */
+    public function getDetailForUser(int $orderId, int $userId): ?array
+    {
+        $stmt = $this->db->prepare("SELECT * FROM orders WHERE order_id = :order_id AND user_id = :user_id");
+        $stmt->execute([
+            ':order_id' => $orderId,
+            ':user_id' => $userId
+        ]);
+        
+        $order = $stmt->fetch();
+
+        if (!$order) {
+            return null;
+        }
+
+        $stmt = $this->db->prepare("
+            SELECT oi.*, p.name as product_name, p.image_path
+            FROM order_items oi
+            JOIN products p ON oi.product_id = p.product_id
+            WHERE oi.order_id = :id
+        ");
+        $stmt->execute([':id' => $orderId]);
+        $order['items'] = $stmt->fetchAll();
+
+        return $order;
+    }
 }

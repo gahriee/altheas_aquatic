@@ -32,7 +32,9 @@
 - [x] Profile Settings & Password Reset: change password, forgot password, reset password flows (Ticket: `2026-05-10-03`)
 - [ ] Low-stock alert panel: filtered view highlighting products at or below threshold
 - [x] Real-time Notifications: Pusher integration for order payments and stock alerts (Ticket: `2026-04-19-03`)
+- [x] Notification History Page: paginated and filterable dedicated page for all alerts (Ticket: `2026-05-10-04`)
 - [x] Cart Animation Sync: Synchronized count update with fly-to-cart animation (Ticket: `2026-04-19-05`)
+- [x] Storefront My Orders: customer order history and detail pages (Ticket: `2026-05-10-05`)
 
 ### Phase 3: Polish & Delivery (Week 4–Delivery)
 - [ ] Mobile responsiveness audit — all pages tested on phone viewport
@@ -73,6 +75,7 @@
 | **Forgot / Reset Password** | `[x]` | Public pages to request and verify password reset link |
 | **Admin Dashboard** | `[x]` | Summary cards, sales trend chart, and quick actions |
 | **Users** | `[x]` | Admin/staff list, add/edit user form, role management |
+| **Notification History** | `[x]` | Full paginated list of alerts, filter by type/status, clear old alerts |
 | **Inventory Management** | `[x]` | Sortable product table, add/edit form, image preview, low-stock highlights, pagination |
 | **Supplier Management** | `[x]` | Supplier list, add/edit form, record delivery form, per-supplier history |
 | **Sales / Orders** | `[x]` | Orders table with status filter, order detail view, status update, date-range filter |
@@ -80,6 +83,7 @@
 | **Storefront — Home** | `[x]` | Hero banner, featured product grid, category filter tabs, product cards |
 | **Storefront — Product Detail** | `[x]` | Image, description, price, quantity selector, add-to-cart |
 | **Storefront — Cart & Checkout** | `[x]` | Cart list, subtotals, customer info form, PayMongo GCash integration |
+| **Storefront — My Orders** | `[x]` | Customer order history list with status tabs and itemised detail view |
 | **Order Confirmation** | `[x]` | Order ID, itemised summary, payment status polling, return-to-shop link |
 
 *Key: `[x]` = Complete, `[~]` = In Progress, `[ ]` = Not Started, `[!]` = Blocked*

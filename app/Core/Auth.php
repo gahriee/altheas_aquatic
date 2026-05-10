@@ -52,6 +52,19 @@ class Auth
 
     /**
      * ----------------------------------------
+     * requireCustomerLogin
+     * ----------------------------------------
+     * Ensure any user is authenticated (including customers).
+     */
+    public static function requireCustomerLogin(): void
+    {
+        if (!self::isLoggedIn()) {
+            Response::unauthorized();
+        }
+    }
+
+    /**
+     * ----------------------------------------
      * isLoggedIn
      * ----------------------------------------
      * Check if a valid session exists.

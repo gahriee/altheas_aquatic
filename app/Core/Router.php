@@ -102,9 +102,11 @@ class Router
 
                 // Notifications
                 $this->router->get('/notifications', 'NotificationController@index');
+                $this->router->get('/notifications/history', 'NotificationController@history');
                 $this->router->get('/notifications/unread-count', 'NotificationController@unreadCount');
                 $this->router->post('/notifications/(\d+)/read', 'NotificationController@markRead');
                 $this->router->post('/notifications/read-all', 'NotificationController@markAllRead');
+                $this->router->post('/notifications/delete-old', 'NotificationController@deleteOld');
 
                 // Users
                 $this->router->get('/users', 'UserController@index');
@@ -129,6 +131,10 @@ class Router
             $this->router->post('/checkout', 'PaymentController@createIntent');
             $this->router->get('/order-confirmation/(\d+)', 'OrderController@confirmation');
             $this->router->get('/orders/(\d+)/confirmation', 'OrderController@confirmation');
+
+            // My Orders (Customer)
+            $this->router->get('/my-orders', 'OrderController@myOrders');
+            $this->router->get('/my-orders/(\d+)', 'OrderController@myOrderDetail');
 
             // Payments
             $this->router->post('/payments/create-intent', 'PaymentController@createIntent');

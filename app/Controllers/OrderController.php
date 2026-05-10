@@ -122,4 +122,43 @@ class OrderController
             Response::error('Cleanup error: ' . $e->getMessage(), 500);
         }
     }
+
+    /**
+     * ----------------------------------------
+     * myOrders
+     * ----------------------------------------
+     * Returns a list of orders for the authenticated customer.
+     */
+    public function myOrders(): void
+    {
+        Auth::requireCustomerLogin();
+        $userId = Auth::userId();
+        
+        $params = [
+            'status' => $_GET['status'] ?? null
+        ];
+
+        $orders = $this->orderModel->getByUserId($userId, $params);
+        Response::json(['orders' => $orders]);
+    }
+
+    /**
+     * ----------------------------------------
+     * myOrderDetail
+     * ----------------------------------------
+     * Returns details of a single order belonging to the authenticated customer.
+     */
+    public function myOrderDetail(int $id): void
+    {
+        Auth::requireCustomerLogin();
+        $userId = Auth::userId();
+
+        $order = $this->orderModel->getDetailForUser($id, $userId);
+        
+        if (!$order) {
+            Response::error('Order not found', 404);
+        }
+        
+        Response::json($order);
+    }
 }

@@ -1,5 +1,5 @@
 import { Link, useNavigate } from 'react-router-dom';
-import { ShoppingCart, Waves, LogIn, LogOut } from 'lucide-react';
+import { ShoppingCart, Waves, LogIn, LogOut, Package } from 'lucide-react';
 import { useCart } from '../../context/CartContext';
 import { useAuth } from '../../context/AuthContext';
 
@@ -18,6 +18,12 @@ export default function Navbar() {
 
         <div className="flex items-center gap-6">
           <Link to="/" className="text-sage-500 hover:text-mint-300 font-medium decoration-transparent hidden sm:block">Home</Link>
+          {user && (
+            <Link to="/my-orders" className="text-sage-500 hover:text-mint-300 font-medium decoration-transparent flex items-center gap-1.5 hidden sm:flex">
+              <Package size={18} />
+              My Orders
+            </Link>
+          )}
           
           <div className="flex items-center gap-4 bg-sage-50 p-1.5 rounded-2xl border border-sage-100">
             <Link id="nav-cart-icon" to="/cart" className="relative p-2.5 text-sage-500 hover:text-teal-500 transition rounded-xl hover:bg-white decoration-transparent">

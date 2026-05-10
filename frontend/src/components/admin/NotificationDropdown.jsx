@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { Bell, Check, ExternalLink } from 'lucide-react';
+import { Link } from 'react-router-dom';
 import Pusher from 'pusher-js';
 import { getNotifications, getUnreadCount, markAsRead, markAllAsRead } from '../../api/notifications';
 import { formatDistanceToNow } from 'date-fns';
@@ -178,10 +179,14 @@ export default function NotificationDropdown() {
           </div>
 
           <div className="p-3 bg-sage-50/50 border-t border-sage-50 text-center">
-            <button className="text-[10px] font-bold text-sage-400 hover:text-teal-600 transition-colors flex items-center justify-center gap-2 mx-auto uppercase tracking-widest">
+            <Link 
+              to="/admin/notifications" 
+              onClick={() => setIsOpen(false)}
+              className="text-[10px] font-bold text-sage-400 hover:text-teal-600 transition-colors flex items-center justify-center gap-2 mx-auto uppercase tracking-widest"
+            >
                 View notification history
                 <ExternalLink size={10} />
-            </button>
+            </Link>
           </div>
         </div>
       )}

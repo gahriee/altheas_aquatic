@@ -13,6 +13,8 @@ import Checkout from './pages/storefront/Checkout';
 import OrderConfirmation from './pages/storefront/OrderConfirmation';
 import Register from './pages/storefront/Register';
 import StorefrontLogin from './pages/storefront/Login';
+import MyOrders from './pages/storefront/MyOrders';
+import MyOrderDetail from './pages/storefront/MyOrderDetail';
 
 // Admin Pages
 import Login from './pages/admin/Login';
@@ -29,6 +31,7 @@ import Reports from './pages/admin/reports/Reports';
 
 import UserList from './pages/admin/users/UserList';
 import UserForm from './pages/admin/users/UserForm';
+import NotificationHistory from './pages/admin/notifications/NotificationHistory';
 
 // Public Auth Pages
 import ForgotPassword from './pages/ForgotPassword';
@@ -47,6 +50,8 @@ export default function App() {
           <Route path="order-confirmation/:id" element={<OrderConfirmation />} />
           <Route path="register" element={<Register />} />
           <Route path="login" element={<StorefrontLogin />} />
+          <Route path="my-orders" element={<MyOrders />} />
+          <Route path="my-orders/:id" element={<MyOrderDetail />} />
         </Route>
 
         {/* Admin Login & Password Reset */}
@@ -72,6 +77,7 @@ export default function App() {
             <Route path="orders" element={<OrderList />} />
             <Route path="orders/:id" element={<OrderDetail />} />
             <Route path="reports" element={<Reports />} />
+            <Route path="notifications" element={<NotificationHistory />} />
           </Route>
         </Route>
 

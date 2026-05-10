@@ -34,11 +34,42 @@ export async function markAllAsRead() {
   });
 }
 
+/**
+ * Fetches paginated history of notifications with optional filters.
+ * @param {number} page 
+ * @param {number} perPage 
+ * @param {string} type 
+ * @param {number} isRead 
+ */
+export async function getHistory(page = 1, perPage = 20, type = '', isRead = '') {
+  const params = new URLSearchParams({
+    page: page,
+    per_page: perPage,
+  });
+  if (type) params.append('type', type);
+  if (isRead !== '') params.append('is_read', isRead);
+
+  return await apiFetch(`/api/admin/notifications/history?${params.toString()}`);
+}
+
+/**
+ * Deletes notifications older than the given number of days.
+ * @param {number} days 
+ */
+export async function deleteOldNotifications(days = 30) {
+  return await apiFetch('/api/admin/notifications/delete-old', {
+    method: 'POST',
+    body: JSON.stringify({ days })
+  });
+}
+
 const notificationsApi = {
   getNotifications,
   getUnreadCount,
   markAsRead,
-  markAllAsRead
+  markAllAsRead,
+  getHistory,
+  deleteOldNotifications
 };
 
 export default notificationsApi;

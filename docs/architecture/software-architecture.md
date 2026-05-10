@@ -103,6 +103,7 @@ To provide immediate visibility into critical events (e.g. successful payments, 
 - 🔐 **Sign Up Page** — Account creation form for customers (Email, Password)
 - 📄 **Product Detail** — Image, description, price, quantity selector, add-to-cart (triggers login modal if guest)
 - 🛒 **Cart & Checkout** — Cart summary, customer info form, stock validation, order submission
+- 📦 **My Orders** — Customer order history list and itemised detail view
 - 🔐 **Login Page** — Dedicated customer login page
 - ✅ **Order Confirmation** — Order ID, itemised summary, thank-you message
 
@@ -213,6 +214,8 @@ altheas-aquatic/
 │   │   │   │   ├── users/
 │   │   │   │   │   ├── UserList.jsx
 │   │   │   │   │   └── UserForm.jsx
+│   │   │   │   ├── notifications/
+│   │   │   │   │   └── NotificationHistory.jsx
 │   │   │   │   └── reports/
 │   │   │   │       └── Reports.jsx
 │   │   │   └── storefront/
@@ -332,6 +335,14 @@ GET  /api/admin/orders                  → OrderController::index()
 GET  /api/admin/orders/{id}             → OrderController::show()
 POST /api/admin/orders/{id}/status      → OrderController::updateStatus()
 
+# Notifications
+GET  /api/admin/notifications           → NotificationController::index()
+GET  /api/admin/notifications/history   → NotificationController::history()
+GET  /api/admin/notifications/unread-count → NotificationController::unreadCount()
+POST /api/admin/notifications/{id}/read → NotificationController::markRead()
+POST /api/admin/notifications/read-all  → NotificationController::markAllRead()
+POST /api/admin/notifications/delete-old→ NotificationController::deleteOld()
+
 # Reports
 GET  /api/admin/reports/sales           → ReportController::sales()
 GET  /api/admin/reports/inventory       → ReportController::inventory()
@@ -342,6 +353,10 @@ GET  /api/admin/reports/export          → ReportController::exportCsv()
 GET  /api/storefront/list                → StorefrontController::list()
 GET  /api/storefront/detail/{id}          → StorefrontController::detail()
 GET  /api/storefront/categories            → StorefrontController::categories()
+
+# My Orders (Customer)
+GET  /api/my-orders                     → OrderController::myOrders()
+GET  /api/my-orders/{id}                → OrderController::myOrderDetail()
 
 # Cart (Persistent / Session fallback)
 GET  /api/cart                          → CartController::index()
@@ -464,6 +479,7 @@ POST /api/webhooks/paymongo             → PaymentController::handleWebhook()
 | Field | Type | Constraints | Notes |
 | :--- | :--- | :--- | :--- |
 | `order_id` | INT | PK, AUTO_INCREMENT | |
+| `user_id` | INT UNSIGNED | FK → users ON DELETE SET NULL | NULL for guest checkout |
 | `customer_name` | VARCHAR(150) | NOT NULL | |
 | `customer_email` | VARCHAR(150) | NULLABLE | |
 | `customer_phone` | VARCHAR(30) | NULLABLE | |

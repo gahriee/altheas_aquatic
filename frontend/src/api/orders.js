@@ -26,3 +26,12 @@ export async function submitCheckout(data) {
 export async function getConfirmation(id) {
   return apiFetch(`/api/orders/${id}/confirmation`);
 }
+
+export async function getMyOrders(params = {}) {
+  const query = new URLSearchParams(params).toString();
+  return apiFetch(`/api/my-orders${query ? `?${query}` : ''}`);
+}
+
+export async function getMyOrderDetail(id) {
+  return apiFetch(`/api/my-orders/${id}`);
+}

@@ -167,6 +167,7 @@ CREATE TABLE IF NOT EXISTS `products` (
 -- 5. orders
 CREATE TABLE IF NOT EXISTS `orders` (
     `order_id` INT AUTO_INCREMENT PRIMARY KEY,
+    `user_id` INT UNSIGNED NULL,
     `customer_name` VARCHAR(150) NOT NULL,
     `customer_email` VARCHAR(150) NULL,
     `customer_phone` VARCHAR(30) NULL,
@@ -179,7 +180,9 @@ CREATE TABLE IF NOT EXISTS `orders` (
     `status` ENUM('pending', 'confirmed', 'completed', 'cancelled') DEFAULT 'pending',
     `ordered_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
     `notes` TEXT NULL,
+    CONSTRAINT `fk_orders_user` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE SET NULL,
     UNIQUE INDEX `idx_orders_number` (`order_number`),
+    INDEX `idx_orders_user` (`user_id`),
     INDEX `idx_orders_status` (`status`),
     INDEX `idx_orders_payment_status` (`payment_status`),
     INDEX `idx_orders_payment_intent` (`payment_intent_id`),

@@ -93,4 +93,49 @@ class NotificationController
             Response::error('Failed to mark all notifications as read', 500);
         }
     }
+
+    /**
+     * ----------------------------------------
+     * history
+     * ----------------------------------------
+     * GET /api/admin/notifications/history
+     * Returns a paginated list of notifications with filters.
+     */
+    public function history(): void
+    {
+        Auth::requireLogin();
+        
+        $page = isset($_GET['page']) ? max(1, (int)$_GET['page']) : 1;
+        $perPage = isset($_GET['per_page']) ? max(1, (int)$_GET['per_page']) : 20;
+        
+        $type = isset($_GET['type']) && $_GET['type'] !== '' ? $_GET['type'] : null;
+        $isRead = isset($_GET['is_read']) && $_GET['is_read'] !== '' ? (int)$_GET['is_read'] : null;
+        
+        $result = $this->notificationModel->getPaginated($page, $perPage, $type, $isRead);
+        
+        Response::json($result);
+    }
+
+    /**
+     * ----------------------------------------
+     * deleteOld
+     * ----------------------------------------
+     * POST /api/admin/notifications/delete-old
+     * Deletes old notifications based on days provided.
+     */
+    public function deleteOld(): void
+    {
+        Auth::requireLogin();
+        Csrf::verifyHeader();
+
+        $input = json_decode(file_get_contents('php://input'), true);
+        $days = isset($input['days']) ? max(1, (int)$input['days']) : 30;
+
+        $deletedCount = $this->notificationModel->deleteOld($days);
+
+        Response::json([
+            'message' => "Successfully cleared $deletedCount old notifications",
+            'deleted_count' => $deletedCount
+        ]);
+    }
 }
