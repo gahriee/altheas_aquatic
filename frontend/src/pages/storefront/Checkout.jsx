@@ -17,7 +17,7 @@ import Select from '../../components/ui/Select';
  * Collects customer information and initiates the PayMongo GCash flow.
  */
 export default function Checkout() {
-  const { items, total, count, clearCart } = useCart();
+  const { items, total, clearCart } = useCart();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({

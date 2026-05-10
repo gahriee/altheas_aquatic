@@ -5,7 +5,7 @@ import { getDeliveries } from '../../../api/deliveries';
 export default function SupplierDeliveryTable({ supplierId }) {
   const [deliveries, setDeliveries] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState('');
+
 
   useEffect(() => {
     async function fetchHistory() {
@@ -14,7 +14,6 @@ export default function SupplierDeliveryTable({ supplierId }) {
         const data = await getDeliveries(supplierId);
         setDeliveries(data);
       } catch (err) {
-        setError('Failed to load delivery history');
         console.error(err);
       } finally {
         setLoading(false);

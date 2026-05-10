@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useParams, Link, useNavigate } from 'react-router-dom';
+import { useParams, Link } from 'react-router-dom';
 import { getOrder, updateOrderStatus } from '../../../api/orders';
 import { 
   ChevronLeft, 
@@ -20,7 +20,6 @@ import Button from '../../../components/ui/Button';
 
 export default function OrderDetail() {
   const { id } = useParams();
-  const navigate = useNavigate();
   const [order, setOrder] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);

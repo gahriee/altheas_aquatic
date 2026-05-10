@@ -13,7 +13,7 @@ import SupplierDeliveryTable from './SupplierDeliveryTable';
 export default function SupplierList() {
   const [suppliers, setSuppliers] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState('');
+
   const [searchTerm, setSearchTerm] = useState('');
 
   const debouncedSearch = useDebounce(searchTerm, 300);
@@ -28,7 +28,6 @@ export default function SupplierList() {
       const data = await getSuppliers();
       setSuppliers(data);
     } catch (err) {
-      setError('Failed to load suppliers');
       console.error(err);
     } finally {
       setLoading(false);

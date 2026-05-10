@@ -11,6 +11,24 @@ export default function NotificationDropdown() {
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef(null);
 
+  const fetchUnreadCount = async () => {
+    try {
+        const data = await getUnreadCount();
+        setUnreadCount(data.count);
+    } catch (error) {
+        console.error('Failed to fetch unread count:', error);
+    }
+  };
+
+  const fetchNotifications = async () => {
+    try {
+        const data = await getNotifications();
+        setNotifications(data);
+    } catch (error) {
+        console.error('Failed to fetch notifications:', error);
+    }
+  };
+
   useEffect(() => {
     // Initial fetch
     fetchUnreadCount();
@@ -38,12 +56,14 @@ export default function NotificationDropdown() {
         pusher.unsubscribe('admin-notifications');
         pusher.disconnect();
     };
+   
   }, []);
 
   useEffect(() => {
     if (isOpen) {
         fetchNotifications();
     }
+   
   }, [isOpen]);
 
   // Click outside handler
@@ -56,24 +76,6 @@ export default function NotificationDropdown() {
     document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
-
-  const fetchUnreadCount = async () => {
-    try {
-        const data = await getUnreadCount();
-        setUnreadCount(data.count);
-    } catch (error) {
-        console.error('Failed to fetch unread count:', error);
-    }
-  };
-
-  const fetchNotifications = async () => {
-    try {
-        const data = await getNotifications();
-        setNotifications(data);
-    } catch (error) {
-        console.error('Failed to fetch notifications:', error);
-    }
-  };
 
   const handleMarkRead = async (e, id) => {
     e.stopPropagation();

@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import { NavLink, Link, Outlet, useNavigate, useLocation } from 'react-router-dom';
+import { NavLink, Link, Outlet, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import Sidebar from './Sidebar';
 import NotificationDropdown from './NotificationDropdown';
@@ -10,7 +10,6 @@ export default function AdminLayout() {
   const { user, logout } = useAuth();
   const { setToastsEnabled } = useToastConfig();
   const navigate = useNavigate();
-  const location = useLocation();
 
   useEffect(() => {
     setToastsEnabled(true);

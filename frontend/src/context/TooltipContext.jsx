@@ -1,3 +1,4 @@
+/* eslint-disable react-refresh/only-export-components */
 import { createContext, useContext, useState, useCallback, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { useLocation } from 'react-router-dom';
@@ -42,8 +43,8 @@ export function TooltipProvider({ children }) {
 
   // Clear tooltip on navigation
   useEffect(() => {
-    hideTooltip();
-  }, [location.pathname, hideTooltip]);
+    setActive(false);
+  }, [location.pathname]);
 
   return (
     <TooltipContext.Provider value={{ showTooltip, hideTooltip }}>

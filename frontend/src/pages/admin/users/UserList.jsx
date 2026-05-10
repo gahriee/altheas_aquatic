@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Plus, Edit3, Trash2, ShieldAlert, ShieldCheck, Mail, Calendar, Clock, AlertCircle } from 'lucide-react';
-import { toast } from 'react-hot-toast';
 import { fetchUsers, deleteUser } from '../../../api/users';
 import { useAuth } from '../../../context/AuthContext';
 import Button from '../../../components/ui/Button';

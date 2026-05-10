@@ -12,9 +12,11 @@ export default function Select({
   value, 
   onChange, 
   placeholder = 'Select an option', 
+  // eslint-disable-next-line no-unused-vars
   label,
   id,
   name,
+  // eslint-disable-next-line no-unused-vars
   required = false,
   className = ''
 }) {

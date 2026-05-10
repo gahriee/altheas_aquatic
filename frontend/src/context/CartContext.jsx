@@ -1,4 +1,5 @@
-import { createContext, useContext, useState, useEffect } from 'react';
+/* eslint-disable react-refresh/only-export-components */
+import { createContext, useContext, useState, useEffect, useCallback } from 'react';
 import { getCart, addToCart, updateCart, removeFromCart, clearCart as apiClearCart } from '../api/cart';
 import { useAuth } from './AuthContext';
 
@@ -10,7 +11,7 @@ export function CartProvider({ children }) {
   const [total, setTotal] = useState(0);
   const [count, setCount] = useState(0);
 
-  const fetchCart = async () => {
+  const fetchCart = useCallback(async () => {
     try {
       const data = await getCart();
       setItems(data.items || []);
@@ -19,11 +20,11 @@ export function CartProvider({ children }) {
     } catch (error) {
       console.error('Failed to fetch cart:', error);
     }
-  };
+  }, []);
 
   useEffect(() => {
     fetchCart();
-  }, [user]);
+  }, [user, fetchCart]);
 
   const addItem = async (productId, qty = 1) => {
     await addToCart({ product_id: productId, qty });
