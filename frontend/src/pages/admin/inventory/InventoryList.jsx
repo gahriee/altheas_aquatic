@@ -189,6 +189,13 @@ export default function InventoryList() {
 
   return (
     <div className="space-y-6">
+      <div className="flex justify-between items-start">
+        <div>
+          <h1 className="text-4xl font-bold font-display text-teal-600 tracking-tight">Inventory</h1>
+          <p className="text-sage-500 text-lg mt-1">Manage your aquatic species catalog and stock levels.</p>
+        </div>
+      </div>
+
       {error && (
         <div className="p-4 bg-coral-50 text-coral-500 rounded-2xl border border-coral-100 flex items-center gap-2 animate-in slide-in-from-top-2">
           <AlertCircle size={20} />

@@ -22,7 +22,7 @@ class UserController
     public function __construct()
     {
         $this->auth = Auth::getInstance();
-        $this->db = Database::getInstance();
+        $this->db = Database::getInstance()->getConnection();
         $this->userModel = new UserModel($this->db);
     }
 
@@ -41,7 +41,8 @@ class UserController
         }
 
         $type = $_GET['type'] ?? 'all';
-        $data = $this->userModel->fetchAllWithCounts($type);
+        $currentUserId = $this->auth->getUserId();
+        $data = $this->userModel->fetchAllWithCounts($type, $currentUserId);
         
         Response::json($data);
     }

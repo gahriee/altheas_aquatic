@@ -73,23 +73,35 @@ class UserModel
      * @param string $type The filter type ('admin_staff', 'customer', or 'all').
      * @return array Array containing 'users' and 'counts'.
      */
-    public function fetchAllWithCounts(string $type = 'all'): array
+    public function fetchAllWithCounts(string $type = 'all', int $excludeId = 0): array
     {
         try {
             // Fetch users based on type
-            $where = "";
+            $whereParts = [];
             if ($type === 'admin_staff') {
-                $where = " WHERE role_label IN ('admin', 'staff') ";
+                $whereParts[] = "role_label IN ('admin', 'staff')";
             } elseif ($type === 'customer') {
-                $where = " WHERE role_label = 'customer' ";
+                $whereParts[] = "(role_label = 'customer' OR role_label IS NULL)";
             }
 
-            $stmt = $this->db->query("
+            if ($excludeId > 0) {
+                $whereParts[] = "id != :exclude_id";
+            }
+
+            $where = !empty($whereParts) ? " WHERE " . implode(" AND ", $whereParts) : "";
+
+            $stmt = $this->db->prepare("
                 SELECT id, email, username, role_label, roles_mask, status, verified, registered, last_login 
                 FROM users 
                 $where
                 ORDER BY registered DESC
             ");
+            
+            if ($excludeId > 0) {
+                $stmt->execute(['exclude_id' => $excludeId]);
+            } else {
+                $stmt->execute();
+            }
             $users = $stmt->fetchAll();
 
             // Fetch counts
@@ -99,11 +111,19 @@ class UserModel
                 'all' => 0
             ];
 
-            $countStmt = $this->db->query("
+            $countWhere = $excludeId > 0 ? " WHERE id != :exclude_id " : "";
+            $countStmt = $this->db->prepare("
                 SELECT role_label, COUNT(*) as count 
                 FROM users 
+                $countWhere
                 GROUP BY role_label
             ");
+            
+            if ($excludeId > 0) {
+                $countStmt->execute(['exclude_id' => $excludeId]);
+            } else {
+                $countStmt->execute();
+            }
             $rows = $countStmt->fetchAll();
 
             foreach ($rows as $row) {

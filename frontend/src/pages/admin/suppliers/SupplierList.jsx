@@ -122,6 +122,13 @@ export default function SupplierList() {
 
   return (
     <div className="space-y-6">
+      <div className="flex justify-between items-start">
+        <div>
+          <h1 className="text-3xl font-bold font-display text-teal-600">Suppliers</h1>
+          <p className="text-sage-500 mt-1">Manage your aquatic livestock providers and deliveries.</p>
+        </div>
+      </div>
+
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
         <div className="relative w-full md:w-96 group">
           <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-sage-300 group-focus-within:text-teal-500 transition-colors" size={18} />

@@ -66,28 +66,32 @@ export default function Dashboard() {
       title: 'Total Products',
       value: stats.total_products,
       icon: Package,
-      color: 'bg-teal-50 text-teal-600 border-teal-100',
+      accent: 'text-teal-600',
+      iconBg: 'bg-teal-50',
       path: '/admin/inventory'
     },
     {
       title: 'Low Stock Alerts',
       value: stats.low_stock_count,
       icon: AlertTriangle,
-      color: stats.low_stock_count > 0 ? 'bg-amber-50 text-amber-600 border-amber-200' : 'bg-sage-50 text-sage-400 border-sage-100',
+      accent: stats.low_stock_count > 0 ? 'text-amber-600' : 'text-sage-400',
+      iconBg: stats.low_stock_count > 0 ? 'bg-amber-50' : 'bg-sage-50',
       path: '/admin/inventory'
     },
     {
       title: "Today's Sales",
       value: `₱${Number(stats.today_sales).toLocaleString(undefined, { minimumFractionDigits: 2 })}`,
       icon: TrendingUp,
-      color: 'bg-emerald-50 text-emerald-600 border-emerald-100',
+      accent: 'text-teal-600',
+      iconBg: 'bg-teal-50',
       path: '/admin/reports'
     },
     {
       title: 'Pending Orders',
       value: stats.pending_orders,
       icon: Clock,
-      color: stats.pending_orders > 0 ? 'bg-mint-50 text-teal-600 border-mint-200' : 'bg-sage-50 text-sage-400 border-sage-100',
+      accent: stats.pending_orders > 0 ? 'text-teal-600' : 'text-sage-400',
+      iconBg: stats.pending_orders > 0 ? 'bg-teal-50' : 'bg-sage-50',
       path: '/admin/orders'
     }
   ];
@@ -106,8 +110,8 @@ export default function Dashboard() {
     <div className="space-y-8 animate-in fade-in duration-500">
       <div className="flex justify-between items-start">
         <div>
-          <h1 className="text-3xl font-bold font-display text-teal-600">Dashboard</h1>
-          <p className="text-sage-500 mt-1">Welcome back, here's what's happening in your aquatic farm.</p>
+          <h1 className="text-4xl font-bold font-display text-teal-600 tracking-tight">Dashboard</h1>
+          <p className="text-sage-500 text-lg mt-1">Welcome back, here's what's happening in your aquatic farm.</p>
         </div>
       </div>
 
@@ -117,17 +121,17 @@ export default function Dashboard() {
           <div 
             key={idx}
             onClick={() => navigate(card.path)}
-            className={`cursor-pointer group p-6 rounded-2xl border transition-all hover:shadow-md ${card.color}`}
+            className="cursor-pointer group p-6 rounded-2xl bg-white border border-sage-100 transition-all hover:shadow-md hover:border-teal-200"
           >
             <div className="flex justify-between items-start">
-              <div className="p-2 rounded-xl bg-white/50 border border-current opacity-80">
+              <div className={`p-2 rounded-xl border border-current opacity-80 ${card.iconBg} ${card.accent}`}>
                 <card.icon size={24} />
               </div>
-              <ArrowRight size={18} className="opacity-0 group-hover:opacity-100 -translate-x-2 group-hover:translate-x-0 transition-all" />
+              <ArrowRight size={18} className="text-sage-300 opacity-0 group-hover:opacity-100 -translate-x-2 group-hover:translate-x-0 transition-all" />
             </div>
             <div className="mt-4">
-              <p className="text-sm font-medium opacity-80">{card.title}</p>
-              <p className="text-2xl font-bold font-display mt-1">{card.value}</p>
+              <p className="text-sm font-bold text-sage-400 uppercase tracking-wider">{card.title}</p>
+              <p className={`text-2xl font-bold font-display mt-1 ${card.accent}`}>{card.value}</p>
             </div>
           </div>
         ))}

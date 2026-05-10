@@ -55,15 +55,45 @@ export default function Reports() {
 
   return (
     <div className="space-y-6">
-      <div className="flex justify-between items-end">
+      <div className="flex justify-between items-start">
         <div>
-          <h1 className="text-3xl font-bold font-display text-teal-600">Reports</h1>
-          <p className="text-sage-500 mt-1">Business performance and analytics</p>
+          <h1 className="text-4xl font-bold font-display text-teal-600 tracking-tight">Reports</h1>
+          <p className="text-sage-500 text-lg mt-1">Business performance and analytics</p>
         </div>
-        
-        <div className="flex space-x-4 items-end">
+      </div>
+
+      {/* Tabs and Filters Row */}
+      <div className="flex flex-col xl:flex-row justify-between items-end border-b border-sage-200 gap-4">
+        <div className="flex space-x-1">
+          <button
+            onClick={() => setActiveTab('sales')}
+            className={`px-4 py-3 flex items-center space-x-2 font-bold text-xs uppercase tracking-widest transition-all border-b-2 ${
+              activeTab === 'sales' ? 'border-teal-500 text-teal-600' : 'border-transparent text-sage-400 hover:text-teal-500 hover:bg-teal-50 rounded-t-xl'
+            }`}
+          >
+            <TrendingUp size={16} /> <span>Sales Summary</span>
+          </button>
+          <button
+            onClick={() => setActiveTab('inventory')}
+            className={`px-4 py-3 flex items-center space-x-2 font-bold text-xs uppercase tracking-widest transition-all border-b-2 ${
+              activeTab === 'inventory' ? 'border-teal-500 text-teal-600' : 'border-transparent text-sage-400 hover:text-teal-500 hover:bg-teal-50 rounded-t-xl'
+            }`}
+          >
+            <Package size={16} /> <span>Inventory Status</span>
+          </button>
+          <button
+            onClick={() => setActiveTab('suppliers')}
+            className={`px-4 py-3 flex items-center space-x-2 font-bold text-xs uppercase tracking-widest transition-all border-b-2 ${
+              activeTab === 'suppliers' ? 'border-teal-500 text-teal-600' : 'border-transparent text-sage-400 hover:text-teal-500 hover:bg-teal-50 rounded-t-xl'
+            }`}
+          >
+            <Truck size={16} /> <span>Supplier Deliveries</span>
+          </button>
+        </div>
+
+        <div className="flex items-end gap-3 mb-2">
           {activeTab !== 'inventory' && (
-            <div className="flex space-x-2">
+            <div className="flex items-end gap-2">
               <div className="w-40">
                 <Input
                   type="date"
@@ -85,41 +115,12 @@ export default function Reports() {
           <Button 
             onClick={handleExport} 
             variant="primary" 
-            fullWidth={false} 
-            className="px-6"
+            className="shadow-md shadow-teal-500/10"
           >
-            <Download size={20} />
+            <Download size={18} />
             Export CSV
           </Button>
         </div>
-      </div>
-
-      {/* Tabs */}
-      <div className="flex space-x-1 border-b border-sage-200">
-        <button
-          onClick={() => setActiveTab('sales')}
-          className={`px-4 py-2 flex items-center space-x-2 font-medium transition-colors border-b-2 ${
-            activeTab === 'sales' ? 'border-teal-500 text-teal-600' : 'border-transparent text-sage-500 hover:text-teal-500'
-          }`}
-        >
-          <TrendingUp size={18} /> <span>Sales Summary</span>
-        </button>
-        <button
-          onClick={() => setActiveTab('inventory')}
-          className={`px-4 py-2 flex items-center space-x-2 font-medium transition-colors border-b-2 ${
-            activeTab === 'inventory' ? 'border-teal-500 text-teal-600' : 'border-transparent text-sage-500 hover:text-teal-500'
-          }`}
-        >
-          <Package size={18} /> <span>Inventory Status</span>
-        </button>
-        <button
-          onClick={() => setActiveTab('suppliers')}
-          className={`px-4 py-2 flex items-center space-x-2 font-medium transition-colors border-b-2 ${
-            activeTab === 'suppliers' ? 'border-teal-500 text-teal-600' : 'border-transparent text-sage-500 hover:text-teal-500'
-          }`}
-        >
-          <Truck size={18} /> <span>Supplier Deliveries</span>
-        </button>
       </div>
 
       {/* Content */}
