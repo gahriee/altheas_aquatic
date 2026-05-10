@@ -16,3 +16,7 @@ frontend/.env
 /docs/tickets/
 /AGENTS.md
 /CLAUDE.md
+
+# Vercel
+.vercel/
+

@@ -23,19 +23,24 @@ class Database
         $db   = DB_NAME;
         $user = DB_USER;
         $pass = DB_PASS;
+        $port = defined('DB_PORT') ? DB_PORT : '3306';
         $charset = 'utf8mb4';
 
-        $dsn = "mysql:host=$host;dbname=$db;charset=$charset";
+        $dsn = "mysql:host=$host;port=$port;dbname=$db;charset=$charset";
         $options = [
             PDO::ATTR_ERRMODE            => PDO::ERRMODE_EXCEPTION,
             PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
             PDO::ATTR_EMULATE_PREPARES   => false,
         ];
 
+        if (defined('DB_SSL') && DB_SSL) {
+            $options[PDO::MYSQL_ATTR_SSL_VERIFY_SERVER_CERT] = true;
+            $options[PDO::MYSQL_ATTR_SSL_CA] = '/etc/ssl/certs/ca-certificates.crt';
+        }
+
         try {
             $this->connection = new PDO($dsn, $user, $pass, $options);
         } catch (PDOException $e) {
-            // In a production environment, you might want to log this instead of throwing
             throw new PDOException($e->getMessage(), (int)$e->getCode());
         }
     }

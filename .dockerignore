@@ -1,0 +1,12 @@
+frontend/
+node_modules/
+.git/
+.github/
+docs/
+.agents/
+.claude/
+*.md
+.gitignore
+.dockerignore
+storage/products/*
+!storage/products/.gitkeep
