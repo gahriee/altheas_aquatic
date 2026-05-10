@@ -30,3 +30,31 @@ export async function logout() {
 export async function getMe() {
   return apiFetch('/api/admin/me');
 }
+
+export async function changePassword(currentPassword, newPassword, confirmPassword) {
+  return apiFetch('/api/admin/profile/change-password', {
+    method: 'POST',
+    body: { current_password: currentPassword, new_password: newPassword, confirm_password: confirmPassword },
+  });
+}
+
+export async function forgotPassword(email) {
+  return apiFetch('/api/forgot-password', {
+    method: 'POST',
+    body: { email },
+  });
+}
+
+export async function verifyResetToken(selector, token) {
+  return apiFetch('/api/verify-reset-token', {
+    method: 'POST',
+    body: { selector, token },
+  });
+}
+
+export async function resetPassword(selector, token, newPassword, confirmPassword) {
+  return apiFetch('/api/reset-password', {
+    method: 'POST',
+    body: { selector, token, new_password: newPassword, confirm_password: confirmPassword },
+  });
+}

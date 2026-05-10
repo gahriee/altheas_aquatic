@@ -17,6 +17,7 @@ import StorefrontLogin from './pages/storefront/Login';
 // Admin Pages
 import Login from './pages/admin/Login';
 import Dashboard from './pages/admin/Dashboard';
+import ProfileSettings from './pages/admin/ProfileSettings';
 import InventoryList from './pages/admin/inventory/InventoryList';
 import ProductForm from './pages/admin/inventory/ProductForm';
 import SupplierList from './pages/admin/suppliers/SupplierList';
@@ -28,6 +29,10 @@ import Reports from './pages/admin/reports/Reports';
 
 import UserList from './pages/admin/users/UserList';
 import UserForm from './pages/admin/users/UserForm';
+
+// Public Auth Pages
+import ForgotPassword from './pages/ForgotPassword';
+import ResetPassword from './pages/ResetPassword';
 
 export default function App() {
   return (
@@ -44,13 +49,16 @@ export default function App() {
           <Route path="login" element={<StorefrontLogin />} />
         </Route>
 
-        {/* Admin Login */}
+        {/* Admin Login & Password Reset */}
         <Route path="/admin/login" element={<Login />} />
+        <Route path="/forgot-password" element={<ForgotPassword />} />
+        <Route path="/reset-password" element={<ResetPassword />} />
 
         {/* Admin Routes (Protected) */}
         <Route path="/admin" element={<ProtectedRoute />}>
           <Route element={<AdminLayout />}>
             <Route index element={<Dashboard />} />
+            <Route path="profile" element={<ProfileSettings />} />
             <Route path="users" element={<UserList />} />
             <Route path="users/add" element={<UserForm />} />
             <Route path="users/edit/:id" element={<UserForm />} />

@@ -55,11 +55,15 @@ class Router
             $this->router->post('/login', 'AuthController@customerLogin');
             $this->router->post('/register', 'AuthController@register');
             $this->router->post('/admin/login', 'AuthController@login');
+            $this->router->post('/forgot-password', 'AuthController@forgotPassword');
+            $this->router->post('/verify-reset-token', 'AuthController@verifyResetToken');
+            $this->router->post('/reset-password', 'AuthController@resetPassword');
 
             // Admin Group
             $this->router->mount('/admin', function () {
                 $this->router->post('/logout', 'AuthController@logout');
                 $this->router->get('/me', 'AuthController@me');
+                $this->router->post('/profile/change-password', 'AuthController@changePassword');
                 $this->router->get('/dashboard', 'DashboardController@index');
 
                 // Inventory

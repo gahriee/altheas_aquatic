@@ -29,6 +29,7 @@
 - [x] CSV Export: export sales and inventory reports as downloadable CSV files (Ticket: `2026-05-07-01`)
 - [x] Admin Dashboard: summary cards and sales trend chart (Ticket: `2026-05-07-02`)
 - [x] Admin Users Module: manage admin/staff roles and accounts (Ticket: `2026-05-10-02`)
+- [x] Profile Settings & Password Reset: change password, forgot password, reset password flows (Ticket: `2026-05-10-03`)
 - [ ] Low-stock alert panel: filtered view highlighting products at or below threshold
 - [x] Real-time Notifications: Pusher integration for order payments and stock alerts (Ticket: `2026-04-19-03`)
 - [x] Cart Animation Sync: Synchronized count update with fly-to-cart animation (Ticket: `2026-04-19-05`)
@@ -61,12 +62,15 @@
 | **Login Modal** | `[x]` | Portable auth with aquatic theme and post-login action support |
 | **Order Expiry** | `[x]` | Auto stock restoration for unpaid orders older than 60 mins |
 | **Admin Users Module** | `[x]` | `UserController` with role-based CRUD using `delight-im/auth` admin methods |
+| **Password Reset Flow** | `[x]` | Forgot password email, verify token, change/reset password via `delight-im/auth` |
 
 ### 🖥️ Frontend Pages
 
 | Page | Status | Notes |
 | :--- | :---: | :--- |
-| **Login Page** | `[x]` | Credential form, error message, rate-limit feedback |
+| **Login Page** | `[x]` | Credential form, error message, rate-limit feedback, forgot password link |
+| **Profile Settings** | `[x]` | Admin change password form |
+| **Forgot / Reset Password** | `[x]` | Public pages to request and verify password reset link |
 | **Admin Dashboard** | `[x]` | Summary cards, sales trend chart, and quick actions |
 | **Users** | `[x]` | Admin/staff list, add/edit user form, role management |
 | **Inventory Management** | `[x]` | Sortable product table, add/edit form, image preview, low-stock highlights, pagination |

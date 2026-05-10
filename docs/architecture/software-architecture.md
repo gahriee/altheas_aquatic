@@ -194,9 +194,12 @@ altheas-aquatic/
 │   │   │       └── ConfirmDialog.jsx
 │   │   │
 │   │   ├── pages/
+│   │   │   ├── ForgotPassword.jsx
+│   │   │   ├── ResetPassword.jsx
 │   │   │   ├── admin/
 │   │   │   │   ├── Login.jsx
 │   │   │   │   ├── Dashboard.jsx
+│   │   │   │   ├── ProfileSettings.jsx
 │   │   │   │   ├── inventory/
 │   │   │   │   │   ├── InventoryList.jsx
 │   │   │   │   │   └── ProductForm.jsx

@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import { NavLink, Outlet, useNavigate, useLocation } from 'react-router-dom';
+import { NavLink, Link, Outlet, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import Sidebar from './Sidebar';
 import NotificationDropdown from './NotificationDropdown';
@@ -124,10 +124,14 @@ export default function AdminLayout() {
                       <p className="text-xs font-bold text-sage-200 uppercase tracking-[0.2em]">Account Settings</p>
                     </div>
                     
-                    <button className="w-full flex items-center gap-3 px-4 py-3 text-sm font-semibold text-sage-500 hover:text-teal-600 hover:bg-teal-50 rounded-2xl transition-colors">
+                    <Link 
+                      to="/admin/profile"
+                      onClick={() => setIsDropdownOpen(false)}
+                      className="w-full flex items-center gap-3 px-4 py-3 text-sm font-semibold text-sage-500 hover:text-teal-600 hover:bg-teal-50 rounded-2xl transition-colors"
+                    >
                       <Settings size={18} />
                       Profile Settings
-                    </button>
+                    </Link>
 
                     <button 
                       onClick={handleLogout}

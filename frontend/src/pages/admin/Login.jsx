@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
+import { useNavigate, useLocation, Link } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import ErrorMessage from '../../components/shared/ErrorMessage';
 import Label from '../../components/ui/Label';
@@ -75,9 +75,16 @@ export default function Login() {
             </div>
 
             <div>
-              <Label htmlFor="password">
-                Password
-              </Label>
+              <div className="flex items-center justify-between">
+                <Label htmlFor="password">
+                  Password
+                </Label>
+                <div className="text-sm">
+                  <Link to="/forgot-password" className="font-semibold text-mint-500 hover:text-mint-400 transition-colors">
+                    Forgot password?
+                  </Link>
+                </div>
+              </div>
               <div className="mt-1">
                 <Input
                   id="password"

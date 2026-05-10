@@ -11,6 +11,10 @@ use Delight\Auth\InvalidEmailException;
 use Delight\Auth\EmailNotVerifiedException;
 use Delight\Auth\TooManyRequestsException;
 use Delight\Auth\UserAlreadyExistsException;
+use Delight\Auth\NotLoggedInException;
+use Delight\Auth\InvalidSelectorTokenPairException;
+use Delight\Auth\TokenExpiredException;
+use Delight\Auth\ResetDisabledException;
 
 class AuthController
 {
@@ -179,5 +183,156 @@ class AuthController
         Csrf::verifyHeader();
         $this->auth->logOut();
         Response::json(['message' => 'Logged out successfully']);
+    }
+
+    /**
+     * ----------------------------------------
+     * changePassword
+     * ----------------------------------------
+     * Change password for the authenticated user.
+     */
+    public function changePassword(): void
+    {
+        Auth::requireLogin();
+        Csrf::verifyHeader();
+
+        $input = json_decode(file_get_contents('php://input'), true);
+        $currentPassword = $input['current_password'] ?? '';
+        $newPassword = $input['new_password'] ?? '';
+        $confirmPassword = $input['confirm_password'] ?? '';
+
+        if (empty($currentPassword) || empty($newPassword) || empty($confirmPassword)) {
+            Response::error('All fields are required', 400);
+        }
+
+        if ($newPassword !== $confirmPassword) {
+            Response::error('New password and confirm password do not match', 400);
+        }
+
+        if (strlen($newPassword) < 8) {
+            Response::error('New password must be at least 8 characters long', 400);
+        }
+
+        try {
+            $this->auth->changePassword($currentPassword, $newPassword);
+            Response::json(['message' => 'Password changed successfully']);
+        } catch (NotLoggedInException $e) {
+            Response::unauthorized();
+        } catch (InvalidPasswordException $e) {
+            Response::error('Incorrect current password', 400);
+        } catch (TooManyRequestsException $e) {
+            Response::error('Too many requests. Please try again later.', 429);
+        } catch (\Exception $e) {
+            Response::error('Failed to change password', 500);
+        }
+    }
+
+    /**
+     * ----------------------------------------
+     * forgotPassword
+     * ----------------------------------------
+     * Send a password reset link to the user's email.
+     */
+    public function forgotPassword(): void
+    {
+        Csrf::verifyHeader();
+
+        $input = json_decode(file_get_contents('php://input'), true);
+        $email = trim($input['email'] ?? '');
+
+        if (empty($email)) {
+            Response::error('Email is required', 400);
+        }
+
+        try {
+            $this->auth->forgotPassword($email, function ($selector, $token) use ($email) {
+                $url = APP_URL . '/reset-password?selector=' . \urlencode($selector) . '&token=' . \urlencode($token);
+                
+                $subject = "Password Reset Request";
+                $message = "You requested a password reset. Click the link below to set a new password:\n\n" . $url . "\n\nIf you did not request this, please ignore this email.";
+                $headers = "From: noreply@" . parse_url(APP_URL, PHP_URL_HOST);
+                
+                @mail($email, $subject, $message, $headers);
+            });
+        } catch (InvalidEmailException | TooManyRequestsException | \Exception $e) {
+            // Silently catch these exceptions to prevent email enumeration
+        }
+
+        // Always return success message
+        Response::json(['message' => 'If an account with that email exists, a reset link has been sent.']);
+    }
+
+    /**
+     * ----------------------------------------
+     * verifyResetToken
+     * ----------------------------------------
+     * Verify a password reset selector and token pair.
+     */
+    public function verifyResetToken(): void
+    {
+        $input = json_decode(file_get_contents('php://input'), true);
+        $selector = $input['selector'] ?? '';
+        $token = $input['token'] ?? '';
+
+        if (empty($selector) || empty($token)) {
+            Response::error('Invalid reset link', 400);
+        }
+
+        try {
+            $this->auth->canResetPasswordOrThrow($selector, $token);
+            Response::json(['valid' => true]);
+        } catch (InvalidSelectorTokenPairException | TokenExpiredException | ResetDisabledException $e) {
+            Response::error('The reset link is invalid or has expired', 400);
+        } catch (TooManyRequestsException $e) {
+            Response::error('Too many requests. Please try again later.', 429);
+        } catch (\Exception $e) {
+            Response::error('Failed to verify reset link', 500);
+        }
+    }
+
+    /**
+     * ----------------------------------------
+     * resetPassword
+     * ----------------------------------------
+     * Reset the user's password using the selector and token.
+     */
+    public function resetPassword(): void
+    {
+        Csrf::verifyHeader();
+
+        $input = json_decode(file_get_contents('php://input'), true);
+        $selector = $input['selector'] ?? '';
+        $token = $input['token'] ?? '';
+        $newPassword = $input['new_password'] ?? '';
+        $confirmPassword = $input['confirm_password'] ?? '';
+
+        if (empty($selector) || empty($token)) {
+            Response::error('Invalid reset link', 400);
+        }
+
+        if (empty($newPassword) || empty($confirmPassword)) {
+            Response::error('New password is required', 400);
+        }
+
+        if ($newPassword !== $confirmPassword) {
+            Response::error('New password and confirm password do not match', 400);
+        }
+
+        if (strlen($newPassword) < 8) {
+            Response::error('New password must be at least 8 characters long', 400);
+        }
+
+        try {
+            $this->auth->resetPassword($selector, $token, $newPassword);
+            Response::json(['message' => 'Password has been reset successfully. You may now log in.']);
+        } catch (InvalidSelectorTokenPairException | TokenExpiredException | ResetDisabledException $e) {
+            Response::error('The reset link is invalid or has expired', 400);
+        } catch (InvalidPasswordException $e) {
+            Response::error('Invalid password format', 400);
+        } catch (TooManyRequestsException $e) {
+            Response::error('Too many requests. Please try again later.', 429);
+        } catch (\Exception $e) {
+            Response::error('Failed to reset password', 500);
+        }
     }
 }
