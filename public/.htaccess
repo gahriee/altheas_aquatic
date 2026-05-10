@@ -1,0 +1,13 @@
+RewriteEngine On
+
+# Route /api/* to index.php
+RewriteCond %{REQUEST_URI} ^/api/ [NC]
+RewriteRule ^(.*)$ index.php [L,QSA]
+
+# Allow existing files and directories to be served directly
+RewriteCond %{REQUEST_FILENAME} -f [OR]
+RewriteCond %{REQUEST_FILENAME} -d
+RewriteRule ^ - [L]
+
+# Everything else (React routing) goes to dist/index.html
+RewriteRule ^(.*)$ dist/index.html [L]
