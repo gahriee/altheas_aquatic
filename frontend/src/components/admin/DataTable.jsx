@@ -153,7 +153,7 @@ export default function DataTable({
                   </td>
                 </tr>
               ) : currentData.map((row, idx) => {
-                const rowId = row.product_id || row.id || idx;
+                const rowId = row.product_id || row.order_id || row.id || idx;
                 const isExpanded = expandedRows.has(rowId);
 
                 return (

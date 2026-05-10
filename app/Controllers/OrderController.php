@@ -32,8 +32,19 @@ class OrderController
     {
         Auth::requireLogin();
         
-        $orders = $this->orderModel->getAll();
-        Response::json($orders);
+        $params = [
+            'status' => $_GET['status'] ?? null,
+            'from' => $_GET['from'] ?? null,
+            'to' => $_GET['to'] ?? null
+        ];
+
+        $orders = $this->orderModel->getAll($params);
+        $counts = $this->orderModel->getOrderCounts();
+
+        Response::json([
+            'orders' => $orders,
+            'counts' => $counts
+        ]);
     }
 
     /**
@@ -45,6 +56,7 @@ class OrderController
     public function updateStatus(int $id): void
     {
         Auth::requireLogin();
+        \App\Core\Csrf::verifyHeader();
 
         $input = json_decode(file_get_contents('php://input'), true);
         $status = $input['status'] ?? null;
@@ -53,11 +65,7 @@ class OrderController
             Response::error('Status is required', 400);
         }
 
-        $db = Database::getInstance()->getConnection();
-        $stmt = $db->prepare("UPDATE orders SET status = :status WHERE order_id = :id");
-        $success = $stmt->execute([':status' => $status, ':id' => $id]);
-
-        if ($success) {
+        if ($this->orderModel->updateStatus($id, $status)) {
             Response::json(['message' => 'Order status updated successfully']);
         } else {
             Response::error('Failed to update order status');
@@ -72,6 +80,7 @@ class OrderController
      */
     public function show(int $id): void
     {
+        Auth::requireLogin();
         $order = $this->orderModel->getById($id);
         if (!$order) {
             Response::error('Order not found', 404);

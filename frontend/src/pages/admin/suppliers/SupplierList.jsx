@@ -143,13 +143,13 @@ export default function SupplierList() {
         
         <div className="flex gap-3 w-full sm:w-auto">
           <Link to="/admin/suppliers/delivery" className="flex-1 sm:flex-none">
-            <Button variant="secondary" className="w-full flex items-center justify-center gap-2 py-4 px-6">
+            <Button variant="secondary">
               <Plus size={20} />
               Record Delivery
             </Button>
           </Link>
           <Link to="/admin/suppliers/add" className="flex-1 sm:flex-none">
-            <Button variant="primary" className="w-full flex items-center justify-center gap-2 py-4 px-6 shadow-lg shadow-teal-500/20">
+            <Button variant="primary">
               <Plus size={20} />
               Add Supplier
             </Button>

@@ -270,8 +270,78 @@ class OrderModel
      */
     public function getAll(array $params = []): array
     {
-        $stmt = $this->db->prepare("SELECT * FROM orders ORDER BY ordered_at DESC");
-        $stmt->execute();
+        $sql = "SELECT * FROM orders WHERE 1=1";
+        $binds = [];
+
+        if (!empty($params['status']) && $params['status'] !== 'all') {
+            $sql .= " AND status = :status";
+            $binds[':status'] = $params['status'];
+        }
+
+        if (!empty($params['from'])) {
+            $sql .= " AND ordered_at >= :from";
+            $binds[':from'] = $params['from'] . ' 00:00:00';
+        }
+
+        if (!empty($params['to'])) {
+            $sql .= " AND ordered_at <= :to";
+            $binds[':to'] = $params['to'] . ' 23:59:59';
+        }
+
+        $sql .= " ORDER BY ordered_at DESC";
+
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute($binds);
         return $stmt->fetchAll();
+    }
+
+    /**
+     * ----------------------------------------
+     * updateStatus
+     * ----------------------------------------
+     * Updates the status of an existing order.
+     */
+    public function updateStatus(int $orderId, string $status): bool
+    {
+        $allowedStatuses = ['pending', 'confirmed', 'completed', 'cancelled'];
+        if (!in_array($status, $allowedStatuses)) {
+            return false;
+        }
+
+        try {
+            $stmt = $this->db->prepare("UPDATE orders SET status = :status WHERE order_id = :id");
+            return $stmt->execute([':status' => $status, ':id' => $orderId]);
+        } catch (\PDOException $e) {
+            return false;
+        }
+    }
+
+    /**
+     * ----------------------------------------
+     * getOrderCounts
+     * ----------------------------------------
+     * Returns a breakdown of order counts by status.
+     */
+    public function getOrderCounts(): array
+    {
+        $stmt = $this->db->prepare("
+            SELECT status, COUNT(*) as count 
+            FROM orders 
+            GROUP BY status
+        ");
+        $stmt->execute();
+        $counts = $stmt->fetchAll(PDO::FETCH_KEY_PAIR);
+        
+        $total = array_sum($counts);
+        
+        // Ensure all possible statuses are represented
+        $statuses = ['pending', 'confirmed', 'completed', 'cancelled'];
+        foreach ($statuses as $status) {
+            if (!isset($counts[$status])) {
+                $counts[$status] = 0;
+            }
+        }
+        
+        return array_merge(['all' => (int)$total], array_map('intval', $counts));
     }
 }

@@ -236,14 +236,14 @@ export default function InventoryList() {
         <div className="flex items-center gap-3 w-full sm:w-auto">
           <Button 
             variant="secondary" 
-            className="flex items-center gap-2 py-4 px-6 border-sage-200 text-sage-500 hover:text-teal-600 hover:bg-teal-50 hover:border-teal-100"
+            className="flex items-center gap-2"
             onClick={() => setIsTrashOpen(true)}
           >
             <Trash2 size={20} />
             Trash
           </Button>
           <Link to="/admin/inventory/add" className="flex-1 sm:flex-none">
-            <Button variant="primary" className="w-full flex items-center justify-center gap-2 py-4 px-6 shadow-lg shadow-teal-500/20">
+            <Button variant="primary">
               <Plus size={20} />
               Add New Product
             </Button>

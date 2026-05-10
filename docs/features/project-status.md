@@ -25,9 +25,9 @@
 
 ### Phase 2: Order Management & Alerts (Week 3)
 - [x] Admin Order Management: List view, status updates (Ticket: `2026-04-19-06`)
-- [ ] Reports Module: sales summary by date range, inventory status table, supplier delivery summary
-- [ ] CSV Export: export sales and inventory reports as downloadable CSV files
-- [ ] Admin Dashboard: summary cards (total products, low-stock count, today's sales, pending orders)
+- [x] Reports Module: sales summary by date range, inventory status table, supplier delivery summary (Ticket: `2026-05-07-01`)
+- [x] CSV Export: export sales and inventory reports as downloadable CSV files (Ticket: `2026-05-07-01`)
+- [x] Admin Dashboard: summary cards and sales trend chart (Ticket: `2026-05-07-02`)
 - [ ] Low-stock alert panel: filtered view highlighting products at or below threshold
 - [x] Real-time Notifications: Pusher integration for order payments and stock alerts (Ticket: `2026-04-19-03`)
 - [x] Cart Animation Sync: Synchronized count update with fly-to-cart animation (Ticket: `2026-04-19-05`)
@@ -53,7 +53,7 @@
 | **Inventory Module** | `[x]` | Product CRUD, image upload, soft delete, low-stock query |
 | **Supplier Module** | `[x]` | Supplier CRUD, delivery form, auto stock deduction |
 | **Order Module** | `[x]` | Atomic checkout, order creation, order_items insert, stock deduction, PayMongo integration |
-| **Reports Module** | `[ ]` | Date-range sales query, inventory status, supplier summaries, CSV export |
+| **Reports Module** | `[x]` | Date-range sales query, inventory status, supplier summaries, CSV export |
 | **Rate Limit Logic** | `[x]` | rate_limit_log insert/check — 5 attempts per IP per 10 minutes |
 | **CSRF Protection** | `[x]` | Token generate/verify helper — applied to all state-changing forms |
 | **File Upload Handler** | `[x]` | MIME validation, random rename, outside-web-root storage, serve script |
@@ -65,11 +65,11 @@
 | Page | Status | Notes |
 | :--- | :---: | :--- |
 | **Login Page** | `[x]` | Credential form, error message, rate-limit feedback |
-| **Admin Dashboard** | `[ ]` | Summary cards, quick-action buttons, navigation sidebar |
+| **Admin Dashboard** | `[x]` | Summary cards, sales trend chart, and quick actions |
 | **Inventory Management** | `[x]` | Sortable product table, add/edit form, image preview, low-stock highlights, pagination |
 | **Supplier Management** | `[x]` | Supplier list, add/edit form, record delivery form, per-supplier history |
-| **Sales / Orders** | `[ ]` | Orders table with status filter, order detail view, status update, date-range filter |
-| **Reports** | `[ ]` | Date picker, sales summary table, inventory status table, supplier delivery summary, CSV export |
+| **Sales / Orders** | `[x]` | Orders table with status filter, order detail view, status update, date-range filter |
+| **Reports** | `[x]` | Date picker, sales summary table, inventory status table, supplier delivery summary, CSV export |
 | **Storefront — Home** | `[x]` | Hero banner, featured product grid, category filter tabs, product cards |
 | **Storefront — Product Detail** | `[x]` | Image, description, price, quantity selector, add-to-cart |
 | **Storefront — Cart & Checkout** | `[x]` | Cart list, subtotals, customer info form, PayMongo GCash integration |
@@ -147,20 +147,20 @@
 
 ### 📋 Priority 6: Orders & Reports (Phase 2)
 
-- [ ] **Order List** (`OrderController::index`): table with status filter (all/pending/confirmed/completed/cancelled), date-range filter, order ID, customer, total, status; sortable columns
-- [ ] **Order Detail** (`OrderController::detail`): itemised view with product name, qty, unit_price, subtotal; status update dropdown; CSRF-protected POST to update status
-- [ ] **Sales Report** (`ReportController::index`): date range picker; aggregated daily totals (orders count, revenue) for completed orders; top-selling products; gross totals for range
-- [ ] **Inventory Status Report**: current stock levels table; highlights products at or below `low_stock_threshold`
-- [ ] **Supplier Delivery Summary**: per-supplier delivery count and total units received within date range
-- [ ] **CSV Export** (`ReportController::exportCsv`): `Content-Type: text/csv` + `Content-Disposition: attachment`; uses `fputcsv`; exports sales or inventory data based on `type` query param
+- [x] **Order List** (`OrderController::index`): table with status filter (all/pending/confirmed/completed/cancelled), date-range filter, order ID, customer, total, status; sortable columns
+- [x] **Order Detail** (`OrderController::detail`): itemised view with product name, qty, unit_price, subtotal; status update dropdown; CSRF-protected POST to update status
+- [x] **Sales Report** (`ReportController::sales`): date range picker; aggregated daily totals (orders count, revenue) for completed orders; top-selling products; gross totals for range
+- [x] **Inventory Status Report** (`ReportController::inventory`): current stock levels table; highlights products at or below `low_stock_threshold`
+- [x] **Supplier Delivery Summary** (`ReportController::suppliers`): per-supplier delivery count and total units received within date range
+- [x] **CSV Export** (`ReportController::exportCsv`): `Content-Type: text/csv` + `Content-Disposition: attachment`; uses `fputcsv`; exports sales or inventory data based on `type` query param
 
 ---
 
 ### 🏠 Priority 7: Admin Dashboard
 
-- [ ] **Summary Cards**: total active products count; low-stock products count (with link to inventory); today's completed sales total (PHP); pending orders count (with link to orders)
-- [ ] **Quick Actions**: links to Add Product, Record Delivery, View Pending Orders, Run Report
-- [ ] **Navigation Sidebar**: links to all admin sections; active state highlighting; logout button
+- [x] **Summary Cards**: total active products count; low-stock products count; today's completed sales total (PHP); pending orders count
+- [x] **Sales Trend**: Visual line chart showing the last 7 days of revenue using `recharts`
+- [x] **Quick Actions**: links to Add Product, View Orders, Generate Reports
 
 ---
 

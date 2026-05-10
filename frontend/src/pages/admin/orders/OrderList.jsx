@@ -1,27 +1,37 @@
 import { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
 import DataTable from '../../../components/admin/DataTable';
 import { getOrders } from '../../../api/orders';
 import OrderDetailsExpansion from '../../../components/admin/orders/OrderDetailsExpansion';
+import Input from '../../../components/ui/Input';
 
 export default function OrderList() {
-  const [orders, setOrders] = useState([]);
+  const [data, setData] = useState({ orders: [], counts: {} });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  
+  const [filters, setFilters] = useState({
+    status: 'all',
+    from: '',
+    to: ''
+  });
+
+  const fetchOrders = async () => {
+    try {
+      setLoading(true);
+      const res = await getOrders(filters);
+      setData(res);
+    } catch (err) {
+      setError(err.message || 'Failed to fetch orders');
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
-    const fetchOrders = async () => {
-      try {
-        setLoading(true);
-        const data = await getOrders();
-        setOrders(data);
-      } catch (err) {
-        setError(err.message || 'Failed to fetch orders');
-      } finally {
-        setLoading(false);
-      }
-    };
     fetchOrders();
-  }, []);
+  }, [filters]);
+
 
   const getStatusStyle = (status) => {
     switch (status?.toLowerCase()) {
@@ -33,6 +43,8 @@ export default function OrderList() {
       case 'cancelled':
       case 'failed':
         return 'bg-coral-100 text-coral-600';
+      case 'completed':
+        return 'bg-teal-100 text-teal-600';
       default:
         return 'bg-sage-100 text-sage-400';
     }
@@ -44,7 +56,9 @@ export default function OrderList() {
       label: 'Order #', 
       sortable: true,
       render: (row) => (
-        <span className="font-bold text-teal-600 tracking-tight">{row.order_number || `#${row.order_id}`}</span>
+        <Link to={`/admin/orders/${row.order_id}`} className="font-bold text-teal-600 tracking-tight hover:underline">
+          {row.order_number || `#${row.order_id}`}
+        </Link>
       )
     },
     { key: 'customer_name', label: 'Customer', sortable: true },
@@ -74,13 +88,63 @@ export default function OrderList() {
     }
   ];
 
+  const tabs = [
+    { id: 'all', label: 'All Orders' },
+    { id: 'pending', label: 'Pending' },
+    { id: 'confirmed', label: 'Confirmed' },
+    { id: 'completed', label: 'Completed' },
+    { id: 'cancelled', label: 'Cancelled' }
+  ];
+
   return (
     <div className="space-y-6 animate-in fade-in duration-500">
-      <div className="flex justify-between items-end">
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-4">
         <div className="space-y-1">
           <h1 className="text-4xl font-bold font-display text-sage-800 tracking-tight">Orders</h1>
           <p className="text-sage-400 font-medium">Manage aquatic collections and fulfillment status.</p>
         </div>
+
+        {/* Date Filters */}
+        <div className="flex space-x-2">
+          <div className="w-40">
+            <Input
+              type="date"
+              label="From"
+              value={filters.from}
+              onChange={(e) => setFilters({ ...filters, from: e.target.value })}
+            />
+          </div>
+          <div className="w-40">
+            <Input
+              type="date"
+              label="To"
+              value={filters.to}
+              onChange={(e) => setFilters({ ...filters, to: e.target.value })}
+            />
+          </div>
+        </div>
+      </div>
+
+      {/* Status Tabs */}
+      <div className="flex overflow-x-auto pb-1 gap-2 border-b border-sage-100">
+        {tabs.map((tab) => (
+          <button
+            key={tab.id}
+            onClick={() => setFilters({ ...filters, status: tab.id })}
+            className={`flex items-center gap-2 px-4 py-2 rounded-t-xl font-bold text-xs uppercase tracking-widest transition-all ${
+              filters.status === tab.id 
+                ? 'bg-teal-500 text-white shadow-lg shadow-teal-500/20 translate-y-[-2px]' 
+                : 'text-sage-400 hover:text-teal-500 hover:bg-teal-50'
+            }`}
+          >
+            {tab.label}
+            <span className={`px-1.5 py-0.5 rounded-full text-[10px] ${
+              filters.status === tab.id ? 'bg-white/20 text-white' : 'bg-sage-100 text-sage-500'
+            }`}>
+              {data.counts?.[tab.id] || 0}
+            </span>
+          </button>
+        ))}
       </div>
       
       {error && (
@@ -91,10 +155,15 @@ export default function OrderList() {
 
       <DataTable 
         columns={columns} 
-        data={orders} 
+        data={data.orders} 
         loading={loading}
-        renderExpanded={(row) => <OrderDetailsExpansion orderId={row.order_id} />}
-        emptyMessage="No orders found. Your sales history will appear here."
+        renderExpanded={(row) => (
+          <OrderDetailsExpansion 
+            orderId={row.order_id} 
+            onUpdate={() => fetchOrders()}
+          />
+        )}
+        emptyMessage="No orders found. Adjust your filters or check back later."
       />
     </div>
   );
