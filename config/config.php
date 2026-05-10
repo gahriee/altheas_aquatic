@@ -78,8 +78,13 @@ $defaults = [
     'CLOUDINARY_API_SECRET' => '',
 ];
 
-foreach ($defaults as $key => $value) {
+foreach ($defaults as $key => $default) {
     if (!defined($key)) {
-        define($key, $value);
+        $envVal = getenv($key);
+        if ($envVal !== false && $envVal !== '') {
+            define($key, $envVal);
+        } else {
+            define($key, $default);
+        }
     }
 }
