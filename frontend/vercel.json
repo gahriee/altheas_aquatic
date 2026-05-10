@@ -6,11 +6,11 @@
   "rewrites": [
     {
       "source": "/api/:path*",
-      "destination": "https://BACKEND_URL/api/:path*"
+      "destination": "https://altheas-aquatic.onrender.com/api/:path*"
     },
     {
       "source": "/image.php",
-      "destination": "https://BACKEND_URL/image.php"
+      "destination": "https://altheas-aquatic.onrender.com/image.php"
     },
     {
       "source": "/(.*)",
