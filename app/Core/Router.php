@@ -70,6 +70,7 @@ class Router
                 $this->router->get('/inventory', 'InventoryController@index');
                 $this->router->post('/inventory', 'InventoryController@store');
                 $this->router->get('/inventory/trash', 'InventoryController@trash');
+                $this->router->get('/inventory/low-stock', 'InventoryController@lowStock');
                 $this->router->get('/inventory/(\d+)', 'InventoryController@show');
                 $this->router->post('/inventory/(\d+)', 'InventoryController@update');
                 $this->router->post('/inventory/(\d+)/deactivate', 'InventoryController@deactivate');
@@ -114,6 +115,10 @@ class Router
                 $this->router->post('/users/(\d+)', 'UserController@update');
                 $this->router->post('/users/(\d+)/deactivate', 'UserController@deactivate');
                 $this->router->post('/users/(\d+)/reactivate', 'UserController@reactivate');
+
+                // Audit Logs
+                $this->router->get('/audit-logs', 'AuditLogController@index');
+                $this->router->get('/audit-logs/(\d+)', 'AuditLogController@show');
             });
 
             // Storefront (Public)

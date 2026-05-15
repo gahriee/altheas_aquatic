@@ -6,6 +6,7 @@ use App\Core\Auth;
 use App\Core\Csrf;
 use App\Core\Response;
 use App\Core\Database;
+use App\Core\AuditLogger;
 use App\Models\SupplierModel;
 
 class SupplierController
@@ -73,6 +74,7 @@ class SupplierController
 
         try {
             $id = $model->store($input);
+            AuditLogger::log('create', 'supplier', $id, "Created supplier '{$input['name']}'");
             Response::json(['id' => $id, 'message' => 'Supplier created successfully'], 201);
         } catch (\PDOException $e) {
             if ($e->getCode() === '23000') {
@@ -114,6 +116,7 @@ class SupplierController
 
         try {
             $model->update($id, $input);
+            AuditLogger::log('update', 'supplier', $id, "Updated supplier '{$input['name']}'", $existing, $input);
             Response::json(['message' => 'Supplier updated successfully']);
         } catch (\PDOException $e) {
             if ($e->getCode() === '23000') {
@@ -172,6 +175,7 @@ class SupplierController
 
         try {
             if ($model->recordDelivery($input)) {
+                AuditLogger::log('create', 'delivery', null, "Recorded delivery of {$input['qty_received']} units for product #{$input['product_id']}");
                 Response::json(['message' => 'Delivery recorded successfully and stock updated'], 201);
             } else {
                 Response::error('Failed to record delivery', 500);

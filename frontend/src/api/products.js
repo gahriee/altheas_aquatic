@@ -97,3 +97,10 @@ export async function hardDeleteProduct(id) {
     method: 'DELETE',
   });
 }
+
+/**
+ * Fetch low stock products.
+ */
+export async function getLowStockProducts() {
+  return await apiFetch('/api/admin/inventory/low-stock');
+}

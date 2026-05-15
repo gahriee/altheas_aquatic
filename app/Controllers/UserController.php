@@ -6,6 +6,7 @@ use App\Core\Auth;
 use App\Core\Csrf;
 use App\Core\Database;
 use App\Core\Response;
+use App\Core\AuditLogger;
 use App\Models\UserModel;
 use Delight\Auth\Role;
 use Delight\Auth\InvalidEmailException;
@@ -86,6 +87,8 @@ class UserController
             $roleMask = $role === 'admin' ? Role::ADMIN : Role::MANAGER;
             $this->auth->admin()->addRoleForUserById($userId, $roleMask);
 
+            AuditLogger::log('create', 'user', $userId, "Created user '{$email}' with role '{$role}'");
+
             Response::json(['message' => 'User created successfully', 'id' => $userId], 201);
         } catch (InvalidEmailException $e) {
             Response::error('Invalid email address', 400);
@@ -144,6 +147,8 @@ class UserController
                 $this->auth->admin()->changePasswordForUserById($id, $password);
             }
 
+            AuditLogger::log('update', 'user', $id, "Updated user #{$id}");
+
             Response::json(['message' => 'User updated successfully']);
         } catch (UnknownIdException $e) {
             Response::error('User not found', 404);
@@ -188,6 +193,7 @@ class UserController
 
         $success = $this->userModel->deactivate($id);
         if ($success) {
+            AuditLogger::log('update', 'user', $id, "Deactivated user #{$id}");
             Response::json(['message' => 'User deactivated successfully']);
         } else {
             Response::error('Failed to deactivate user', 500);
@@ -217,6 +223,7 @@ class UserController
 
         $success = $this->userModel->reactivate($id);
         if ($success) {
+            AuditLogger::log('update', 'user', $id, "Reactivated user #{$id}");
             Response::json(['message' => 'User reactivated successfully']);
         } else {
             Response::error('Failed to reactivate user', 500);

@@ -1,5 +1,5 @@
 import { NavLink } from 'react-router-dom';
-import { LayoutDashboard, Package, Truck, ShoppingCart, BarChart3, Users, ChevronLeft, ChevronRight } from 'lucide-react';
+import { LayoutDashboard, Package, Truck, ShoppingCart, BarChart3, Users, ClipboardList, ChevronLeft, ChevronRight } from 'lucide-react';
 import Tooltip from '../ui/Tooltip';
 
 const navItems = [
@@ -9,6 +9,7 @@ const navItems = [
   { path: '/admin/suppliers', label: 'Suppliers', icon: Truck },
   { path: '/admin/orders', label: 'Orders', icon: ShoppingCart },
   { path: '/admin/reports', label: 'Reports', icon: BarChart3 },
+  { path: '/admin/audit-logs', label: 'Audit Logs', icon: ClipboardList },
 ];
 
 export default function Sidebar({ isCollapsed }) {

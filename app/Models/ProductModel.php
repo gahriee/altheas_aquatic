@@ -180,6 +180,28 @@ class ProductModel
 
     /**
      * ----------------------------------------
+     * fetchLowStock
+     * ----------------------------------------
+     * Fetch all active products where stock is at or below the threshold.
+     */
+    public function fetchLowStock(): array
+    {
+        $sql = "SELECT p.product_id, p.name, p.price, p.stock_qty, p.low_stock_threshold, p.image_path, c.name as category_name 
+                FROM products p 
+                JOIN categories c ON p.category_id = c.category_id 
+                WHERE p.is_active = 1 AND p.stock_qty <= p.low_stock_threshold
+                ORDER BY (p.stock_qty - p.low_stock_threshold) ASC, p.stock_qty ASC";
+        try {
+            $stmt = $this->db->prepare($sql);
+            $stmt->execute();
+            return $stmt->fetchAll();
+        } catch (\PDOException $e) {
+            return [];
+        }
+    }
+
+    /**
+     * ----------------------------------------
      * restore
      * ----------------------------------------
      * Restore a soft-deleted product.

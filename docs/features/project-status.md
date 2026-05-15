@@ -1,7 +1,7 @@
 # Project Status: Althea's Aquatic
 
-**Last Updated:** 2026-04-19
-**Current Phase:** Phase 2 — Admin Operations
+**Last Updated:** 2026-05-15
+**Current Phase:** Phase 3 — Post-Delivery Enhancements
 
 > **AI Agent Instructions:** Always read this file before generating code. Update this file when a task is completed. Do not implement features assigned to future phases.
 
@@ -9,7 +9,8 @@
 
 ## 🎯 Development Roadmap
 
-### Phase 1: Core Foundation (Weeks 1–2) — Current Focus
+### Phase 1: Core Foundation (Weeks 1–2) ✅
+
 - [x] Project scaffold: MVC folder structure, front controller, autoloader, `.env` config
 - [x] Database schema: all 7 tables with InnoDB + FK constraints, seed categories
 - [x] Authentication: login form, bcrypt verify, session management, logout, brute-force protection
@@ -23,25 +24,31 @@
 - [x] Cart & Checkout: session cart, customer info form, atomic stock deduction, order confirmation, PayMongo GCash integration
 - [x] Persistent Cart: transition to database-backed storage for authenticated users (Ticket: `2026-04-18-03`)
 
-### Phase 2: Order Management & Alerts (Week 3)
+### Phase 2: Order Management & Alerts (Week 3) ✅
+
 - [x] Admin Order Management: List view, status updates (Ticket: `2026-04-19-06`)
 - [x] Reports Module: sales summary by date range, inventory status table, supplier delivery summary (Ticket: `2026-05-07-01`)
 - [x] CSV Export: export sales and inventory reports as downloadable CSV files (Ticket: `2026-05-07-01`)
 - [x] Admin Dashboard: summary cards and sales trend chart (Ticket: `2026-05-07-02`)
 - [x] Admin Users Module: manage admin/staff roles and accounts (Ticket: `2026-05-10-02`)
 - [x] Profile Settings & Password Reset: change password, forgot password, reset password flows (Ticket: `2026-05-10-03`)
-- [ ] Low-stock alert panel: filtered view highlighting products at or below threshold
+- [x] Low-stock alert panel: filtered view highlighting products at or below threshold (Ticket: `2026-05-15-01`)
 - [x] Real-time Notifications: Pusher integration for order payments and stock alerts (Ticket: `2026-04-19-03`)
 - [x] Notification History Page: paginated and filterable dedicated page for all alerts (Ticket: `2026-05-10-04`)
 - [x] Cart Animation Sync: Synchronized count update with fly-to-cart animation (Ticket: `2026-04-19-05`)
 - [x] Storefront My Orders: customer order history and detail pages (Ticket: `2026-05-10-05`)
 
-### Phase 3: Polish & Delivery (Week 4–Delivery)
-- [ ] Mobile responsiveness audit — all pages tested on phone viewport
-- [ ] Security hardening audit: CSP headers, CSRF on all forms, upload path checks
-- [ ] UI polish: custom CSS refinements, loading states, error/success message consistency
-- [ ] Deployment: production server setup, `.env` config, SSL verification
-- [ ] Client handover: source code delivery, documentation, credentials handoff
+### Phase 2.5: Polish & Delivery ✅
+
+- [x] Mobile responsiveness audit — all pages tested on phone viewport
+- [x] Security hardening audit: CSP headers, CSRF on all forms, upload path checks
+- [x] UI polish: custom CSS refinements, loading states, error/success message consistency
+- [x] Deployment: production server setup, `.env` config, SSL verification
+- [x] Client handover: source code delivery, documentation, credentials handoff
+
+### Phase 3: Post-Delivery Enhancements — Current Focus
+
+- [x] Audit Logs Module: track all state-changing API actions (create, update, delete) with admin page for review
 
 ---
 
@@ -49,50 +56,53 @@
 
 ### 🌐 Backend (PHP MVC)
 
-| Module | Status | Notes |
-| :--- | :---: | :--- |
-| **Project Scaffold** | `[x]` | MVC folder structure, front controller, autoloader, env config |
-| **Database Schema** | `[~]` | All 7 tables updated; adding `delight-im/auth` tables |
-| **Authentication** | `[~]` | Migrating to `delight-im/auth` for secure session/throttling |
-| **Inventory Module** | `[x]` | Product CRUD, image upload, soft delete, low-stock query |
-| **Supplier Module** | `[x]` | Supplier CRUD, delivery form, auto stock deduction |
-| **Order Module** | `[x]` | Atomic checkout, order creation, order_items insert, stock deduction, PayMongo integration |
-| **Reports Module** | `[x]` | Date-range sales query, inventory status, supplier summaries, CSV export |
-| **Rate Limit Logic** | `[x]` | rate_limit_log insert/check — 5 attempts per IP per 10 minutes |
-| **CSRF Protection** | `[x]` | Token generate/verify helper — applied to all state-changing forms |
-| **File Upload Handler** | `[x]` | MIME validation, random rename, outside-web-root storage, serve script |
-| **Login Modal** | `[x]` | Portable auth with aquatic theme and post-login action support |
-| **Order Expiry** | `[x]` | Auto stock restoration for unpaid orders older than 60 mins |
-| **Admin Users Module** | `[x]` | `UserController` with role-based CRUD using `delight-im/auth` admin methods |
-| **Password Reset Flow** | `[x]` | Forgot password email, verify token, change/reset password via `delight-im/auth` |
+| Module                  | Status | Notes                                                                                      |
+| :---------------------- | :----: | :----------------------------------------------------------------------------------------- |
+| **Project Scaffold**    | `[x]`  | MVC folder structure, front controller, autoloader, env config                             |
+| **Database Schema**     | `[x]`  | All 7 tables updated; adding `delight-im/auth` tables                                      |
+| **Authentication**      | `[x]`  | Migrating to `delight-im/auth` for secure session/throttling                               |
+| **Inventory Module**    | `[x]`  | Product CRUD, image upload, soft delete, low-stock query                                   |
+| **Supplier Module**     | `[x]`  | Supplier CRUD, delivery form, auto stock deduction                                         |
+| **Order Module**        | `[x]`  | Atomic checkout, order creation, order_items insert, stock deduction, PayMongo integration |
+| **Reports Module**      | `[x]`  | Date-range sales query, inventory status, supplier summaries, CSV export                   |
+| **Rate Limit Logic**    | `[x]`  | rate_limit_log insert/check — 5 attempts per IP per 10 minutes                             |
+| **CSRF Protection**     | `[x]`  | Token generate/verify helper — applied to all state-changing forms                         |
+| **File Upload Handler** | `[x]`  | MIME validation, random rename, outside-web-root storage, serve script                     |
+| **Login Modal**         | `[x]`  | Portable auth with aquatic theme and post-login action support                             |
+| **Order Expiry**        | `[x]`  | Auto stock restoration for unpaid orders older than 60 mins                                |
+| **Admin Users Module**  | `[x]`  | `UserController` with role-based CRUD using `delight-im/auth` admin methods                |
+| **Password Reset Flow** | `[x]`  | Forgot password email, verify token, change/reset password via `delight-im/auth`           |
 
 ### 🖥️ Frontend Pages
 
-| Page | Status | Notes |
-| :--- | :---: | :--- |
-| **Login Page** | `[x]` | Credential form, error message, rate-limit feedback, forgot password link |
-| **Profile Settings** | `[x]` | Admin change password form |
-| **Forgot / Reset Password** | `[x]` | Public pages to request and verify password reset link |
-| **Admin Dashboard** | `[x]` | Summary cards, sales trend chart, and quick actions |
-| **Users** | `[x]` | Admin/staff list, add/edit user form, role management |
-| **Notification History** | `[x]` | Full paginated list of alerts, filter by type/status, clear old alerts |
-| **Inventory Management** | `[x]` | Sortable product table, add/edit form, image preview, low-stock highlights, pagination |
-| **Supplier Management** | `[x]` | Supplier list, add/edit form, record delivery form, per-supplier history |
-| **Sales / Orders** | `[x]` | Orders table with status filter, order detail view, status update, date-range filter |
-| **Reports** | `[x]` | Date picker, sales summary table, inventory status table, supplier delivery summary, CSV export |
-| **Storefront — Home** | `[x]` | Hero banner, featured product grid, category filter tabs, product cards |
-| **Storefront — Product Detail** | `[x]` | Image, description, price, quantity selector, add-to-cart |
-| **Storefront — Cart & Checkout** | `[x]` | Cart list, subtotals, customer info form, PayMongo GCash integration |
-| **Storefront — My Orders** | `[x]` | Customer order history list with status tabs and itemised detail view |
-| **Order Confirmation** | `[x]` | Order ID, itemised summary, payment status polling, return-to-shop link |
+| Page                             | Status | Notes                                                                                           |
+| :------------------------------- | :----: | :---------------------------------------------------------------------------------------------- |
+| **Login Page**                   | `[x]`  | Credential form, error message, rate-limit feedback, forgot password link                       |
+| **Profile Settings**             | `[x]`  | Admin change password form                                                                      |
+| **Forgot / Reset Password**      | `[x]`  | Public pages to request and verify password reset link                                          |
+| **Admin Dashboard**              | `[x]`  | Summary cards, sales trend chart, and quick actions                                             |
+| **Users**                        | `[x]`  | Admin/staff list, add/edit user form, role management                                           |
+| **Notification History**         | `[x]`  | Full paginated list of alerts, filter by type/status, clear old alerts                          |
+| **Inventory Management**         | `[x]`  | Sortable product table, add/edit form, image preview, low-stock highlights, pagination          |
+| **Low Stock Alerts**             | `[x]`  | Full list of low-stock items with threshold and restocking actions                              |
+| **Supplier Management**          | `[x]`  | Supplier list, add/edit form, record delivery form, per-supplier history                        |
+| **Sales / Orders**               | `[x]`  | Orders table with status filter, order detail view, status update, date-range filter            |
+| **Reports**                      | `[x]`  | Date picker, sales summary table, inventory status table, supplier delivery summary, CSV export |
+| **Audit Logs**                   | `[x]`  | Paginated list of system changes, filter by action/resource/user, JSON diff view                |
+| **Storefront — Home**            | `[x]`  | Hero banner, featured product grid, category filter tabs, product cards                         |
+| **Storefront — Product Detail**  | `[x]`  | Image, description, price, quantity selector, add-to-cart                                       |
+| **Storefront — Cart & Checkout** | `[x]`  | Cart list, subtotals, customer info form, PayMongo GCash integration                            |
+| **Storefront — My Orders**       | `[x]`  | Customer order history list with status tabs and itemised detail view                           |
+| **Order Confirmation**           | `[x]`  | Order ID, itemised summary, payment status polling, return-to-shop link                         |
 
-*Key: `[x]` = Complete, `[~]` = In Progress, `[ ]` = Not Started, `[!]` = Blocked*
+_Key: `[x]` = Complete, `[~]` = In Progress, `[ ]` = Not Started, `[!]` = Blocked_
 
 ---
 
 ## 📝 Active Tasks
 
 ### ✅ Completed
+
 - Project specification document finalized
 
 ---
@@ -177,7 +187,7 @@
 
 ## 🐛 Known Issues / Tech Debt
 
-*None yet — project is in initial setup.*
+_None yet — project is in initial setup._
 
 ---
 

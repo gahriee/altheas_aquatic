@@ -1,6 +1,6 @@
 import { useState, useEffect, useMemo } from 'react';
 import { Link } from 'react-router-dom';
-import { Plus, Search, Edit3, Trash2, AlertCircle, CheckCircle, Info, X } from 'lucide-react';
+import { Plus, Search, Edit3, Trash2, AlertCircle, CheckCircle, Info, X, AlertTriangle, PackageX, PackageMinus, Filter } from 'lucide-react';
 import { getAllProducts, deactivateProduct } from '../../../api/products';
 import { getAllCategories } from '../../../api/categories';
 import Button from '../../../components/ui/Button';
@@ -22,6 +22,7 @@ export default function InventoryList() {
   const [isTrashOpen, setIsTrashOpen] = useState(false);
   const [confirmDeactivate, setConfirmDeactivate] = useState(null);
   const [isDeactivating, setIsDeactivating] = useState(false);
+  const [showLowStockOnly, setShowLowStockOnly] = useState(false);
 
   const debouncedSearch = useDebounce(searchTerm, 300);
 
@@ -75,9 +76,16 @@ export default function InventoryList() {
       
       const matchesCategory = selectedCategory === 'all' || p.category_id?.toString() === selectedCategory?.toString();
       
-      return matchesSearch && matchesCategory;
+      const isLowStock = p.stock_qty <= p.low_stock_threshold;
+      const matchesLowStock = showLowStockOnly ? isLowStock : true;
+
+      return matchesSearch && matchesCategory && matchesLowStock;
     });
-  }, [products, debouncedSearch, selectedCategory]);
+  }, [products, debouncedSearch, selectedCategory, showLowStockOnly]);
+
+  const lowStockProducts = useMemo(() => products.filter(p => p.is_active && p.stock_qty <= p.low_stock_threshold), [products]);
+  const criticalCount = useMemo(() => lowStockProducts.filter(p => parseInt(p.stock_qty, 10) === 0).length, [lowStockProducts]);
+  const warningCount = lowStockProducts.length - criticalCount;
 
   const columns = [
     {
@@ -196,6 +204,77 @@ export default function InventoryList() {
         </div>
       </div>
 
+      {/* Inventory Health Summary */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+        <div 
+          onClick={() => setShowLowStockOnly(!showLowStockOnly)}
+          className={`group cursor-pointer p-6 rounded-2xl border transition-all duration-300 relative overflow-hidden ${
+            showLowStockOnly 
+              ? 'bg-teal-500 border-teal-600 shadow-lg shadow-teal-500/30' 
+              : 'bg-white border-sage-200 hover:border-teal-300 hover:shadow-md'
+          }`}
+        >
+          {/* Background pattern/accent */}
+          <div className={`absolute top-0 right-0 -mt-4 -mr-4 w-24 h-24 rounded-full opacity-10 transition-transform duration-500 group-hover:scale-150 ${showLowStockOnly ? 'bg-white' : 'bg-teal-500'}`}></div>
+          
+          <div className="flex items-start justify-between relative z-10">
+            <div>
+              <div className="flex items-center gap-2 mb-2">
+                <Filter size={16} className={showLowStockOnly ? 'text-teal-100' : 'text-sage-400 group-hover:text-teal-500'} />
+                <p className={`text-sm font-bold uppercase tracking-wider ${showLowStockOnly ? 'text-teal-50' : 'text-sage-500 group-hover:text-teal-600'}`}>
+                  Low Stock Filter
+                </p>
+              </div>
+              <p className={`text-3xl font-bold font-display ${showLowStockOnly ? 'text-white' : 'text-teal-600'}`}>
+                {lowStockProducts.length} <span className={`text-lg font-medium ${showLowStockOnly ? 'text-teal-200' : 'text-sage-400'}`}>Items</span>
+              </p>
+              <p className={`text-xs mt-3 font-medium flex items-center gap-1.5 ${showLowStockOnly ? 'text-teal-100' : 'text-sage-400'}`}>
+                {showLowStockOnly ? (
+                  <>Showing only low stock. Click to remove filter.</>
+                ) : (
+                  <>Click to filter the table below.</>
+                )}
+              </p>
+            </div>
+            <div className={`p-3 rounded-xl ${showLowStockOnly ? 'bg-white/20 text-white' : 'bg-teal-50 text-teal-600 group-hover:bg-teal-100'}`}>
+              <AlertTriangle size={24} />
+            </div>
+          </div>
+        </div>
+
+        <div className="p-6 rounded-2xl bg-white border border-coral-200 shadow-sm relative overflow-hidden flex flex-col justify-between">
+          <div className="absolute top-0 right-0 -mt-4 -mr-4 w-24 h-24 rounded-full bg-coral-500 opacity-5"></div>
+          <div className="flex items-start justify-between relative z-10">
+            <div>
+              <p className="text-coral-600/80 text-sm font-bold uppercase tracking-wider mb-2">Critical Stock</p>
+              <p className="text-3xl font-bold font-display text-coral-600">{criticalCount} <span className="text-lg font-medium text-coral-400">Items</span></p>
+            </div>
+            <div className="p-3 rounded-xl bg-coral-50 text-coral-500 border border-coral-100">
+              <PackageX size={24} />
+            </div>
+          </div>
+          <p className="text-xs font-medium text-coral-500 mt-3 relative z-10">
+            Completely out of stock (0 units)
+          </p>
+        </div>
+
+        <div className="p-6 rounded-2xl bg-white border border-amber-200 shadow-sm relative overflow-hidden flex flex-col justify-between">
+          <div className="absolute top-0 right-0 -mt-4 -mr-4 w-24 h-24 rounded-full bg-amber-500 opacity-5"></div>
+          <div className="flex items-start justify-between relative z-10">
+            <div>
+              <p className="text-amber-600/80 text-sm font-bold uppercase tracking-wider mb-2">Warning Stock</p>
+              <p className="text-3xl font-bold font-display text-amber-600">{warningCount} <span className="text-lg font-medium text-amber-400">Items</span></p>
+            </div>
+            <div className="p-3 rounded-xl bg-amber-50 text-amber-500 border border-amber-100">
+              <PackageMinus size={24} />
+            </div>
+          </div>
+          <p className="text-xs font-medium text-amber-600 mt-3 relative z-10">
+            At or below threshold (needs restock)
+          </p>
+        </div>
+      </div>
+
       {error && (
         <div className="p-4 bg-coral-50 text-coral-500 rounded-2xl border border-coral-100 flex items-center gap-2 animate-in slide-in-from-top-2">
           <AlertCircle size={20} />
@@ -229,10 +308,10 @@ export default function InventoryList() {
             onChange={(e) => setSelectedCategory(e.target.value)}
           />
 
-          {(searchTerm !== '' || selectedCategory !== 'all') && (
+          {(searchTerm !== '' || selectedCategory !== 'all' || showLowStockOnly) && (
             <Tooltip text="Clear Filters">
               <button 
-                onClick={() => { setSearchTerm(''); setSelectedCategory('all'); }}
+                onClick={() => { setSearchTerm(''); setSelectedCategory('all'); setShowLowStockOnly(false); }}
                 className="p-3 text-sage-400 hover:text-coral-500 bg-white rounded-2xl border border-sage-100 transition-all hover:bg-coral-50"
               >
                 <X size={20} />

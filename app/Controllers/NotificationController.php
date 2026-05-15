@@ -6,6 +6,7 @@ use App\Core\Auth;
 use App\Core\Csrf;
 use App\Core\Database;
 use App\Core\Response;
+use App\Core\AuditLogger;
 use App\Models\NotificationModel;
 
 class NotificationController
@@ -88,6 +89,7 @@ class NotificationController
         
         $success = $this->notificationModel->markAllAsRead();
         if ($success) {
+            AuditLogger::log('update', 'notification', null, "Marked all notifications as read");
             Response::json(['message' => 'All notifications marked as read']);
         } else {
             Response::error('Failed to mark all notifications as read', 500);
@@ -132,6 +134,8 @@ class NotificationController
         $days = isset($input['days']) ? max(1, (int)$input['days']) : 30;
 
         $deletedCount = $this->notificationModel->deleteOld($days);
+
+        AuditLogger::log('delete', 'notification', null, "Deleted old notifications");
 
         Response::json([
             'message' => "Successfully cleared $deletedCount old notifications",

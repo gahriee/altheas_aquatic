@@ -97,6 +97,7 @@ To provide immediate visibility into critical events (e.g. successful payments, 
 - 🏭 **Supplier Management** — Supplier directory, delivery recording, per-supplier history
 - 🛒 **Sales / Orders** — Order table with status filter, order detail view, status update
 - 📊 **Reports** — Date-range picker, sales/inventory/supplier summaries, CSV export
+- 📋 **Audit Logs** — Paginated list of system changes, filter by action/resource/user, JSON diff view
 
 **Storefront Pages:**
 - 🏠 **Home** — Hero banner, product grid, category filter tabs
@@ -137,6 +138,7 @@ altheas-aquatic/
 │   │   ├── SupplierController.php          # Supplier CRUD, delivery recording
 │   │   ├── OrderController.php             # Order list, detail, status update, checkout
 │   │   ├── ReportController.php            # Sales, inventory, supplier reports, CSV export
+│   │   ├── AuditLogController.php          # Admin audit log list and details
 │   │   ├── StorefrontController.php        # Public product list, product detail
 │   │   └── CartController.php             # Session cart add, update, remove, get
 │   │
@@ -147,12 +149,14 @@ altheas-aquatic/
 │   │   ├── SupplierModel.php
 │   │   ├── OrderModel.php
 │   │   ├── ReportModel.php
+│   │   ├── AuditLogModel.php
 │   │   └── RateLimitModel.php
 │   │
 │   └── Core/                               # Shared services
 │       ├── Database.php                    # PDO singleton
 │       ├── Router.php                      # URL dispatcher — /api/* routing
 │       ├── Auth.php                        # Session guard, requireLogin(), isLoggedIn()
+│       ├── AuditLogger.php                 # Static utility to log system actions
 │       ├── Csrf.php                        # Token generate, header verify
 │       ├── Cart.php                        # Cart service — handles session-to-DB logic
 │       ├── Uploader.php                    # MIME validation, rename, store outside web root
@@ -216,8 +220,10 @@ altheas-aquatic/
 │   │   │   │   │   └── UserForm.jsx
 │   │   │   │   ├── notifications/
 │   │   │   │   │   └── NotificationHistory.jsx
-│   │   │   │   └── reports/
-│   │   │   │       └── Reports.jsx
+│   │   │   │   ├── reports/
+│   │   │   │   │   └── Reports.jsx
+│   │   │   │   └── audit/
+│   │   │   │       └── AuditLogs.jsx
 │   │   │   └── storefront/
 │   │   │       ├── Home.jsx
 │   │   │       ├── ProductDetail.jsx
@@ -312,6 +318,7 @@ POST /api/admin/users/{id}/delete       → UserController::destroy()
 # Inventory
 GET  /api/admin/inventory               → InventoryController::index()
 POST /api/admin/inventory               → InventoryController::store()
+GET  /api/admin/inventory/low-stock     → InventoryController::lowStock()
 GET  /api/admin/inventory/{id}          → InventoryController::show()
 POST /api/admin/inventory/{id}          → InventoryController::update()
 POST /api/admin/inventory/{id}/deactivate → InventoryController::deactivate()
@@ -342,6 +349,10 @@ GET  /api/admin/notifications/unread-count → NotificationController::unreadCou
 POST /api/admin/notifications/{id}/read → NotificationController::markRead()
 POST /api/admin/notifications/read-all  → NotificationController::markAllRead()
 POST /api/admin/notifications/delete-old→ NotificationController::deleteOld()
+
+# Audit Logs
+GET  /api/admin/audit-logs              → AuditLogController::index()
+GET  /api/admin/audit-logs/{id}         → AuditLogController::show()
 
 # Reports
 GET  /api/admin/reports/sales           → ReportController::sales()
@@ -522,6 +533,22 @@ POST /api/webhooks/paymongo             → PaymentController::handleWebhook()
 | `message` | TEXT | NOT NULL | Detailed message |
 | `is_read` | TINYINT(1) | DEFAULT 0 | 0 = Unread, 1 = Read |
 | `data_json` | TEXT | NULLABLE | Context payload (e.g. `{"order_id": 123}`) |
+| `created_at` | DATETIME | DEFAULT NOW() | |
+
+### audit_logs
+
+| Field | Type | Constraints | Notes |
+| :--- | :--- | :--- | :--- |
+| `id` | INT | PK, AUTO_INCREMENT | |
+| `action` | ENUM | NOT NULL | 'create', 'update', 'delete' |
+| `resource_type` | VARCHAR(50) | NOT NULL | 'product', 'supplier', 'order', 'user', etc. |
+| `resource_id` | INT | NULLABLE | ID of the affected resource |
+| `user_id` | INT | FK → users ON DELETE SET NULL | NULL if system action |
+| `description` | TEXT | NOT NULL | Human-readable summary |
+| `old_data` | JSON | NULLABLE | State before mutation |
+| `new_data` | JSON | NULLABLE | State after mutation |
+| `ip_address` | VARCHAR(45) | NULLABLE | |
+| `user_agent` | TEXT | NULLABLE | |
 | `created_at` | DATETIME | DEFAULT NOW() | |
 
 ---

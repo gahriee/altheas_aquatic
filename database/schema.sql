@@ -20,6 +20,7 @@ DROP TABLE IF EXISTS `products`;
 DROP TABLE IF EXISTS `suppliers`;
 DROP TABLE IF EXISTS `categories`;
 DROP TABLE IF EXISTS `users`;
+DROP TABLE IF EXISTS `audit_logs`;
 DROP TABLE IF EXISTS `notifications`;
 DROP TABLE IF EXISTS `rate_limit_log`;
 
@@ -246,6 +247,27 @@ CREATE TABLE IF NOT EXISTS `notifications` (
     INDEX `idx_notifications_read` (`is_read`),
     INDEX `idx_notifications_type` (`type`),
     INDEX `idx_notifications_created` (`created_at`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- 10. audit_logs
+CREATE TABLE IF NOT EXISTS `audit_logs` (
+    `id` BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    `user_id` INT UNSIGNED NULL,
+    `user_email` VARCHAR(249) NULL,
+    `action` ENUM('create', 'update', 'delete') NOT NULL,
+    `resource_type` VARCHAR(50) NOT NULL,
+    `resource_id` INT NULL,
+    `description` VARCHAR(255) NOT NULL,
+    `old_data` JSON NULL,
+    `new_data` JSON NULL,
+    `ip_address` VARCHAR(49) NULL,
+    `user_agent` TEXT NULL,
+    `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
+    INDEX `idx_audit_user` (`user_id`),
+    INDEX `idx_audit_action` (`action`),
+    INDEX `idx_audit_resource` (`resource_type`, `resource_id`),
+    INDEX `idx_audit_created` (`created_at`),
+    CONSTRAINT `fk_audit_user` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE SET NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 SET FOREIGN_KEY_CHECKS = 1;

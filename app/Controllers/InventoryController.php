@@ -7,6 +7,7 @@ use App\Core\Csrf;
 use App\Core\Response;
 use App\Core\Database;
 use App\Core\Uploader;
+use App\Core\AuditLogger;
 use App\Models\ProductModel;
 
 class InventoryController
@@ -26,6 +27,23 @@ class InventoryController
 
         $products = $model->fetchAll();
         Response::json($products);
+    }
+
+    /**
+     * ----------------------------------------
+     * lowStock
+     * ----------------------------------------
+     * Fetch and return low-stock products for the admin panel.
+     */
+    public function lowStock(): void
+    {
+        Auth::requireLogin();
+
+        $db = Database::getInstance()->getConnection();
+        $model = new ProductModel($db);
+
+        $products = $model->fetchLowStock();
+        Response::json(['products' => $products, 'count' => count($products)]);
     }
 
     /**
@@ -96,6 +114,7 @@ class InventoryController
 
         try {
             $id = $model->create($data);
+            AuditLogger::log('create', 'product', $id, "Created product '{$data['name']}'");
             Response::json(['id' => $id, 'message' => 'Product created successfully'], 201);
         } catch (\PDOException $e) {
             if ($e->getCode() === '23000') {
@@ -151,6 +170,7 @@ class InventoryController
 
         try {
             $model->update($id, $data);
+            AuditLogger::log('update', 'product', $id, "Updated product '{$data['name']}'", $existing, $data);
             Response::json(['message' => 'Product updated successfully']);
         } catch (\PDOException $e) {
             if ($e->getCode() === '23000') {
@@ -177,7 +197,11 @@ class InventoryController
         $model = new ProductModel($db);
 
         try {
+            $product = $model->getById($id);
             $model->deactivate($id);
+            if ($product) {
+                AuditLogger::log('delete', 'product', $id, "Deactivated product '{$product['name']}'");
+            }
             Response::json(['message' => 'Product deactivated successfully']);
         } catch (\Exception $e) {
             Response::error('Failed to deactivate product', 500);
@@ -216,7 +240,11 @@ class InventoryController
         $model = new ProductModel($db);
 
         try {
+            $product = $model->getById($id);
             $model->restore($id);
+            if ($product) {
+                AuditLogger::log('update', 'product', $id, "Restored product '{$product['name']}'");
+            }
             Response::json(['message' => 'Product restored successfully']);
         } catch (\Exception $e) {
             Response::error('Failed to restore product', 500);
@@ -245,6 +273,8 @@ class InventoryController
 
         try {
             $model->delete($id);
+
+            AuditLogger::log('delete', 'product', $id, "Permanently deleted product #{$id}");
 
             // Cleanup image file if it exists
             if ($product['image_path']) {

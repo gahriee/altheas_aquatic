@@ -5,6 +5,7 @@ namespace App\Controllers;
 use App\Core\Auth;
 use App\Core\Csrf;
 use App\Core\Response;
+use App\Core\AuditLogger;
 use Delight\Auth\Auth as DelightAuth;
 use Delight\Auth\InvalidPasswordException;
 use Delight\Auth\InvalidEmailException;
@@ -215,6 +216,7 @@ class AuthController
 
         try {
             $this->auth->changePassword($currentPassword, $newPassword);
+            AuditLogger::log('update', 'user', Auth::userId(), "Changed password");
             Response::json(['message' => 'Password changed successfully']);
         } catch (NotLoggedInException $e) {
             Response::unauthorized();

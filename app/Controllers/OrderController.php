@@ -5,6 +5,7 @@ namespace App\Controllers;
 use App\Core\Response;
 use App\Core\Database;
 use App\Core\Auth;
+use App\Core\AuditLogger;
 use App\Models\OrderModel;
 
 /**
@@ -66,6 +67,10 @@ class OrderController
         }
 
         if ($this->orderModel->updateStatus($id, $status)) {
+            $order = $this->orderModel->getById($id);
+            if ($order) {
+                AuditLogger::log('update', 'order', $id, "Updated order #{$order['order_number']} status to '{$status}'");
+            }
             Response::json(['message' => 'Order status updated successfully']);
         } else {
             Response::error('Failed to update order status');

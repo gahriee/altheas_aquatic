@@ -28,6 +28,7 @@ import DeliveryForm from './pages/admin/suppliers/DeliveryForm';
 import OrderList from './pages/admin/orders/OrderList';
 import OrderDetail from './pages/admin/orders/OrderDetail';
 import Reports from './pages/admin/reports/Reports';
+import AuditLogs from './pages/admin/audit/AuditLogs';
 
 import UserList from './pages/admin/users/UserList';
 import UserForm from './pages/admin/users/UserForm';
@@ -77,6 +78,7 @@ export default function App() {
             <Route path="orders" element={<OrderList />} />
             <Route path="orders/:id" element={<OrderDetail />} />
             <Route path="reports" element={<Reports />} />
+            <Route path="audit-logs" element={<AuditLogs />} />
             <Route path="notifications" element={<NotificationHistory />} />
           </Route>
         </Route>
