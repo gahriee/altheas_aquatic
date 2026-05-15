@@ -49,6 +49,10 @@ if (file_exists($envPath)) {
             $key = trim($key);
             $value = trim($value);
 
+            if ($key === 'DB_SSL') {
+                $value = ($value === 'true' || $value === '1');
+            }
+
             if (!defined($key)) {
                 define($key, $value);
             }

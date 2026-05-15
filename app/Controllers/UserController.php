@@ -156,11 +156,12 @@ class UserController
 
     /**
      * ----------------------------------------
-     * destroy
+     * deactivate
      * ----------------------------------------
-     * POST /api/admin/users/{id}/delete
+     * POST /api/admin/users/{id}/deactivate
+     * Soft-disables a user account by setting status to BANNED.
      */
-    public function destroy(int $id): void
+    public function deactivate(int $id): void
     {
         Auth::requireLogin();
         Csrf::verifyHeader();
@@ -170,7 +171,7 @@ class UserController
         }
 
         if ($id === $this->auth->getUserId()) {
-            Response::error('Cannot delete your own account', 400);
+            Response::error('Cannot deactivate your own account', 400);
         }
 
         $user = $this->userModel->getById($id);
@@ -181,17 +182,44 @@ class UserController
         if ($user['role_label'] === 'admin') {
             $adminCount = $this->userModel->countAdmins();
             if ($adminCount <= 1) {
-                Response::error('Cannot delete the last admin account', 400);
+                Response::error('Cannot deactivate the last admin account', 400);
             }
         }
 
-        try {
-            $this->auth->admin()->deleteUserById($id);
-            Response::json(['message' => 'User deleted successfully']);
-        } catch (UnknownIdException $e) {
+        $success = $this->userModel->deactivate($id);
+        if ($success) {
+            Response::json(['message' => 'User deactivated successfully']);
+        } else {
+            Response::error('Failed to deactivate user', 500);
+        }
+    }
+
+    /**
+     * ----------------------------------------
+     * reactivate
+     * ----------------------------------------
+     * POST /api/admin/users/{id}/reactivate
+     * Restores a deactivated user account by setting status back to NORMAL.
+     */
+    public function reactivate(int $id): void
+    {
+        Auth::requireLogin();
+        Csrf::verifyHeader();
+
+        if (!$this->auth->hasRole(Role::ADMIN)) {
+            Response::error('Admin role required', 403);
+        }
+
+        $user = $this->userModel->getById($id);
+        if (!$user) {
             Response::error('User not found', 404);
-        } catch (\Exception $e) {
-            Response::error('Failed to delete user', 500);
+        }
+
+        $success = $this->userModel->reactivate($id);
+        if ($success) {
+            Response::json(['message' => 'User reactivated successfully']);
+        } else {
+            Response::error('Failed to reactivate user', 500);
         }
     }
 }

@@ -217,4 +217,44 @@ class UserModel
             return 0;
         }
     }
+
+    /**
+     * ----------------------------------------
+     * deactivate
+     * ----------------------------------------
+     * Set a user's status to BANNED (2), effectively soft-disabling the account.
+     *
+     * @param int $id The user ID to deactivate.
+     * @return bool True on success.
+     */
+    public function deactivate(int $id): bool
+    {
+        try {
+            $stmt = $this->db->prepare("UPDATE users SET status = 2 WHERE id = :id");
+            return $stmt->execute(['id' => $id]);
+        } catch (\PDOException $e) {
+            error_log("UserModel::deactivate failed: " . $e->getMessage());
+            return false;
+        }
+    }
+
+    /**
+     * ----------------------------------------
+     * reactivate
+     * ----------------------------------------
+     * Restore a deactivated user's status back to NORMAL (0).
+     *
+     * @param int $id The user ID to reactivate.
+     * @return bool True on success.
+     */
+    public function reactivate(int $id): bool
+    {
+        try {
+            $stmt = $this->db->prepare("UPDATE users SET status = 0 WHERE id = :id");
+            return $stmt->execute(['id' => $id]);
+        } catch (\PDOException $e) {
+            error_log("UserModel::reactivate failed: " . $e->getMessage());
+            return false;
+        }
+    }
 }

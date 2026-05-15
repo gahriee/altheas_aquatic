@@ -112,7 +112,8 @@ class Router
                 $this->router->get('/users', 'UserController@index');
                 $this->router->post('/users', 'UserController@store');
                 $this->router->post('/users/(\d+)', 'UserController@update');
-                $this->router->post('/users/(\d+)/delete', 'UserController@destroy');
+                $this->router->post('/users/(\d+)/deactivate', 'UserController@deactivate');
+                $this->router->post('/users/(\d+)/reactivate', 'UserController@reactivate');
             });
 
             // Storefront (Public)

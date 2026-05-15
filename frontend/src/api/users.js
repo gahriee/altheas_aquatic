@@ -18,8 +18,14 @@ export const updateUser = async (id, data) => {
   });
 };
 
-export const deleteUser = async (id) => {
-  return await client(`/api/admin/users/${id}/delete`, {
+export const deactivateUser = async (id) => {
+  return await client(`/api/admin/users/${id}/deactivate`, {
+    method: 'POST',
+  });
+};
+
+export const reactivateUser = async (id) => {
+  return await client(`/api/admin/users/${id}/reactivate`, {
     method: 'POST',
   });
 };

@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { Plus, Edit3, Trash2, ShieldAlert, ShieldCheck, Mail, Calendar, Clock, AlertCircle } from 'lucide-react';
-import { fetchUsers, deleteUser } from '../../../api/users';
+import { Plus, Edit3, UserX, UserCheck, ShieldAlert, ShieldCheck, Mail, Calendar, Clock, AlertCircle } from 'lucide-react';
+import { fetchUsers, deactivateUser, reactivateUser } from '../../../api/users';
 import { useAuth } from '../../../context/AuthContext';
 import Button from '../../../components/ui/Button';
 import DataTable from '../../../components/admin/DataTable';
@@ -11,7 +11,8 @@ import Tooltip from '../../../components/ui/Tooltip';
 export default function UserList() {
   const [data, setData] = useState({ users: [], counts: { all: 0, admin_staff: 0, customer: 0 } });
   const [loading, setLoading] = useState(true);
-  const [deleteId, setDeleteId] = useState(null);
+  const [deactivateId, setDeactivateId] = useState(null);
+  const [reactivateId, setReactivateId] = useState(null);
   const [activeTab, setActiveTab] = useState('admin_staff');
   
   const { user: currentUser } = useAuth();
@@ -32,16 +33,24 @@ export default function UserList() {
     }
   }
 
-  const handleDelete = async () => {
-    if (!deleteId) return;
+  const handleDeactivate = async () => {
+    if (!deactivateId) return;
     try {
-      await deleteUser(deleteId);
-      // apiFetch handles the success toast
+      await deactivateUser(deactivateId);
       loadUsers();
     } catch (err) {
       // apiFetch handles the error toast
     } finally {
-      setDeleteId(null);
+      setDeactivateId(null);
+    }
+  };
+
+  const handleReactivate = async (id) => {
+    try {
+      await reactivateUser(id);
+      loadUsers();
+    } catch (err) {
+      // apiFetch handles the error toast
     }
   };
 
@@ -96,18 +105,28 @@ export default function UserList() {
       )
     },
     {
-      key: 'verified',
+      key: 'status',
       label: 'Status',
       sortable: true,
-      render: (u) => (
-        <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-bold uppercase tracking-wider border ${
-          u.verified == 1 
-            ? 'bg-emerald-50 text-emerald-600 border-emerald-200' 
-            : 'bg-amber-50 text-amber-600 border-amber-200'
-        }`}>
-          {u.verified == 1 ? 'Verified' : 'Unverified'}
-        </span>
-      )
+      render: (u) => {
+        const isDeactivated = u.status == 2;
+        if (isDeactivated) {
+          return (
+            <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-bold uppercase tracking-wider border bg-coral-50 text-coral-500 border-coral-200">
+              Deactivated
+            </span>
+          );
+        }
+        return (
+          <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-bold uppercase tracking-wider border ${
+            u.verified == 1 
+              ? 'bg-emerald-50 text-emerald-600 border-emerald-200' 
+              : 'bg-amber-50 text-amber-600 border-amber-200'
+          }`}>
+            {u.verified == 1 ? 'Verified' : 'Unverified'}
+          </span>
+        );
+      }
     },
     {
       key: 'registered',
@@ -135,29 +154,47 @@ export default function UserList() {
       key: 'actions',
       label: 'Actions',
       align: 'right',
-      render: (u) => (
-        <div className="flex justify-end gap-1">
-          <Tooltip text="Edit User">
-            <Link 
-              to={`/admin/users/edit/${u.id}`}
-              className="p-2 text-sage-400 hover:text-teal-600 hover:bg-teal-50 rounded-xl transition-all"
-            >
-              <Edit3 size={18} />
-            </Link>
-          </Tooltip>
-          
-          {currentUser?.id !== u.id && (
-            <Tooltip text="Delete User">
-              <button 
-                onClick={() => setDeleteId(u.id)}
-                className="p-2 text-sage-400 hover:text-coral-500 hover:bg-coral-50 rounded-xl transition-all"
-              >
-                <Trash2 size={18} />
-              </button>
-            </Tooltip>
-          )}
-        </div>
-      )
+      render: (u) => {
+        const isDeactivated = u.status == 2;
+        return (
+          <div className="flex justify-end gap-1">
+            {isDeactivated ? (
+              currentUser?.id !== u.id && (
+                <Tooltip text="Reactivate User">
+                  <button 
+                    onClick={() => setReactivateId(u.id)}
+                    className="p-2 text-sage-400 hover:text-emerald-500 hover:bg-emerald-50 rounded-xl transition-all"
+                  >
+                    <UserCheck size={18} />
+                  </button>
+                </Tooltip>
+              )
+            ) : (
+              <>
+                <Tooltip text="Edit User">
+                  <Link 
+                    to={`/admin/users/edit/${u.id}`}
+                    className="p-2 text-sage-400 hover:text-teal-600 hover:bg-teal-50 rounded-xl transition-all"
+                  >
+                    <Edit3 size={18} />
+                  </Link>
+                </Tooltip>
+                
+                {currentUser?.id !== u.id && (
+                  <Tooltip text="Deactivate User">
+                    <button 
+                      onClick={() => setDeactivateId(u.id)}
+                      className="p-2 text-sage-400 hover:text-coral-500 hover:bg-coral-50 rounded-xl transition-all"
+                    >
+                      <UserX size={18} />
+                    </button>
+                  </Tooltip>
+                )}
+              </>
+            )}
+          </div>
+        );
+      }
     }
   ];
 
@@ -214,13 +251,23 @@ export default function UserList() {
       />
 
       <ConfirmDialog
-        isOpen={!!deleteId}
-        onClose={() => setDeleteId(null)}
-        onConfirm={handleDelete}
-        title="Delete User"
-        message="Are you sure you want to delete this user? This action cannot be undone."
-        confirmText="Delete User"
+        isOpen={!!deactivateId}
+        onClose={() => setDeactivateId(null)}
+        onConfirm={handleDeactivate}
+        title="Deactivate User"
+        message="Are you sure you want to deactivate this user? They will no longer be able to log in, but their account data will be preserved."
+        confirmText="Deactivate"
         isDestructive={true}
+      />
+
+      <ConfirmDialog
+        isOpen={!!reactivateId}
+        onClose={() => setReactivateId(null)}
+        onConfirm={async () => { await handleReactivate(reactivateId); setReactivateId(null); }}
+        title="Reactivate User"
+        message="Are you sure you want to reactivate this user? They will be able to log in again."
+        confirmText="Reactivate"
+        isDestructive={false}
       />
     </div>
   );

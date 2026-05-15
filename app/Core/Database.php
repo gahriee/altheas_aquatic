@@ -35,7 +35,15 @@ class Database
 
         if (defined('DB_SSL') && DB_SSL) {
             $options[PDO::MYSQL_ATTR_SSL_VERIFY_SERVER_CERT] = true;
-            $options[PDO::MYSQL_ATTR_SSL_CA] = '/etc/ssl/certs/ca-certificates.crt';
+            $localCert = __DIR__ . '/../../cacert.pem';
+            
+            if (file_exists($localCert)) {
+                // Use local downloaded cert (Windows XAMPP)
+                $options[PDO::MYSQL_ATTR_SSL_CA] = $localCert;
+            } else {
+                // Use native OS cert bundle (Render/Linux)
+                $options[PDO::MYSQL_ATTR_SSL_CA] = '/etc/ssl/certs/ca-certificates.crt';
+            }
         }
 
         try {

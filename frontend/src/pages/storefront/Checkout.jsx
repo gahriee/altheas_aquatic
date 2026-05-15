@@ -55,6 +55,23 @@ export default function Checkout() {
     setFormData(prev => ({ ...prev, [name]: value }));
   };
 
+  const handlePhoneChange = (e) => {
+    let raw = e.target.value.replace(/[^\d]/g, '');
+    if (raw.startsWith('0')) {
+      raw = raw.substring(1);
+    }
+    raw = raw.slice(0, 10);
+    let formatted = '';
+    if (raw.length > 6) {
+      formatted = raw.slice(0, 3) + '-' + raw.slice(3, 6) + '-' + raw.slice(6);
+    } else if (raw.length > 3) {
+      formatted = raw.slice(0, 3) + '-' + raw.slice(3);
+    } else {
+      formatted = raw;
+    }
+    setFormData(prev => ({ ...prev, phone: formatted }));
+  };
+
   const handleRegionChange = (e) => {
     const code = e.target.value;
     const label = regionOptions.find(o => o.value === code)?.label || '';
@@ -108,7 +125,7 @@ export default function Checkout() {
         customer: {
             name: formData.name,
             email: formData.email,
-            phone: formData.phone,
+            phone: '+63' + formData.phone.replace(/-/g, ''),
             notes: formData.notes,
             address: fullAddress
         },
@@ -189,14 +206,19 @@ export default function Checkout() {
 
               <div className="space-y-2">
                 <Label htmlFor="phone">Phone Number</Label>
-                <Input
-                  id="phone"
-                  name="phone"
-                  value={formData.phone}
-                  onChange={handleChange}
-                  placeholder="0917XXXXXXX"
-                  required
-                />
+                <div className="relative">
+                  <span className="absolute left-4 top-1/2 -translate-y-1/2 text-sage-500 font-semibold text-sm pointer-events-none select-none">+63</span>
+                  <Input
+                    id="phone"
+                    name="phone"
+                    value={formData.phone}
+                    onChange={handlePhoneChange}
+                    placeholder="9XX-XXX-XXXX"
+                    maxLength={12}
+                    required
+                    className="pl-12"
+                  />
+                </div>
               </div>
 
                 {/* Delivery Address Section */}

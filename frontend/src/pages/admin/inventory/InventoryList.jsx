@@ -222,7 +222,7 @@ export default function InventoryList() {
               { label: 'All Categories', value: 'all' },
               ...categories.map(c => ({ 
                 label: c.name, 
-                value: c.id?.toString() || c.name 
+                value: c.category_id?.toString() || c.name 
               }))
             ]}
             value={selectedCategory}
