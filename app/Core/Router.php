@@ -142,6 +142,10 @@ class Router
             $this->router->get('/my-orders', 'OrderController@myOrders');
             $this->router->get('/my-orders/(\d+)', 'OrderController@myOrderDetail');
 
+            // Profile (Customer)
+            $this->router->get('/profile', 'ProfileController@show');
+            $this->router->post('/profile', 'ProfileController@update');
+
             // Payments
             $this->router->post('/payments/create-intent', 'PaymentController@createIntent');
             $this->router->get('/payments/status/([^/]+)', 'PaymentController@checkStatus');

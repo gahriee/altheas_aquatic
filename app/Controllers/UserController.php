@@ -87,6 +87,10 @@ class UserController
             $roleMask = $role === 'admin' ? Role::ADMIN : Role::MANAGER;
             $this->auth->admin()->addRoleForUserById($userId, $roleMask);
 
+            // Automatically create a user_profiles row
+            $profileStmt = $this->db->prepare("INSERT INTO user_profiles (user_id) VALUES (:user_id)");
+            $profileStmt->execute(['user_id' => $userId]);
+
             AuditLogger::log('create', 'user', $userId, "Created user '{$email}' with role '{$role}'");
 
             Response::json(['message' => 'User created successfully', 'id' => $userId], 201);

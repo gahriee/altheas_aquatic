@@ -2,7 +2,9 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ArrowLeft, CreditCard, ShieldCheck, ShoppingBag, Loader2, MapPin } from 'lucide-react';
 import { useCart } from '../../context/CartContext';
+import { useAuth } from '../../context/AuthContext';
 import { createPaymentIntent } from '../../api/payments';
+import { fetchProfile } from '../../api/profile';
 import { regions, provincesByCode, cities, barangays } from 'select-philippines-address';
 import Button from '../../components/ui/Button';
 import Input from '../../components/ui/Input';
@@ -18,6 +20,7 @@ import Select from '../../components/ui/Select';
  */
 export default function Checkout() {
   const { items, total, clearCart } = useCart();
+  const { user } = useAuth();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
@@ -41,7 +44,40 @@ export default function Checkout() {
     regions().then(response => {
       setRegionOptions(response.map(r => ({ label: r.region_name, value: r.region_code })));
     });
-  }, []);
+
+    if (user) {
+      fetchProfile().then(response => {
+        if (response?.profile) {
+          const profile = response.profile;
+          setFormData(prev => ({
+            ...prev,
+            name: profile.display_name || prev.name,
+            email: profile.email || user?.email || prev.email,
+            phone: profile.phone || prev.phone,
+            street: profile.street || prev.street,
+            regionCode: profile.region_code || prev.regionCode,
+            region: profile.region || prev.region,
+            provinceCode: profile.province_code || prev.provinceCode,
+            province: profile.province || prev.province,
+            cityCode: profile.city_code || prev.cityCode,
+            city: profile.city || prev.city,
+            barangayCode: profile.barangay_code || prev.barangayCode,
+            barangay: profile.barangay || prev.barangay
+          }));
+
+          if (profile.region_code) {
+            provincesByCode(profile.region_code).then(res => setProvinceOptions(res.map(p => ({ label: p.province_name, value: p.province_code }))));
+          }
+          if (profile.province_code) {
+            cities(profile.province_code).then(res => setCityOptions(res.map(c => ({ label: c.city_name, value: c.city_code }))));
+          }
+          if (profile.city_code) {
+            barangays(profile.city_code).then(res => setBarangayOptions(res.map(b => ({ label: b.brgy_name, value: b.brgy_code }))));
+          }
+        }
+      }).catch(err => console.error('Failed to pre-fill profile', err));
+    }
+  }, [user]);
 
   const formatCurrency = (val) => {
     return new Intl.NumberFormat('en-PH', {

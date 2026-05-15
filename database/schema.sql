@@ -13,6 +13,7 @@ DROP TABLE IF EXISTS `users_audit_log`;
 DROP TABLE IF EXISTS `users_otps`;
 DROP TABLE IF EXISTS `users_2fa`;
 DROP TABLE IF EXISTS `cart_items`;
+DROP TABLE IF EXISTS `user_profiles`;
 DROP TABLE IF EXISTS `order_items`;
 DROP TABLE IF EXISTS `deliveries`;
 DROP TABLE IF EXISTS `orders`;
@@ -233,6 +234,27 @@ CREATE TABLE IF NOT EXISTS `cart_items` (
     CONSTRAINT `fk_cart_product` FOREIGN KEY (`product_id`) REFERENCES `products` (`product_id`) ON DELETE CASCADE,
     INDEX `idx_cart_product` (`product_id`),
     UNIQUE KEY `idx_user_product` (`user_id`, `product_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- 8.5 user_profiles
+CREATE TABLE IF NOT EXISTS `user_profiles` (
+    `profile_id` INT AUTO_INCREMENT PRIMARY KEY,
+    `user_id` INT UNSIGNED NOT NULL,
+    `display_name` VARCHAR(150) NULL,
+    `phone` VARCHAR(30) NULL,
+    `region` VARCHAR(100) NULL,
+    `region_code` VARCHAR(20) NULL,
+    `province` VARCHAR(100) NULL,
+    `province_code` VARCHAR(20) NULL,
+    `city` VARCHAR(100) NULL,
+    `city_code` VARCHAR(20) NULL,
+    `barangay` VARCHAR(100) NULL,
+    `barangay_code` VARCHAR(20) NULL,
+    `street` VARCHAR(255) NULL,
+    `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
+    `updated_at` DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    CONSTRAINT `fk_profile_user` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE,
+    UNIQUE KEY `idx_profile_user` (`user_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- 9. notifications

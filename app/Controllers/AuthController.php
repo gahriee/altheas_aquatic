@@ -156,6 +156,10 @@ class AuthController
                 'id' => $userId
             ]);
 
+            // Automatically create a user_profiles row
+            $profileStmt = $db->prepare("INSERT INTO user_profiles (user_id) VALUES (:user_id)");
+            $profileStmt->execute(['user_id' => $userId]);
+
             Response::json([
                 'id' => $userId,
                 'message' => 'Account created successfully. Please login to continue.'

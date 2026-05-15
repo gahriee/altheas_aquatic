@@ -257,4 +257,116 @@ class UserModel
             return false;
         }
     }
+
+    /**
+     * ----------------------------------------
+     * getProfile
+     * ----------------------------------------
+     * Fetch the user_profiles row for the given user_id.
+     * Also join users.email so the response includes the customer's email.
+     * If no profile row exists, return a default array with just the user's email.
+     * 
+     * @param int $userId The user ID.
+     * @return array|null The user profile record.
+     */
+    public function getProfile(int $userId): ?array
+    {
+        try {
+            $stmt = $this->db->prepare("
+                SELECT p.*, u.email 
+                FROM users u
+                LEFT JOIN user_profiles p ON u.id = p.user_id
+                WHERE u.id = :user_id
+            ");
+            $stmt->execute(['user_id' => $userId]);
+            $row = $stmt->fetch();
+            
+            if (!$row) {
+                return null;
+            }
+
+            // If profile_id is null, it means no profile exists yet, but we have the email from the LEFT JOIN
+            if ($row['profile_id'] === null) {
+                return [
+                    'user_id' => $userId,
+                    'email' => $row['email'],
+                    'display_name' => '',
+                    'phone' => '',
+                    'region' => '',
+                    'region_code' => '',
+                    'province' => '',
+                    'province_code' => '',
+                    'city' => '',
+                    'city_code' => '',
+                    'barangay' => '',
+                    'barangay_code' => '',
+                    'street' => ''
+                ];
+            }
+
+            return $row;
+        } catch (\PDOException $e) {
+            error_log("UserModel::getProfile failed: " . $e->getMessage());
+            return null;
+        }
+    }
+
+    /**
+     * ----------------------------------------
+     * upsertProfile
+     * ----------------------------------------
+     * Insert or update the profile row.
+     * 
+     * @param int $userId The user ID.
+     * @param array $data The profile data.
+     * @return bool True on success.
+     */
+    public function upsertProfile(int $userId, array $data): bool
+    {
+        if ($userId <= 0) {
+            return false;
+        }
+
+        try {
+            $stmt = $this->db->prepare("
+                INSERT INTO user_profiles (
+                    user_id, display_name, phone, region, region_code, province, province_code, 
+                    city, city_code, barangay, barangay_code, street
+                ) VALUES (
+                    :user_id, :display_name, :phone, :region, :region_code, :province, :province_code,
+                    :city, :city_code, :barangay, :barangay_code, :street
+                )
+                ON DUPLICATE KEY UPDATE
+                    display_name = VALUES(display_name),
+                    phone = VALUES(phone),
+                    region = VALUES(region),
+                    region_code = VALUES(region_code),
+                    province = VALUES(province),
+                    province_code = VALUES(province_code),
+                    city = VALUES(city),
+                    city_code = VALUES(city_code),
+                    barangay = VALUES(barangay),
+                    barangay_code = VALUES(barangay_code),
+                    street = VALUES(street)
+            ");
+
+            return $stmt->execute([
+                'user_id' => $userId,
+                'display_name' => $data['display_name'] ?? null,
+                'phone' => $data['phone'] ?? null,
+                'region' => $data['region'] ?? null,
+                'region_code' => $data['region_code'] ?? null,
+                'province' => $data['province'] ?? null,
+                'province_code' => $data['province_code'] ?? null,
+                'city' => $data['city'] ?? null,
+                'city_code' => $data['city_code'] ?? null,
+                'barangay' => $data['barangay'] ?? null,
+                'barangay_code' => $data['barangay_code'] ?? null,
+                'street' => $data['street'] ?? null
+            ]);
+        } catch (\PDOException $e) {
+            error_log("UserModel::upsertProfile failed: " . $e->getMessage());
+            return false;
+        }
+    }
 }

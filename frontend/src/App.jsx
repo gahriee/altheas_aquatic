@@ -15,6 +15,7 @@ import Register from './pages/storefront/Register';
 import StorefrontLogin from './pages/storefront/Login';
 import MyOrders from './pages/storefront/MyOrders';
 import MyOrderDetail from './pages/storefront/MyOrderDetail';
+import MyProfile from './pages/storefront/MyProfile';
 
 // Admin Pages
 import Login from './pages/admin/Login';
@@ -53,6 +54,7 @@ export default function App() {
           <Route path="login" element={<StorefrontLogin />} />
           <Route path="my-orders" element={<MyOrders />} />
           <Route path="my-orders/:id" element={<MyOrderDetail />} />
+          <Route path="my-profile" element={<MyProfile />} />
         </Route>
 
         {/* Admin Login & Password Reset */}

@@ -49,6 +49,7 @@
 ### Phase 3: Post-Delivery Enhancements — Current Focus
 
 - [x] Audit Logs Module: track all state-changing API actions (create, update, delete) with admin page for review
+- [x] Customer Profile & Saved Delivery Address: view/edit personal info and default address, auto-fill checkout (Ticket: `2026-05-15-04`)
 
 ---
 
@@ -93,6 +94,7 @@
 | **Storefront — Product Detail**  | `[x]`  | Image, description, price, quantity selector, add-to-cart                                       |
 | **Storefront — Cart & Checkout** | `[x]`  | Cart list, subtotals, customer info form, PayMongo GCash integration                            |
 | **Storefront — My Orders**       | `[x]`  | Customer order history list with status tabs and itemised detail view                           |
+| **Storefront — My Profile**      | `[x]`  | Customer profile page with saved delivery address and checkout pre-fill                         |
 | **Order Confirmation**           | `[x]`  | Order ID, itemised summary, payment status polling, return-to-shop link                         |
 
 _Key: `[x]` = Complete, `[~]` = In Progress, `[ ]` = Not Started, `[!]` = Blocked_

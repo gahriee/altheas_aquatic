@@ -1,12 +1,27 @@
 import { Link, useNavigate } from 'react-router-dom';
-import { ShoppingCart, Waves, LogIn, LogOut, Package } from 'lucide-react';
+import { ShoppingCart, Waves, LogIn, LogOut, Package, User, ChevronDown } from 'lucide-react';
 import { useCart } from '../../context/CartContext';
 import { useAuth } from '../../context/AuthContext';
+import { useState, useRef, useEffect } from 'react';
+import ConfirmDialog from '../shared/ConfirmDialog';
 
 export default function Navbar() {
   const { count } = useCart();
   const { user, logout } = useAuth();
   const navigate = useNavigate();
+  const [dropdownOpen, setDropdownOpen] = useState(false);
+  const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
+  const dropdownRef = useRef(null);
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setDropdownOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
 
   return (
     <nav className="bg-white border-b border-sage-100 h-20">
@@ -18,12 +33,7 @@ export default function Navbar() {
 
         <div className="flex items-center gap-6">
           <Link to="/" className="text-sage-500 hover:text-mint-300 font-medium decoration-transparent hidden sm:block">Home</Link>
-          {user && (
-            <Link to="/my-orders" className="text-sage-500 hover:text-mint-300 font-medium decoration-transparent flex items-center gap-1.5 hidden sm:flex">
-              <Package size={18} />
-              My Orders
-            </Link>
-          )}
+
           
           <div className="flex items-center gap-4 bg-sage-50 p-1.5 rounded-2xl border border-sage-100">
             <Link id="nav-cart-icon" to="/cart" className="relative p-2.5 text-sage-500 hover:text-teal-500 transition rounded-xl hover:bg-white decoration-transparent">
@@ -38,14 +48,50 @@ export default function Navbar() {
             <div className="w-px h-6 bg-sage-100 mx-1" />
 
             {user ? (
-              <div className="flex items-center gap-2">
+              <div className="relative" ref={dropdownRef}>
                 <button
-                  onClick={logout}
-                  className="p-2.5 text-sage-500 hover:text-coral-500 transition rounded-xl hover:bg-white"
-                  title="Logout"
+                  onClick={() => setDropdownOpen(!dropdownOpen)}
+                  className="flex items-center gap-2 p-1 text-sage-500 hover:text-teal-500 transition rounded-xl hover:bg-white focus:outline-none"
                 >
-                  <LogOut size={22} />
+                  <div className="w-8 h-8 rounded-full bg-teal-100 flex items-center justify-center text-teal-600">
+                    <User size={18} />
+                  </div>
+                  <ChevronDown size={16} className={`transition-transform duration-200 ${dropdownOpen ? 'rotate-180' : ''}`} />
                 </button>
+
+                {dropdownOpen && (
+                  <div className="absolute right-0 mt-3 w-48 bg-white rounded-2xl shadow-lg border border-sage-100 overflow-hidden z-50">
+                    <div className="p-2 space-y-1">
+                      <Link
+                        to="/my-profile"
+                        onClick={() => setDropdownOpen(false)}
+                        className="flex items-center gap-3 px-3 py-2 text-sm font-medium text-sage-600 hover:text-teal-600 hover:bg-sage-50 rounded-xl transition-colors decoration-transparent"
+                      >
+                        <User size={16} />
+                        My Profile
+                      </Link>
+                      <Link
+                        to="/my-orders"
+                        onClick={() => setDropdownOpen(false)}
+                        className="flex items-center gap-3 px-3 py-2 text-sm font-medium text-sage-600 hover:text-teal-600 hover:bg-sage-50 rounded-xl transition-colors decoration-transparent"
+                      >
+                        <Package size={16} />
+                        My Orders
+                      </Link>
+                      <div className="h-px bg-sage-100 my-1" />
+                      <button
+                        onClick={() => {
+                          setDropdownOpen(false);
+                          setShowLogoutConfirm(true);
+                        }}
+                        className="w-full flex items-center gap-3 px-3 py-2 text-sm font-medium text-coral-500 hover:bg-coral-50 rounded-xl transition-colors text-left"
+                      >
+                        <LogOut size={16} />
+                        Logout
+                      </button>
+                    </div>
+                  </div>
+                )}
               </div>
             ) : (
               <button
@@ -59,6 +105,17 @@ export default function Navbar() {
           </div>
         </div>
       </div>
+
+      <ConfirmDialog 
+        isOpen={showLogoutConfirm}
+        title="Confirm Logout"
+        message="Are you sure you want to log out?"
+        onConfirm={() => {
+          setShowLogoutConfirm(false);
+          logout();
+        }}
+        onCancel={() => setShowLogoutConfirm(false)}
+      />
     </nav>
   );
 }

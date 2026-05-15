@@ -10,6 +10,9 @@ SET NAMES utf8mb4;
 INSERT INTO `users` (`email`, `password`, `status`, `verified`, `roles_mask`, `registered`, `role_label`) VALUES 
 ('admin@example.com', '$2y$12$LFjLiZZTmuoHxdVh3Ckef.bH0zOCSn0kZ1XBeB6vKKgWXhDAshiXC', 0, 1, 1, UNIX_TIMESTAMP(), 'admin');
 
+-- Default admin profile
+INSERT INTO `user_profiles` (`user_id`, `display_name`) VALUES (1, 'System Admin');
+
 -- Seed categories
 INSERT INTO `categories` (`name`, `description`) VALUES 
 ('Aquatic Pets', 'Live fish, shrimp, and snails'),
