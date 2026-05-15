@@ -18,7 +18,7 @@ export default function MyOrders() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [activeTab, setActiveTab] = useState('all');
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, loading: authLoading } = useAuth();
   const navigate = useNavigate();
 
   const fetchOrders = useCallback(async () => {
@@ -35,12 +35,14 @@ export default function MyOrders() {
   }, [activeTab]);
 
   useEffect(() => {
+    if (authLoading) return;
     if (!isAuthenticated()) {
       navigate('/login');
       return;
     }
     fetchOrders();
-  }, [fetchOrders, isAuthenticated, navigate]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [authLoading, isAuthenticated, navigate]);
 
   const getStatusConfig = (status) => {
     switch (status) {
@@ -60,6 +62,14 @@ export default function MyOrders() {
       default: return null;
     }
   };
+
+  if (authLoading) {
+    return (
+      <div className="py-20">
+        <LoadingSpinner size="lg" className="text-teal-500" />
+      </div>
+    );
+  }
 
   if (!isAuthenticated()) return null;
 

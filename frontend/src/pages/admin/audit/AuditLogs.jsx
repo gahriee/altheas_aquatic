@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect } from 'react';
 import { fetchAuditLogs } from '../../../api/auditLogs';
 import { 
   ClipboardList, 
@@ -40,6 +40,7 @@ export default function AuditLogs() {
 
   useEffect(() => {
     loadLogs();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [page, actionFilter, resourceFilter, debouncedSearch, fromDate, toDate]);
 
   async function loadLogs() {

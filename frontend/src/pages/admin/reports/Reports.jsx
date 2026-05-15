@@ -47,6 +47,7 @@ export default function Reports() {
 
   useEffect(() => {
     fetchData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [activeTab, dateRange]);
 
   const handleExport = () => {

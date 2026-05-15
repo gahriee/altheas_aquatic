@@ -28,6 +28,7 @@ export default function UserForm() {
     if (isEditMode) {
       loadUser();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id]);
 
   async function loadUser() {

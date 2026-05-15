@@ -8,7 +8,7 @@ import LoadingSpinner from '../../components/shared/LoadingSpinner';
 export default function MyOrderDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, loading: authLoading } = useAuth();
   
   const [order, setOrder] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -31,12 +31,14 @@ export default function MyOrderDetail() {
   }, [id, navigate]);
 
   useEffect(() => {
+    if (authLoading) return;
     if (!isAuthenticated()) {
       navigate('/login');
       return;
     }
     fetchOrder();
-  }, [fetchOrder, isAuthenticated, navigate]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [authLoading, isAuthenticated, navigate]);
 
   const getStatusConfig = (status) => {
     switch (status) {
@@ -47,6 +49,14 @@ export default function MyOrderDetail() {
       default: return { color: 'text-sage-500', bg: 'bg-sage-50 border-sage-100', icon: AlertCircle };
     }
   };
+
+  if (authLoading) {
+    return (
+      <div className="max-w-4xl mx-auto py-20 px-4">
+        <LoadingSpinner size="lg" className="text-teal-500" />
+      </div>
+    );
+  }
 
   if (!isAuthenticated()) return null;
 
