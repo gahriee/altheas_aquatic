@@ -11,6 +11,10 @@
     {
       "source": "/image.php",
       "destination": "https://altheas-aquatic.onrender.com/image.php"
+    },
+    {
+      "source": "/(.*)",
+      "destination": "/index.html"
     }
   ]
 }
