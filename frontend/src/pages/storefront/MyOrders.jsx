@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Package, Clock, CheckCircle, XCircle, AlertCircle, Eye } from 'lucide-react';
 import { getMyOrders } from '../../api/orders';
@@ -21,25 +21,70 @@ const STATUS_TABS = [
 export default function MyOrders() {
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [loadingMore, setLoadingMore] = useState(false);
   const [error, setError] = useState(null);
   const [activeTab, setActiveTab] = useState('all');
+  const [page, setPage] = useState(1);
+  const [hasMore, setHasMore] = useState(true);
   const { isAuthenticated, loading: authLoading } = useAuth();
   const navigate = useNavigate();
+  const observerTarget = useRef(null);
+
+  const LIMIT = 10;
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      entries => {
+        if (entries[0].isIntersecting && hasMore && !loadingMore && !loading) {
+          setPage(prev => prev + 1);
+        }
+      },
+      { threshold: 0.1 }
+    );
+
+    if (observerTarget.current) {
+      observer.observe(observerTarget.current);
+    }
+
+    const currentTarget = observerTarget.current;
+    return () => {
+      if (currentTarget) observer.unobserve(currentTarget);
+    };
+  }, [hasMore, loadingMore, loading]);
 
   /**
    * Fetches the customer's orders from the API, filtered by activeTab status.
    */
-  const fetchOrders = useCallback(async () => {
+  const fetchOrders = useCallback(async (currentPage = 1, append = false) => {
     try {
-      setLoading(true);
+      if (!append) setLoading(true);
+      else setLoadingMore(true);
+      
       setError(null);
-      const data = await getMyOrders({ status: activeTab });
-      setOrders(data.orders || []);
+      const offset = (currentPage - 1) * LIMIT;
+      const data = await getMyOrders({ status: activeTab, limit: LIMIT, offset });
+      
+      const newOrders = data.orders || [];
+      if (newOrders.length < LIMIT) {
+        setHasMore(false);
+      } else {
+        setHasMore(true);
+      }
+
+      setOrders(prev => append ? [...prev, ...newOrders] : newOrders);
     } catch (err) {
       setError(err.message || 'Failed to fetch orders');
     } finally {
       setLoading(false);
+      setLoadingMore(false);
     }
+  }, [activeTab]);
+
+  useEffect(() => {
+    setOrders([]);
+    setPage(1);
+    setHasMore(true);
+    setLoading(true);
   }, [activeTab]);
 
   useEffect(() => {
@@ -48,8 +93,8 @@ export default function MyOrders() {
       navigate('/login');
       return;
     }
-    fetchOrders();
-  }, [authLoading, isAuthenticated, navigate]);
+    fetchOrders(page, page > 1);
+  }, [authLoading, isAuthenticated, navigate, fetchOrders, page]);
 
   /**
    * Returns color, background, and icon config for a given order status.
@@ -189,6 +234,12 @@ export default function MyOrders() {
               </div>
             );
           })}
+          
+          {hasMore && (
+            <div ref={observerTarget} className="py-4 flex justify-center">
+              {loadingMore && <LoadingSpinner message="Loading more orders..." />}
+            </div>
+          )}
         </div>
       )}
     </div>

@@ -368,6 +368,12 @@ class OrderModel
 
         $sql .= " ORDER BY o.ordered_at DESC";
 
+        if (isset($params['limit'])) {
+            $limit = (int) $params['limit'];
+            $offset = isset($params['offset']) ? (int) $params['offset'] : 0;
+            $sql .= " LIMIT {$limit} OFFSET {$offset}";
+        }
+
         $stmt = $this->db->prepare($sql);
         $stmt->execute($binds);
         return $stmt->fetchAll();

@@ -140,7 +140,9 @@ class OrderController
         $userId = Auth::userId();
         
         $params = [
-            'status' => $_GET['status'] ?? null
+            'status' => $_GET['status'] ?? null,
+            'limit' => isset($_GET['limit']) ? (int) $_GET['limit'] : null,
+            'offset' => isset($_GET['offset']) ? (int) $_GET['offset'] : null
         ];
 
         $orders = $this->orderModel->getByUserId($userId, $params);
