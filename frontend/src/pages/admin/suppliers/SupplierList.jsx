@@ -123,8 +123,8 @@ export default function SupplierList() {
     <div className="space-y-6">
       <div className="flex justify-between items-start">
         <div>
-          <h1 className="text-xl xl:text-3xl font-bold font-display text-teal-600">Suppliers</h1>
-          <p className="text-sage-500 mt-1">Manage your aquatic livestock providers and deliveries.</p>
+          <h1 className="text-2xl xl:text-4xl font-bold font-display text-teal-600 tracking-tight">Suppliers</h1>
+          <p className="text-sage-500 text-sm xl:text-lg mt-1">Manage your aquatic livestock providers and deliveries.</p>
         </div>
       </div>
 

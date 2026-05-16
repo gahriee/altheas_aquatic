@@ -98,8 +98,7 @@ export default function AuditLogs() {
     <div className="space-y-6">
       <div className="flex justify-between items-start">
         <div>
-          <h1 className="text-xl xl:text-3xl font-bold font-display text-teal-500 tracking-tight flex items-center gap-2">
-            <ClipboardList size={28} />
+          <h1 className="text-2xl xl:text-4xl font-bold font-display text-teal-600 tracking-tight">
             Audit Logs
           </h1>
           <p className="text-sage-500 text-sm xl:text-lg mt-1">Track all system changes and admin actions</p>
