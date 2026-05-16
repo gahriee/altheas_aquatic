@@ -105,9 +105,9 @@ export default function Cart() {
               {items.map((item) => (
                 <div 
                   key={item.id}
-                  className="group bg-white p-6 rounded-[32px] border border-sage-100 flex flex-col sm:flex-row items-center gap-6"
+                  className="group bg-white p-4 sm:p-6 rounded-[24px] sm:rounded-[32px] border border-sage-100 flex flex-row gap-4 sm:gap-6"
                 >
-                <div className="relative w-20 h-20 sm:w-32 sm:h-32 rounded-2xl sm:rounded-[24px] overflow-hidden bg-sage-50 shrink-0">
+                  <div className="relative w-24 h-24 sm:w-32 sm:h-32 rounded-[20px] sm:rounded-[24px] overflow-hidden bg-sage-50 shrink-0">
                     <img
                       src={item.image_path ? `/image.php?file=${item.image_path}` : 'https://placehold.co/200x200?text=No+Image'}
                       alt={item.name}
@@ -116,46 +116,48 @@ export default function Cart() {
                     <div className="absolute inset-0 bg-black/5" />
                   </div>
 
-                  <div className="flex-1 min-w-0">
-                    <h3 className="text-base sm:text-xl font-bold font-display text-sage-800 truncate mb-1">{item.name}</h3>
-                    <p className="text-teal-600 font-bold text-base sm:text-lg mb-2 sm:mb-4">{formatCurrency(item.price)}</p>
-                    
-                    <div className="flex items-center gap-4">
-                      <button 
-                        onClick={() => handleRemoveItem(item)}
-                        className="text-sage-300 hover:text-coral-500 transition-colors p-2"
-                        title="Remove Item"
-                      >
-                        <Trash2 size={18} />
-                      </button>
-                      <div className="w-px h-6 bg-sage-100" />
-                      <Link to={`/product/${item.id}`} className="text-[10px] font-bold uppercase tracking-widest text-teal-500 hover:text-teal-600">
-                        View Product
-                      </Link>
+                  <div className="flex-1 min-w-0 flex flex-col sm:flex-row sm:items-center justify-between gap-4 sm:gap-6">
+                    <div className="flex-1 min-w-0 flex flex-col h-full justify-center">
+                      <h3 className="text-base sm:text-xl font-bold font-display text-sage-800 truncate mb-1">{item.name}</h3>
+                      <p className="text-teal-600 font-bold text-sm sm:text-lg mb-3 sm:mb-4">{formatCurrency(item.price)}</p>
+                      
+                      <div className="flex items-center gap-3 sm:gap-4 mt-auto">
+                        <button 
+                          onClick={() => handleRemoveItem(item)}
+                          className="text-sage-300 hover:text-coral-500 transition-colors p-1.5 -ml-1.5"
+                          title="Remove Item"
+                        >
+                          <Trash2 size={16} className="sm:w-[18px] sm:h-[18px]" />
+                        </button>
+                        <div className="w-px h-4 bg-sage-100" />
+                        <Link to={`/product/${item.id}`} className="text-[10px] sm:text-[10px] font-bold uppercase tracking-widest text-teal-500 hover:text-teal-600">
+                          View Product
+                        </Link>
+                      </div>
                     </div>
-                  </div>
 
-                  <div className="flex flex-col items-end gap-2 sm:gap-3 shrink-0">
-                    <div className="flex items-center bg-sage-50 p-1.5 rounded-2xl border border-sage-100">
-                      <button
-                        onClick={() => handleDecreaseQuantity(item)}
-                        className="p-2 text-sage-400 hover:text-coral-500 transition-colors"
-                      >
-                        <Minus size={18} />
-                      </button>
-                      <span className="w-10 text-center font-bold text-sage-800 text-lg">
-                        {item.qty}
-                      </span>
-                      <button
-                        onClick={() => updateItem(item.id, item.qty + 1)}
-                        className="p-2 text-sage-400 hover:text-teal-500 transition-colors"
-                      >
-                        <Plus size={18} />
-                      </button>
+                    <div className="flex flex-row sm:flex-col items-center sm:items-end justify-between sm:justify-center gap-3 shrink-0 mt-2 sm:mt-0 pt-3 sm:pt-0 border-t sm:border-0 border-sage-50">
+                      <div className="flex items-center bg-sage-50 p-1 sm:p-1.5 rounded-xl sm:rounded-2xl border border-sage-100">
+                        <button
+                          onClick={() => handleDecreaseQuantity(item)}
+                          className="p-1.5 sm:p-2 text-sage-400 hover:text-coral-500 transition-colors"
+                        >
+                          <Minus size={16} className="sm:w-[18px] sm:h-[18px]" />
+                        </button>
+                        <span className="w-8 sm:w-10 text-center font-bold text-sage-800 text-sm sm:text-lg">
+                          {item.qty}
+                        </span>
+                        <button
+                          onClick={() => updateItem(item.id, item.qty + 1)}
+                          className="p-1.5 sm:p-2 text-sage-400 hover:text-teal-500 transition-colors"
+                        >
+                          <Plus size={16} className="sm:w-[18px] sm:h-[18px]" />
+                        </button>
+                      </div>
+                      <p className="text-base sm:text-xl font-bold font-display text-sage-800">
+                        {formatCurrency(item.subtotal)}
+                      </p>
                     </div>
-                    <p className="text-xl font-bold font-display text-sage-800">
-                      {formatCurrency(item.subtotal)}
-                    </p>
                   </div>
                 </div>
               ))}
@@ -201,20 +203,6 @@ export default function Cart() {
                   <div className="w-2 h-2 rounded-full bg-emerald-500" />
                   <span className="text-[10px] font-bold uppercase tracking-widest text-sage-300">Secure Transaction</span>
                 </div>
-              </div>
-            </div>
-
-            <div className="bg-white p-5 sm:p-8 rounded-3xl sm:rounded-[40px] border border-sage-100 space-y-4 shadow-none">
-              <p className="text-[10px] font-bold uppercase tracking-widest text-sage-300">Available Coupons?</p>
-              <div className="flex gap-2">
-                <input 
-                  type="text" 
-                  placeholder="PROMO CODE" 
-                  className="flex-1 bg-sage-50 border border-sage-100 rounded-2xl px-4 py-3 text-sm font-bold placeholder:text-sage-200 focus:outline-none focus:ring-2 focus:ring-teal-500/10"
-                />
-                <button className="bg-sage-100 hover:bg-sage-200 text-sage-500 px-6 rounded-2xl font-bold text-xs uppercase tracking-widest transition-colors">
-                  Apply
-                </button>
               </div>
             </div>
           </div>

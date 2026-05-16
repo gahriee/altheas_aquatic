@@ -18,7 +18,7 @@ const Button = forwardRef(function Button({
     danger: 'bg-coral-500 hover:bg-coral-600 text-white shadow-lg shadow-coral-500/20 focus:ring-coral-500',
   };
 
-  const baseStyles = 'flex justify-center items-center gap-3 py-4 px-6 rounded-2xl text-sm font-semibold transition-all outline-none focus:ring-2 focus:ring-offset-2 active:scale-[0.98]';
+  const baseStyles = 'flex justify-center items-center gap-2 sm:gap-3 py-3 px-4 sm:py-4 sm:px-6 rounded-xl sm:rounded-2xl text-xs sm:text-sm font-semibold transition-all outline-none focus:ring-2 focus:ring-offset-2 active:scale-[0.98]';
   const disabledStyles = 'opacity-50 cursor-not-allowed pointer-events-none';
 
   return (
