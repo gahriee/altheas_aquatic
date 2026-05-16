@@ -85,18 +85,18 @@ export default function Cart() {
       <div className="max-w-7xl mx-auto px-4 py-8">
         <div className="flex flex-col lg:flex-row gap-12 items-start">
           <div className="flex-1 space-y-6 w-full">
-            <div className="flex items-center justify-between mb-4 sm:mb-8">
-        <h1 className="text-2xl sm:text-4xl font-bold font-display text-sage-800 tracking-tight flex items-center gap-2 sm:gap-4">
-                Your Selection
-                <span className="text-sm font-bold bg-teal-100 text-teal-600 px-4 py-1.5 rounded-full uppercase tracking-widest">
+            <div className="flex flex-wrap items-center justify-between gap-4 mb-6 sm:mb-8">
+              <h1 className="text-2xl sm:text-4xl font-bold font-display text-sage-800 tracking-tight flex flex-wrap items-center gap-3 sm:gap-4">
+                <span>Your Selection</span>
+                <span className="text-[10px] sm:text-sm font-bold bg-teal-100 text-teal-600 px-3 py-1 sm:px-4 sm:py-1.5 rounded-full uppercase tracking-widest whitespace-nowrap">
                   {count} {count === 1 ? 'Item' : 'Items'}
                 </span>
               </h1>
               <button 
                 onClick={handleClearCart}
-                className="text-sage-400 hover:text-coral-500 font-bold text-xs uppercase tracking-widest flex items-center gap-2 transition-colors"
+                className="text-sage-400 hover:text-coral-500 font-bold text-[10px] sm:text-xs uppercase tracking-widest flex items-center gap-1.5 sm:gap-2 transition-colors whitespace-nowrap shrink-0"
               >
-                <Trash2 size={14} />
+                <Trash2 size={14} className="sm:w-4 sm:h-4" />
                 Clear Cart
               </button>
             </div>
