@@ -51,7 +51,7 @@ export default function ConfirmationDialog({
   return createPortal(
     <div className="fixed inset-0 z-[110] flex items-center justify-center p-4">
       {/* Backdrop - Explicitly no onClick for non-closable background */}
-      <div className="absolute inset-0 bg-sage-900/40 backdrop-blur-sm animate-in fade-in duration-300" />
+      <div className="absolute inset-0 bg-black/60 animate-in fade-in duration-300" />
 
       {/* Dialog Container */}
       <div className="relative w-full max-w-md bg-white rounded-[2rem] shadow-2xl shadow-sage-900/30 border border-sage-100 overflow-hidden animate-in zoom-in-95 duration-300">
