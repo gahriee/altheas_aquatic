@@ -27,8 +27,8 @@ export default function Navbar() {
     <nav className="bg-white border-b border-sage-100 h-20">
       <div className="max-w-7xl mx-auto px-4 h-full flex items-center justify-between">
         <Link to="/" className="flex items-center gap-3 group decoration-transparent">
-          <img src="/logo_nobg.svg" alt="Logo" className="w-16 h-16 group-hover:scale-105 transition-transform object-contain" />
-          <span className="text-2xl font-bold font-display text-teal-600 tracking-tight">Althea's Aquatic Farm</span>
+          <img src="/logo_nobg.svg" alt="Logo" className="w-12 h-12 sm:w-16 sm:h-16 group-hover:scale-105 transition-transform object-contain" />
+          <span className="hidden sm:block text-2xl font-bold font-display text-teal-600 tracking-tight">Althea's Aquatic Farm</span>
         </Link>
 
         <div className="flex items-center gap-6">
