@@ -32,7 +32,7 @@ export default function ProductCard({ id, name, price, imagePath }) {
   };
 
   return (
-    <div className="group bg-white rounded-[32px] border border-sage-100 overflow-hidden hover:shadow-2xl hover:shadow-teal-500/10 transition-all duration-500 hover:-translate-y-1">
+    <div className="group bg-white rounded-[24px] sm:rounded-[32px] border border-sage-100 overflow-hidden hover:shadow-2xl hover:shadow-teal-500/10 transition-all duration-500 hover:-translate-y-1">
       <Link to={`/product/${id}`} className="block relative aspect-square overflow-hidden bg-sage-50 group-hover:after:opacity-100 after:opacity-0 after:absolute after:inset-0 after:bg-teal-500/10 after:transition-opacity after:duration-500">
         <img
           src={imagePath ? `/image.php?file=${imagePath}` : 'https://placehold.co/400x400?text=No+Image'}
@@ -42,24 +42,24 @@ export default function ProductCard({ id, name, price, imagePath }) {
         <div className="absolute inset-0 bg-black/5 group-hover:bg-transparent transition-colors" />
       </Link>
       
-      <div className="p-6">
+      <div className="p-4 sm:p-6">
         <Link to={`/product/${id}`} className="block mb-1 group-hover:text-teal-600 transition-colors decoration-transparent text-sage-800">
-          <h3 className="text-xl font-bold font-display truncate tracking-tight">{name}</h3>
+          <h3 className="text-base sm:text-xl font-bold font-display truncate tracking-tight">{name}</h3>
         </Link>
-        <p className="text-2xl font-bold font-display text-teal-600 mb-6 tracking-tight">₱{Number(price).toFixed(2)}</p>
+        <p className="text-lg sm:text-2xl font-bold font-display text-teal-600 mb-4 sm:mb-6 tracking-tight">₱{Number(price).toFixed(2)}</p>
         
         <button
           onClick={handleAddToCart}
-          className={`w-full flex items-center justify-center gap-3 font-semibold py-4 rounded-2xl transition-all duration-300 shadow-lg active:scale-95 ${
+          className={`w-full flex items-center justify-center gap-2 sm:gap-3 font-semibold py-3 sm:py-4 rounded-xl sm:rounded-2xl transition-all duration-300 shadow-lg active:scale-95 ${
             added
               ? 'bg-emerald-500 shadow-emerald-500/20 scale-[0.97]'
               : 'bg-teal-500 hover:bg-teal-600 shadow-teal-500/20'
           }`}
         >
-          <span className={`transition-all duration-300 ${added ? 'scale-125' : 'scale-100'}`}>
-            {added ? <Check size={20} strokeWidth={3} className="text-white" /> : <ShoppingCart size={20} className="text-white" />}
+          <span className={`transition-all duration-300 ${added ? 'scale-125' : 'scale-100'} shrink-0`}>
+            {added ? <Check size={16} strokeWidth={3} className="text-white sm:w-5 sm:h-5" /> : <ShoppingCart size={16} className="text-white sm:w-5 sm:h-5" />}
           </span>
-          <span className="text-white">{added ? 'Added!' : 'Add to Cart'}</span>
+          <span className="text-white text-xs sm:text-base whitespace-nowrap">{added ? 'Added!' : 'Add to Cart'}</span>
         </button>
       </div>
     </div>
