@@ -4,7 +4,7 @@ import { useAuth } from '../../context/AuthContext';
 import { fetchProfile, updateProfile } from '../../api/profile';
 import { regions, provincesByCode, cities, barangays } from 'select-philippines-address';
 import { toast } from 'react-hot-toast';
-import { Loader2, MapPin, User, Mail, Phone, ShieldCheck } from 'lucide-react';
+import { Loader2, MapPin, User, Mail} from 'lucide-react';
 import Button from '../../components/ui/Button';
 import Input from '../../components/ui/Input';
 import Label from '../../components/ui/Label';

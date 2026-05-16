@@ -43,8 +43,8 @@ export default function Login() {
         <div className="mx-auto h-24 w-24 bg-white rounded-[2rem] flex items-center justify-center shadow-2xl shadow-teal-600/10 border border-teal-50 p-3 mb-8">
            <img src="/logo_nobg.svg" alt="Logo" className="w-full h-full object-contain" />
         </div>
-        <h2 className="text-center text-4xl font-bold font-display text-teal-600 tracking-tight uppercase">
-          Althea's <span className="block text-teal-400 text-2xl mt-1 tracking-[0.3em]">Aquatic Farm</span>
+        <h2 className="text-center text-2xl xl:text-4xl font-bold font-display text-teal-600 tracking-tight uppercase">
+          Althea's <span className="block text-teal-400 text-xl xl:text-2xl mt-1 tracking-[0.3em]">Aquatic Farm</span>
         </h2>
         <p className="mt-2 text-center text-sm text-sage-500 font-medium">
           Admin Portal Login

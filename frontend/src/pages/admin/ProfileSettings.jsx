@@ -63,7 +63,7 @@ export default function ProfileSettings() {
   return (
     <div className="max-w-2xl mx-auto space-y-6">
       <div>
-        <h2 className="text-2xl font-bold font-display text-sage-800 tracking-tight">Profile Settings</h2>
+        <h2 className="text-xl xl:text-2xl font-bold font-display text-sage-800 tracking-tight">Profile Settings</h2>
         <p className="text-sage-500 text-sm mt-1">Manage your account details and security settings.</p>
       </div>
 

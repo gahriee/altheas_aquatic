@@ -109,7 +109,7 @@ export default function NotificationHistory() {
       {/* Header & Actions */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
-          <h1 className="text-2xl font-bold font-display text-sage-800 flex items-center gap-3">
+          <h1 className="text-xl xl:text-2xl font-bold font-display text-sage-800 flex items-center gap-3">
             <div className="p-2 bg-teal-100 text-teal-600 rounded-xl">
               <Bell size={24} />
             </div>

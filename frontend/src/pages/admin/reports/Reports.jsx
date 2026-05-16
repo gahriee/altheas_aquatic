@@ -57,8 +57,8 @@ export default function Reports() {
     <div className="space-y-6">
       <div className="flex justify-between items-start">
         <div>
-          <h1 className="text-4xl font-bold font-display text-teal-600 tracking-tight">Reports</h1>
-          <p className="text-sage-500 text-lg mt-1">Business performance and analytics</p>
+          <h1 className="text-2xl xl:text-4xl font-bold font-display text-teal-600 tracking-tight">Reports</h1>
+          <p className="text-sage-500 text-sm xl:text-lg mt-1">Business performance and analytics</p>
         </div>
       </div>
 
@@ -136,15 +136,15 @@ export default function Reports() {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
                   <div className="bg-teal-50 rounded-lg p-6 border border-teal-100">
                     <p className="text-teal-600 font-medium mb-1">Total Orders</p>
-                    <p className="text-3xl font-bold font-display text-teal-700">{data.sales.total_orders}</p>
+                    <p className="text-xl xl:text-3xl font-bold font-display text-teal-700">{data.sales.total_orders}</p>
                   </div>
                   <div className="bg-mint-50 rounded-lg p-6 border border-mint-100">
                     <p className="text-teal-600 font-medium mb-1">Total Revenue</p>
-                    <p className="text-3xl font-bold font-display text-teal-700">₱{data.sales.total_revenue.toLocaleString(undefined, {minimumFractionDigits: 2})}</p>
+                    <p className="text-xl xl:text-3xl font-bold font-display text-teal-700">₱{data.sales.total_revenue.toLocaleString(undefined, {minimumFractionDigits: 2})}</p>
                   </div>
                 </div>
 
-                <h3 className="text-lg font-bold text-teal-600 font-display">Top Selling Products</h3>
+                <h3 className="text-base xl:text-lg font-bold text-teal-600 font-display">Top Selling Products</h3>
                 <div className="overflow-x-auto">
                   <table className="w-full text-left">
                     <thead className="bg-sage-50 border-y border-sage-200 text-sage-500 text-sm">

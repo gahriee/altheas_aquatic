@@ -133,7 +133,7 @@ export default function UserForm() {
             <ArrowLeft size={20} />
           </Link>
           <div>
-            <h2 className="text-2xl font-bold font-display text-sage-800 tracking-tight">
+            <h2 className="text-xl xl:text-2xl font-bold font-display text-sage-800 tracking-tight">
               {isEditMode ? 'Edit User' : 'Add New User'}
             </h2>
             <p className="text-sage-500 text-sm mt-1">

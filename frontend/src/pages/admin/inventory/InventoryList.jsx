@@ -199,8 +199,8 @@ export default function InventoryList() {
     <div className="space-y-6">
       <div className="flex justify-between items-start">
         <div>
-          <h1 className="text-4xl font-bold font-display text-teal-600 tracking-tight">Inventory</h1>
-          <p className="text-sage-500 text-lg mt-1">Manage your aquatic species catalog and stock levels.</p>
+          <h1 className="text-2xl xl:text-4xl font-bold font-display text-teal-600 tracking-tight">Inventory</h1>
+          <p className="text-sage-500 text-sm xl:text-lg mt-1">Manage your aquatic species catalog and stock levels.</p>
         </div>
       </div>
 
@@ -225,8 +225,8 @@ export default function InventoryList() {
                   Low Stock Filter
                 </p>
               </div>
-              <p className={`text-3xl font-bold font-display ${showLowStockOnly ? 'text-white' : 'text-teal-600'}`}>
-                {lowStockProducts.length} <span className={`text-lg font-medium ${showLowStockOnly ? 'text-teal-200' : 'text-sage-400'}`}>Items</span>
+              <p className={`text-xl xl:text-3xl font-bold font-display ${showLowStockOnly ? 'text-white' : 'text-teal-600'}`}>
+                {lowStockProducts.length} <span className={`text-base xl:text-lg font-medium ${showLowStockOnly ? 'text-teal-200' : 'text-sage-400'}`}>Items</span>
               </p>
               <p className={`text-xs mt-3 font-medium flex items-center gap-1.5 ${showLowStockOnly ? 'text-teal-100' : 'text-sage-400'}`}>
                 {showLowStockOnly ? (
@@ -247,7 +247,7 @@ export default function InventoryList() {
           <div className="flex items-start justify-between relative z-10">
             <div>
               <p className="text-coral-600/80 text-sm font-bold uppercase tracking-wider mb-2">Critical Stock</p>
-              <p className="text-3xl font-bold font-display text-coral-600">{criticalCount} <span className="text-lg font-medium text-coral-400">Items</span></p>
+              <p className="text-xl xl:text-3xl font-bold font-display text-coral-600">{criticalCount} <span className="text-base xl:text-lg font-medium text-coral-400">Items</span></p>
             </div>
             <div className="p-3 rounded-xl bg-coral-50 text-coral-500 border border-coral-100">
               <PackageX size={24} />
@@ -263,7 +263,7 @@ export default function InventoryList() {
           <div className="flex items-start justify-between relative z-10">
             <div>
               <p className="text-amber-600/80 text-sm font-bold uppercase tracking-wider mb-2">Warning Stock</p>
-              <p className="text-3xl font-bold font-display text-amber-600">{warningCount} <span className="text-lg font-medium text-amber-400">Items</span></p>
+              <p className="text-xl xl:text-3xl font-bold font-display text-amber-600">{warningCount} <span className="text-base xl:text-lg font-medium text-amber-400">Items</span></p>
             </div>
             <div className="p-3 rounded-xl bg-amber-50 text-amber-500 border border-amber-100">
               <PackageMinus size={24} />

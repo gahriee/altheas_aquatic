@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Plus, Edit3, UserX, UserCheck, ShieldAlert, ShieldCheck, Mail, Calendar, Clock, AlertCircle } from 'lucide-react';
 import { fetchUsers, deactivateUser, reactivateUser } from '../../../api/users';
+import { formatTimestamp } from '../../../utils/format';
 import { useAuth } from '../../../context/AuthContext';
 import Button from '../../../components/ui/Button';
 import DataTable from '../../../components/admin/DataTable';
@@ -54,16 +55,7 @@ export default function UserList() {
     }
   };
 
-  const formatDate = (timestamp) => {
-    if (!timestamp) return 'Never';
-    return new Date(timestamp * 1000).toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit'
-    });
-  };
+
 
   const tabs = [
     { id: 'admin_staff', label: 'Admin & Staff' },
@@ -135,7 +127,7 @@ export default function UserList() {
       render: (u) => (
         <div className="flex items-center gap-2 text-sage-600 text-sm">
           <Calendar size={14} className="text-sage-400" />
-          {formatDate(u.registered)}
+          {formatTimestamp(u.registered)}
         </div>
       )
     },
@@ -146,7 +138,7 @@ export default function UserList() {
       render: (u) => (
         <div className="flex items-center gap-2 text-sage-600 text-sm">
           <Clock size={14} className="text-sage-400" />
-          {formatDate(u.last_login)}
+          {formatTimestamp(u.last_login)}
         </div>
       )
     },
@@ -202,8 +194,8 @@ export default function UserList() {
     <div className="space-y-6 animate-in fade-in duration-500">
       <div className="flex justify-between items-start">
         <div>
-          <h1 className="text-4xl font-bold font-display text-teal-600 tracking-tight">Users</h1>
-          <p className="text-sage-500 text-lg mt-1">Manage all system accounts and customer profiles</p>
+          <h1 className="text-2xl xl:text-4xl font-bold font-display text-teal-600 tracking-tight">Users</h1>
+          <p className="text-sage-500 text-sm xl:text-lg mt-1">Manage all system accounts and customer profiles</p>
         </div>
       </div>
 

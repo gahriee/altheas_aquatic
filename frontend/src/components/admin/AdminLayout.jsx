@@ -67,12 +67,12 @@ export default function AdminLayout() {
   });
 
   return (
-    <div className="flex min-h-screen bg-sage-50">
+    <div className="flex min-h-screen bg-sage-50 overflow-x-auto">
       {/* Sidebar */}
       <Sidebar isCollapsed={isCollapsed} />
 
       {/* Main Content Area */}
-      <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
+      <div className="flex-1 flex flex-col min-w-[768px] overflow-hidden">
         {/* Top Bar */}
         <header className="bg-white border-b border-sage-100 h-16 flex items-center justify-between px-8">
           <div className="flex items-center gap-6">

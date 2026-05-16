@@ -8,7 +8,6 @@ import {
   Plus, 
   ShoppingCart, 
   BarChart3,
-  ArrowRight,
   ExternalLink
 } from 'lucide-react';
 import { 
@@ -21,9 +20,9 @@ import {
   ResponsiveContainer 
 } from 'recharts';
 import { getDashboardStats } from '../../api/dashboard';
+import { getOrderStatusStyle } from '../../utils/status';
 import LoadingSpinner from '../../components/shared/LoadingSpinner';
 import ErrorMessage from '../../components/shared/ErrorMessage';
-import Button from '../../components/ui/Button';
 
 export default function Dashboard() {
   const navigate = useNavigate();
@@ -68,6 +67,12 @@ export default function Dashboard() {
       icon: Package,
       accent: 'text-teal-600',
       iconBg: 'bg-teal-50',
+      iconBorder: 'border-teal-100',
+      borderColor: 'border-teal-200',
+      circleBg: 'bg-teal-500',
+      labelColor: 'text-teal-600/80',
+      subtitleColor: 'text-teal-500',
+      subtitle: 'Active species in your catalog',
       path: '/admin/inventory'
     },
     {
@@ -76,6 +81,12 @@ export default function Dashboard() {
       icon: AlertTriangle,
       accent: stats.low_stock_count > 0 ? 'text-amber-600' : 'text-sage-400',
       iconBg: stats.low_stock_count > 0 ? 'bg-amber-50' : 'bg-sage-50',
+      iconBorder: stats.low_stock_count > 0 ? 'border-amber-100' : 'border-sage-100',
+      borderColor: stats.low_stock_count > 0 ? 'border-amber-200' : 'border-sage-200',
+      circleBg: stats.low_stock_count > 0 ? 'bg-amber-500' : 'bg-sage-400',
+      labelColor: stats.low_stock_count > 0 ? 'text-amber-600/80' : 'text-sage-500',
+      subtitleColor: stats.low_stock_count > 0 ? 'text-amber-600' : 'text-sage-400',
+      subtitle: stats.low_stock_count > 0 ? 'Items at or below threshold' : 'All stock levels healthy',
       path: '/admin/inventory'
     },
     {
@@ -84,6 +95,12 @@ export default function Dashboard() {
       icon: TrendingUp,
       accent: 'text-teal-600',
       iconBg: 'bg-teal-50',
+      iconBorder: 'border-teal-100',
+      borderColor: 'border-teal-200',
+      circleBg: 'bg-teal-500',
+      labelColor: 'text-teal-600/80',
+      subtitleColor: 'text-teal-500',
+      subtitle: 'Revenue earned today',
       path: '/admin/reports'
     },
     {
@@ -92,26 +109,24 @@ export default function Dashboard() {
       icon: Clock,
       accent: stats.pending_orders > 0 ? 'text-teal-600' : 'text-sage-400',
       iconBg: stats.pending_orders > 0 ? 'bg-teal-50' : 'bg-sage-50',
+      iconBorder: stats.pending_orders > 0 ? 'border-teal-100' : 'border-sage-100',
+      borderColor: stats.pending_orders > 0 ? 'border-teal-200' : 'border-sage-200',
+      circleBg: stats.pending_orders > 0 ? 'bg-teal-500' : 'bg-sage-400',
+      labelColor: stats.pending_orders > 0 ? 'text-teal-600/80' : 'text-sage-500',
+      subtitleColor: stats.pending_orders > 0 ? 'text-teal-500' : 'text-sage-400',
+      subtitle: stats.pending_orders > 0 ? 'Awaiting confirmation or payment' : 'No orders pending',
       path: '/admin/orders'
     }
   ];
 
-  const getStatusStyle = (status) => {
-    switch (status) {
-      case 'completed': return 'bg-emerald-50 text-emerald-600 border-emerald-100';
-      case 'confirmed': return 'bg-teal-50 text-teal-600 border-teal-100';
-      case 'pending': return 'bg-amber-50 text-amber-600 border-amber-100';
-      case 'cancelled': return 'bg-coral-50 text-coral-600 border-coral-100';
-      default: return 'bg-sage-50 text-sage-500 border-sage-100';
-    }
-  };
+
 
   return (
     <div className="space-y-8 animate-in fade-in duration-500">
       <div className="flex justify-between items-start">
         <div>
-          <h1 className="text-4xl font-bold font-display text-teal-600 tracking-tight">Dashboard</h1>
-          <p className="text-sage-500 text-lg mt-1">Welcome back, here's what's happening in your aquatic farm.</p>
+          <h1 className="text-2xl xl:text-4xl font-bold font-display text-teal-600 tracking-tight">Dashboard</h1>
+          <p className="text-sage-500 text-sm xl:text-lg mt-1">Welcome back, here's what's happening in your aquatic farm.</p>
         </div>
       </div>
 
@@ -121,18 +136,21 @@ export default function Dashboard() {
           <div 
             key={idx}
             onClick={() => navigate(card.path)}
-            className="cursor-pointer group p-6 rounded-2xl bg-white border border-sage-100 transition-all hover:shadow-md hover:border-teal-200"
+            className={`cursor-pointer group p-6 rounded-2xl border shadow-sm transition-all duration-300 relative overflow-hidden hover:shadow-md bg-white ${card.borderColor}`}
           >
-            <div className="flex justify-between items-start">
-              <div className={`p-2 rounded-xl border border-current opacity-80 ${card.iconBg} ${card.accent}`}>
+            <div className={`absolute top-0 right-0 -mt-4 -mr-4 w-24 h-24 rounded-full opacity-5 transition-transform duration-500 group-hover:scale-150 ${card.circleBg}`}></div>
+            <div className="flex items-start justify-between relative z-10">
+              <div>
+                <p className={`text-sm font-bold uppercase tracking-wider mb-2 ${card.labelColor}`}>{card.title}</p>
+                <p className={`text-xl xl:text-3xl font-bold font-display ${card.accent}`}>{card.value}</p>
+              </div>
+              <div className={`p-3 rounded-xl ${card.iconBg} ${card.accent} border ${card.iconBorder}`}>
                 <card.icon size={24} />
               </div>
-              <ArrowRight size={18} className="text-sage-300 opacity-0 group-hover:opacity-100 -translate-x-2 group-hover:translate-x-0 transition-all" />
             </div>
-            <div className="mt-4">
-              <p className="text-sm font-bold text-sage-400 uppercase tracking-wider">{card.title}</p>
-              <p className={`text-2xl font-bold font-display mt-1 ${card.accent}`}>{card.value}</p>
-            </div>
+            <p className={`text-xs font-medium mt-3 relative z-10 ${card.subtitleColor}`}>
+              {card.subtitle}
+            </p>
           </div>
         ))}
       </div>
@@ -210,7 +228,7 @@ export default function Dashboard() {
 
         {/* Quick Actions - Emphasized */}
         <div className="bg-teal-600 p-8 rounded-3xl shadow-xl shadow-teal-900/20 flex flex-col text-white">
-          <h3 className="text-xl font-bold font-display mb-6 flex items-center">
+          <h3 className="text-lg xl:text-xl font-bold font-display mb-6 flex items-center">
             <Plus size={24} className="mr-3" /> Quick Actions
           </h3>
           <div className="space-y-4 flex-grow">
@@ -221,7 +239,7 @@ export default function Dashboard() {
               <div className="p-2 rounded-xl bg-white text-teal-600 mr-4 shadow-lg group-hover:scale-110 transition-transform">
                 <Plus size={20} />
               </div>
-              <span className="font-bold">Add New Product</span>
+              <span className="text-sm xl:text-base font-bold">Add New Product</span>
             </button>
             <button 
               onClick={() => navigate('/admin/orders')}
@@ -230,7 +248,7 @@ export default function Dashboard() {
               <div className="p-2 rounded-xl bg-white text-teal-600 mr-4 shadow-lg group-hover:scale-110 transition-transform">
                 <ShoppingCart size={20} />
               </div>
-              <span className="font-bold">View Pending Orders</span>
+              <span className="text-sm xl:text-base font-bold">View Pending Orders</span>
             </button>
             <button 
               onClick={() => navigate('/admin/reports')}
@@ -239,7 +257,7 @@ export default function Dashboard() {
               <div className="p-2 rounded-xl bg-white text-teal-600 mr-4 shadow-lg group-hover:scale-110 transition-transform">
                 <BarChart3 size={20} />
               </div>
-              <span className="font-bold">Generate Reports</span>
+              <span className="text-sm xl:text-base font-bold">Generate Reports</span>
             </button>
           </div>
           
@@ -286,7 +304,7 @@ export default function Dashboard() {
                     <td className="py-4 px-6 text-sage-600 font-medium">{order.customer_name}</td>
                     <td className="py-4 px-6 font-bold text-teal-600">₱{Number(order.total_amount).toLocaleString()}</td>
                     <td className="py-4 px-6">
-                      <span className={`px-2.5 py-1 rounded-full text-xs font-bold border ${getStatusStyle(order.status)}`}>
+                      <span className={`px-2.5 py-1 rounded-full text-xs font-bold border ${getOrderStatusStyle(order.status)}`}>
                         {order.status.charAt(0).toUpperCase() + order.status.slice(1)}
                       </span>
                     </td>

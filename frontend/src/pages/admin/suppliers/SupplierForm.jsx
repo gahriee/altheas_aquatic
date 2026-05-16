@@ -106,7 +106,7 @@ export default function SupplierForm() {
             <ArrowLeft size={20} />
           </Link>
           <div>
-            <h1 className="text-2xl font-bold font-display text-sage-800 tracking-tight">
+            <h1 className="text-xl xl:text-2xl font-bold font-display text-sage-800 tracking-tight">
               {isEdit ? 'Edit Supplier' : 'Add New Supplier'}
             </h1>
             <p className="text-sm text-sage-400 font-medium">

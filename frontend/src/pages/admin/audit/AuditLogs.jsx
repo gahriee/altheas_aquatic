@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { fetchAuditLogs } from '../../../api/auditLogs';
 import { 
   ClipboardList, 
@@ -98,11 +98,11 @@ export default function AuditLogs() {
     <div className="space-y-6">
       <div className="flex justify-between items-start">
         <div>
-          <h1 className="text-3xl font-bold font-display text-teal-500 tracking-tight flex items-center gap-2">
+          <h1 className="text-xl xl:text-3xl font-bold font-display text-teal-500 tracking-tight flex items-center gap-2">
             <ClipboardList size={28} />
             Audit Logs
           </h1>
-          <p className="text-sage-500 text-lg mt-1">Track all system changes and admin actions</p>
+          <p className="text-sage-500 text-sm xl:text-lg mt-1">Track all system changes and admin actions</p>
         </div>
       </div>
 
@@ -206,7 +206,7 @@ export default function AuditLogs() {
                         <PackageSearch size={40} />
                       </div>
                       <div className="space-y-1">
-                        <p className="text-sage-800 font-bold font-display text-xl tracking-tight">No logs found</p>
+                        <p className="text-sage-800 font-bold font-display text-lg xl:text-xl tracking-tight">No logs found</p>
                         <p className="text-sage-400 font-medium text-sm">Try adjusting your filters.</p>
                       </div>
                     </div>

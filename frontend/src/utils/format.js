@@ -33,3 +33,30 @@ export function formatDateTime(dateStr) {
     minute: '2-digit',
   });
 }
+
+/**
+ * Formats a Unix timestamp (seconds) into a human-readable short date with time
+ * (e.g. "May 16, 2026, 02:30 PM"). Returns "Never" if falsy.
+ */
+export function formatTimestamp(timestamp) {
+  if (!timestamp) return 'Never';
+  return new Date(timestamp * 1000).toLocaleDateString('en-US', {
+    year: 'numeric',
+    month: 'short',
+    day: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit'
+  });
+}
+
+/**
+ * Formats a date string into a compact short format
+ * (e.g. "May 16, 2026").
+ */
+export function formatDateShort(dateStr) {
+  return new Date(dateStr).toLocaleDateString('en-US', {
+    year: 'numeric',
+    month: 'short',
+    day: 'numeric'
+  });
+}

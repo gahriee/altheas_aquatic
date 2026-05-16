@@ -93,7 +93,7 @@ export default function DeliveryForm() {
             <ArrowLeft size={20} />
           </Link>
           <div>
-            <h1 className="text-2xl font-bold font-display text-sage-800 tracking-tight">Record Delivery</h1>
+            <h1 className="text-xl xl:text-2xl font-bold font-display text-sage-800 tracking-tight">Record Delivery</h1>
             <p className="text-sm text-sage-400 font-medium">Log incoming stock and update inventory automatically</p>
           </div>
         </div>

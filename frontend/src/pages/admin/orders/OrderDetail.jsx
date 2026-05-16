@@ -17,6 +17,7 @@ import {
   ChevronRight
 } from 'lucide-react';
 import Button from '../../../components/ui/Button';
+import { getOrderStatusStyle } from '../../../utils/status';
 
 export default function OrderDetail() {
   const { id } = useParams();
@@ -66,7 +67,7 @@ export default function OrderDetail() {
     return (
       <div className="max-w-2xl mx-auto mt-20 p-8 bg-coral-50 border border-coral-100 rounded-3xl text-center space-y-4">
         <AlertCircle size={48} className="text-coral-500 mx-auto" />
-        <h2 className="text-xl font-bold text-coral-600">Order Disappeared</h2>
+        <h2 className="text-lg xl:text-xl font-bold text-coral-600">Order Disappeared</h2>
         <p className="text-sage-500">{error || "This order couldn't be found in our ecosystem."}</p>
         <Link to="/admin/orders">
           <Button variant="outline">Back to Orders</Button>
@@ -75,22 +76,7 @@ export default function OrderDetail() {
     );
   }
 
-  const getStatusStyle = (status) => {
-    switch (status?.toLowerCase()) {
-      case 'confirmed':
-      case 'paid':
-        return 'bg-emerald-100 text-emerald-600 border-emerald-200';
-      case 'pending':
-        return 'bg-amber-100 text-amber-600 border-amber-200';
-      case 'cancelled':
-      case 'failed':
-        return 'bg-coral-100 text-coral-600 border-coral-200';
-      case 'completed':
-        return 'bg-teal-100 text-teal-600 border-teal-200';
-      default:
-        return 'bg-sage-100 text-sage-400 border-sage-200';
-    }
-  };
+
 
   const statuses = ['pending', 'confirmed', 'completed', 'cancelled'];
 
@@ -107,10 +93,10 @@ export default function OrderDetail() {
             Back to Orders
           </Link>
           <div className="flex items-center gap-4">
-            <h1 className="text-4xl font-bold font-display text-sage-800 tracking-tight">
+            <h1 className="text-2xl xl:text-4xl font-bold font-display text-sage-800 tracking-tight">
               {order.order_number || `#${order.order_id}`}
             </h1>
-            <span className={`px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider border ${getStatusStyle(order.status)}`}>
+            <span className={`px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider border ${getOrderStatusStyle(order.status)}`}>
               {order.status}
             </span>
           </div>
@@ -312,7 +298,7 @@ export default function OrderDetail() {
             <div className="px-8 py-8 bg-teal-50/30 border-t border-teal-100/50 mt-auto">
               <div className="flex flex-col items-end gap-2">
                 <p className="text-[10px] font-bold text-teal-500 uppercase tracking-widest">Grand Total Amount</p>
-                <p className="text-4xl font-bold font-display text-teal-600 tracking-tight">
+                <p className="text-2xl xl:text-4xl font-bold font-display text-teal-600 tracking-tight">
                   ₱{Number(order.total_amount).toFixed(2)}
                 </p>
               </div>

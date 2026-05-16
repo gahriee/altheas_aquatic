@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import DataTable from '../../../components/admin/DataTable';
 import { getOrders } from '../../../api/orders';
+import { getOrderStatusStyle } from '../../../utils/status';
 import OrderDetailsExpansion from '../../../components/admin/orders/OrderDetailsExpansion';
 import Input from '../../../components/ui/Input';
 
@@ -33,22 +34,7 @@ export default function OrderList() {
   }, [filters]);
 
 
-  const getStatusStyle = (status) => {
-    switch (status?.toLowerCase()) {
-      case 'confirmed':
-      case 'paid':
-        return 'bg-emerald-100 text-emerald-600';
-      case 'pending':
-        return 'bg-amber-100 text-amber-600';
-      case 'cancelled':
-      case 'failed':
-        return 'bg-coral-100 text-coral-600';
-      case 'completed':
-        return 'bg-teal-100 text-teal-600';
-      default:
-        return 'bg-sage-100 text-sage-400';
-    }
-  };
+
 
   const columns = [
     { 
@@ -75,7 +61,7 @@ export default function OrderList() {
       label: 'Status', 
       sortable: true,
       render: (row) => (
-        <span className={`px-2 py-1 rounded text-[10px] font-bold uppercase tracking-wider ${getStatusStyle(row.status)}`}>
+        <span className={`px-2 py-1 rounded text-[10px] font-bold uppercase tracking-wider ${getOrderStatusStyle(row.status)}`}>
           {row.status}
         </span>
       )
@@ -100,8 +86,8 @@ export default function OrderList() {
     <div className="space-y-6 animate-in fade-in duration-500">
       <div className="flex justify-between items-start">
         <div>
-          <h1 className="text-4xl font-bold font-display text-teal-600 tracking-tight">Orders</h1>
-          <p className="text-sage-500 text-lg mt-1">Manage aquatic collections and fulfillment status.</p>
+          <h1 className="text-2xl xl:text-4xl font-bold font-display text-teal-600 tracking-tight">Orders</h1>
+          <p className="text-sage-500 text-sm xl:text-lg mt-1">Manage aquatic collections and fulfillment status.</p>
         </div>
       </div>
 

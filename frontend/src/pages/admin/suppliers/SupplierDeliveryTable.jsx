@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { History as HistoryIcon, Package, Calendar, Hash, Coins, Loader2 } from 'lucide-react';
 import { getDeliveries } from '../../../api/deliveries';
-import { formatCurrency } from '../../../utils/format';
+import { formatCurrency, formatDateShort } from '../../../utils/format';
 
 export default function SupplierDeliveryTable({ supplierId }) {
   const [deliveries, setDeliveries] = useState([]);
@@ -23,13 +23,7 @@ export default function SupplierDeliveryTable({ supplierId }) {
     fetchHistory();
   }, [supplierId]);
 
-  const formatDate = (dateStr) => {
-    return new Date(dateStr).toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric'
-    });
-  };
+
 
   if (loading) {
     return (
@@ -87,7 +81,7 @@ export default function SupplierDeliveryTable({ supplierId }) {
           {deliveries.map((delivery) => (
             <tr key={delivery.delivery_id} className="hover:bg-sage-50/20 transition-colors group">
               <td className="px-6 py-4 text-sm text-sage-500 font-medium">
-                {formatDate(delivery.delivered_at)}
+                {formatDateShort(delivery.delivered_at)}
               </td>
               <td className="px-6 py-4">
                 <p className="text-sm font-bold font-display text-sage-800 group-hover:text-teal-600 transition-colors">
