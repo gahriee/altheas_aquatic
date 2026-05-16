@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { fetchProfile, updateProfile } from '../../api/profile';
 import { regions, provincesByCode, cities, barangays } from 'select-philippines-address';
@@ -14,7 +15,8 @@ import Select from '../../components/ui/Select';
  * information and default delivery address. Pre-fills from existing profile data.
  */
 export default function MyProfile() {
-  const { user } = useAuth();
+  const { user, isAuthenticated, loading: authLoading } = useAuth();
+  const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [fetching, setFetching] = useState(true);
   
@@ -41,6 +43,14 @@ export default function MyProfile() {
   }, [user]);
 
   useEffect(() => {
+    if (!authLoading && !isAuthenticated()) {
+      navigate('/login');
+    }
+  }, [isAuthenticated, authLoading, navigate]);
+
+  useEffect(() => {
+    if (!isAuthenticated()) return;
+
     regions().then(response => {
       setRegionOptions(response.map(r => ({ label: r.region_name, value: r.region_code })));
     });
@@ -182,13 +192,15 @@ export default function MyProfile() {
     }
   };
 
-  if (fetching) {
+  if (authLoading || fetching) {
     return (
       <div className="flex justify-center items-center h-64">
         <Loader2 className="animate-spin text-teal-500" size={32} />
       </div>
     );
   }
+
+  if (!isAuthenticated()) return null;
 
   return (
     <div className="animate-in fade-in duration-700 max-w-4xl mx-auto px-4 py-4 sm:py-8">

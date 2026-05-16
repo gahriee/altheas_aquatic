@@ -166,6 +166,9 @@ class PaymentController
 
             // PayMongo Flow Step 3: Attach Payment Method
             $frontendUrl = (string) constant('FRONTEND_URL');
+            if (!str_starts_with($frontendUrl, 'http://') && !str_starts_with($frontendUrl, 'https://')) {
+                $frontendUrl = 'https://' . $frontendUrl;
+            }
             $returnUrl = rtrim($frontendUrl, '/') . "/order-confirmation/{$orderId}?pi={$intentId}";
 
             $attach = $this->payMongo->attachPaymentIntent($intentId, $methodId, $returnUrl);
