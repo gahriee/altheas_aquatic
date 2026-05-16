@@ -98,12 +98,12 @@ export default function MyOrders() {
         </div>
       </div>
 
-      <div className="flex flex-wrap gap-2 mb-6">
+      <div className="flex gap-2 mb-6 overflow-x-auto flex-nowrap pb-2 scrollbar-none snap-x" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
         {STATUS_TABS.map(tab => (
           <button
             key={tab.value}
             onClick={() => setActiveTab(tab.value)}
-            className={`px-4 py-2 rounded-xl text-sm font-semibold transition-all duration-200 ${
+            className={`shrink-0 snap-start px-4 py-2 rounded-xl text-sm font-semibold transition-all duration-200 ${
               activeTab === tab.value
                 ? 'bg-teal-500 text-white shadow-sm ring-2 ring-teal-100'
                 : 'bg-white text-sage-600 border border-sage-200 hover:border-teal-300 hover:text-teal-600'
