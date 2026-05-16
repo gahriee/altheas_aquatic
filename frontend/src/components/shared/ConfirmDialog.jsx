@@ -1,8 +1,10 @@
+import { createPortal } from 'react-dom';
+
 export default function ConfirmDialog({ isOpen, title, message, onConfirm, onCancel }) {
   if (!isOpen) return null;
 
-  return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+  return createPortal(
+    <div className="fixed inset-0 z-[110] flex items-center justify-center p-4">
       {/* Backdrop */}
       <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" />
       
@@ -27,6 +29,7 @@ export default function ConfirmDialog({ isOpen, title, message, onConfirm, onCan
           </button>
         </div>
       </div>
-    </div>
+    </div>,
+    document.body
   );
 }

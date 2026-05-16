@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Bell, Filter, Trash2, Check, ChevronLeft, ChevronRight, Loader2, AlertCircle } from 'lucide-react';
-import { getHistory, markAsRead, markAllAsRead, deleteOldNotifications } from '../../../api/notifications';
+import { getHistory, markAsRead, markAllAsRead, deleteReadNotifications } from '../../../api/notifications';
 import { formatDistanceToNow, format } from 'date-fns';
 import ConfirmDialog from '../../../components/shared/ConfirmDialog';
 import Tooltip from '../../../components/ui/Tooltip';
@@ -58,10 +58,10 @@ export default function NotificationHistory() {
     }
   };
 
-  const handleDeleteOld = async () => {
+  const handleDeleteRead = async () => {
     setIsDeleting(true);
     try {
-      await deleteOldNotifications(30); // Delete older than 30 days
+      await deleteReadNotifications();
       setIsConfirmOpen(false);
       
       // Reset to page 1 and refresh
@@ -71,7 +71,7 @@ export default function NotificationHistory() {
         setPage(1);
       }
     } catch (error) {
-      console.error('Failed to clear old notifications:', error);
+      console.error('Failed to clear read notifications:', error);
     } finally {
       setIsDeleting(false);
     }
@@ -135,14 +135,14 @@ export default function NotificationHistory() {
             Mark All Read
           </button>
           
-          <Tooltip text="Delete notifications older than 30 days">
+          <Tooltip text="Delete all read notifications">
             <button 
               onClick={() => setIsConfirmOpen(true)}
               className="flex items-center gap-2 px-4 py-2.5 text-xs font-bold text-coral-600 bg-white border border-coral-100 hover:bg-coral-50 rounded-2xl transition-all shadow-sm hover:shadow-md active:scale-95 uppercase tracking-wider"
             >
               <Trash2 size={16} strokeWidth={2.5} />
               Cleanup
-              <span className="hidden sm:inline-block ml-1 opacity-50 px-1.5 py-0.5 bg-coral-50 rounded-md text-[10px]">30d+</span>
+              <span className="hidden sm:inline-block ml-1 opacity-50 px-1.5 py-0.5 bg-coral-50 rounded-md text-[10px]">Read</span>
             </button>
           </Tooltip>
         </div>
@@ -283,11 +283,11 @@ export default function NotificationHistory() {
       {/* Delete Confirmation Dialog */}
       <ConfirmDialog
         isOpen={isConfirmOpen}
-        title="Clear Old Notifications"
-        message="Are you sure you want to permanently delete all notifications older than 30 days? This action cannot be undone."
-        confirmLabel={isDeleting ? 'Deleting...' : 'Yes, clear old notifications'}
+        title="Clear Read Notifications"
+        message="Are you sure you want to permanently delete all read notifications? Unread notifications will be kept. This action cannot be undone."
+        confirmLabel={isDeleting ? 'Deleting...' : 'Yes, clear read notifications'}
         cancelLabel="Cancel"
-        onConfirm={handleDeleteOld}
+        onConfirm={handleDeleteRead}
         onCancel={() => setIsConfirmOpen(false)}
         variant="danger"
         disabled={isDeleting}

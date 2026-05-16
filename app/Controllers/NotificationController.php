@@ -120,25 +120,22 @@ class NotificationController
 
     /**
      * ----------------------------------------
-     * deleteOld
+     * deleteRead
      * ----------------------------------------
-     * POST /api/admin/notifications/delete-old
-     * Deletes old notifications based on days provided.
+     * POST /api/admin/notifications/delete-read
+     * Deletes all read notifications.
      */
-    public function deleteOld(): void
+    public function deleteRead(): void
     {
         Auth::requireLogin();
         Csrf::verifyHeader();
 
-        $input = json_decode(file_get_contents('php://input'), true);
-        $days = isset($input['days']) ? max(1, (int)$input['days']) : 30;
+        $deletedCount = $this->notificationModel->deleteRead();
 
-        $deletedCount = $this->notificationModel->deleteOld($days);
-
-        AuditLogger::log('delete', 'notification', null, "Deleted old notifications");
+        AuditLogger::log('delete', 'notification', null, "Deleted read notifications");
 
         Response::json([
-            'message' => "Successfully cleared $deletedCount old notifications",
+            'message' => "Successfully cleared $deletedCount read notifications",
             'deleted_count' => $deletedCount
         ]);
     }

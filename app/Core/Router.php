@@ -107,7 +107,7 @@ class Router
                 $this->router->get('/notifications/unread-count', 'NotificationController@unreadCount');
                 $this->router->post('/notifications/(\d+)/read', 'NotificationController@markRead');
                 $this->router->post('/notifications/read-all', 'NotificationController@markAllRead');
-                $this->router->post('/notifications/delete-old', 'NotificationController@deleteOld');
+                $this->router->post('/notifications/delete-read', 'NotificationController@deleteRead');
 
                 // Users
                 $this->router->get('/users', 'UserController@index');

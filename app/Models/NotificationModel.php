@@ -152,19 +152,18 @@ class NotificationModel
 
     /**
      * ----------------------------------------
-     * deleteOld
+     * deleteRead
      * ----------------------------------------
-     * Deletes notifications older than the specified number of days.
+     * Deletes all notifications that have been marked as read.
      */
-    public function deleteOld(int $daysOld): int
+    public function deleteRead(): int
     {
         try {
-            $stmt = $this->db->prepare("DELETE FROM notifications WHERE created_at < DATE_SUB(NOW(), INTERVAL :days DAY)");
-            $stmt->bindValue(':days', $daysOld, PDO::PARAM_INT);
+            $stmt = $this->db->prepare("DELETE FROM notifications WHERE is_read = 1");
             $stmt->execute();
             return $stmt->rowCount();
         } catch (\PDOException $e) {
-            error_log("Database error in deleteOld: " . $e->getMessage());
+            error_log("Database error in deleteRead: " . $e->getMessage());
             return 0;
         }
     }

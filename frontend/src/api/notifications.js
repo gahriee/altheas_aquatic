@@ -53,13 +53,11 @@ export async function getHistory(page = 1, perPage = 20, type = '', isRead = '')
 }
 
 /**
- * Deletes notifications older than the given number of days.
- * @param {number} days 
+ * Deletes all read notifications.
  */
-export async function deleteOldNotifications(days = 30) {
-  return await apiFetch('/api/admin/notifications/delete-old', {
-    method: 'POST',
-    body: JSON.stringify({ days })
+export async function deleteReadNotifications() {
+  return await apiFetch('/api/admin/notifications/delete-read', {
+    method: 'POST'
   });
 }
 
@@ -69,7 +67,7 @@ const notificationsApi = {
   markAsRead,
   markAllAsRead,
   getHistory,
-  deleteOldNotifications
+  deleteReadNotifications
 };
 
 export default notificationsApi;
