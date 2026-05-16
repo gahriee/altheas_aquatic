@@ -16,6 +16,9 @@ class Response
     public static function json(array $data, int $status = 200): void
     {
         header('Content-Type: application/json');
+        header('Cache-Control: no-cache, no-store, must-revalidate');
+        header('Pragma: no-cache');
+        header('Expires: 0');
         http_response_code($status);
         echo json_encode($data);
         exit;
