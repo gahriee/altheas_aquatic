@@ -99,7 +99,15 @@ export default function Reports() {
                   type="date"
                   label="From"
                   value={dateRange.from}
-                  onChange={(e) => setDateRange({ ...dateRange, from: e.target.value })}
+                  max={dateRange.to}
+                  onChange={(e) => {
+                    const newFrom = e.target.value;
+                    setDateRange({
+                      ...dateRange,
+                      from: newFrom,
+                      to: (dateRange.to && newFrom > dateRange.to) ? newFrom : dateRange.to
+                    });
+                  }}
                 />
               </div>
               <div className="w-40">
@@ -107,7 +115,15 @@ export default function Reports() {
                   type="date"
                   label="To"
                   value={dateRange.to}
-                  onChange={(e) => setDateRange({ ...dateRange, to: e.target.value })}
+                  min={dateRange.from}
+                  onChange={(e) => {
+                    const newTo = e.target.value;
+                    setDateRange({
+                      ...dateRange,
+                      to: newTo,
+                      from: (dateRange.from && newTo < dateRange.from) ? newTo : dateRange.from
+                    });
+                  }}
                 />
               </div>
             </div>

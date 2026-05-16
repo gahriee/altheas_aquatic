@@ -121,7 +121,15 @@ export default function OrderList() {
               type="date"
               label="From"
               value={filters.from}
-              onChange={(e) => setFilters({ ...filters, from: e.target.value })}
+              max={filters.to}
+              onChange={(e) => {
+                const newFrom = e.target.value;
+                setFilters({
+                  ...filters,
+                  from: newFrom,
+                  to: (filters.to && newFrom > filters.to) ? newFrom : filters.to
+                });
+              }}
             />
           </div>
           <div className="w-40">
@@ -129,7 +137,15 @@ export default function OrderList() {
               type="date"
               label="To"
               value={filters.to}
-              onChange={(e) => setFilters({ ...filters, to: e.target.value })}
+              min={filters.from}
+              onChange={(e) => {
+                const newTo = e.target.value;
+                setFilters({
+                  ...filters,
+                  to: newTo,
+                  from: (filters.from && newTo < filters.from) ? newTo : filters.from
+                });
+              }}
             />
           </div>
         </div>

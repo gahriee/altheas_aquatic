@@ -141,14 +141,26 @@ export default function AuditLogs() {
               type="date"
               className="w-full sm:w-auto"
               value={fromDate}
-              onChange={(e) => { setFromDate(e.target.value); setPage(1); }}
+              max={toDate}
+              onChange={(e) => {
+                const newFrom = e.target.value;
+                setFromDate(newFrom);
+                if (toDate && newFrom > toDate) setToDate(newFrom);
+                setPage(1);
+              }}
             />
             <span className="text-sage-400 font-medium">to</span>
             <Input 
               type="date"
               className="w-full sm:w-auto"
               value={toDate}
-              onChange={(e) => { setToDate(e.target.value); setPage(1); }}
+              min={fromDate}
+              onChange={(e) => {
+                const newTo = e.target.value;
+                setToDate(newTo);
+                if (fromDate && newTo < fromDate) setFromDate(newTo);
+                setPage(1);
+              }}
             />
           </div>
 

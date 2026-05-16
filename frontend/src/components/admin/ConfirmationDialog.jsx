@@ -75,7 +75,7 @@ export default function ConfirmationDialog({
               variant="ghost"
               onClick={onClose}
               disabled={loading}
-              className="flex-1 py-4 border-sage-100 text-sage-400 hover:bg-sage-50"
+              className="flex-1 py-4 border border-sage-100 text-sage-400 hover:bg-sage-50"
             >
               {cancelLabel}
             </Button>
