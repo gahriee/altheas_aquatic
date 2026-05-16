@@ -6,7 +6,7 @@ import { formatTimestamp } from '../../../utils/format';
 import { useAuth } from '../../../context/AuthContext';
 import Button from '../../../components/ui/Button';
 import DataTable from '../../../components/admin/DataTable';
-import ConfirmDialog from '../../../components/shared/ConfirmDialog';
+import ConfirmationDialog from '../../../components/admin/ConfirmationDialog';
 import Tooltip from '../../../components/ui/Tooltip';
 
 export default function UserList() {
@@ -242,24 +242,24 @@ export default function UserList() {
           : 'No administrator or staff accounts were found.'}
       />
 
-      <ConfirmDialog
+      <ConfirmationDialog
         isOpen={!!deactivateId}
         onClose={() => setDeactivateId(null)}
         onConfirm={handleDeactivate}
         title="Deactivate User"
         message="Are you sure you want to deactivate this user? They will no longer be able to log in, but their account data will be preserved."
-        confirmText="Deactivate"
-        isDestructive={true}
+        confirmLabel="Deactivate"
+        variant="danger"
       />
 
-      <ConfirmDialog
+      <ConfirmationDialog
         isOpen={!!reactivateId}
         onClose={() => setReactivateId(null)}
         onConfirm={async () => { await handleReactivate(reactivateId); setReactivateId(null); }}
         title="Reactivate User"
         message="Are you sure you want to reactivate this user? They will be able to log in again."
-        confirmText="Reactivate"
-        isDestructive={false}
+        confirmLabel="Reactivate"
+        variant="success"
       />
     </div>
   );

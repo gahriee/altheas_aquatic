@@ -70,6 +70,8 @@ export default function InventoryList() {
 
   const filteredProducts = useMemo(() => {
     return products.filter(p => {
+      if (!p.is_active) return false;
+
       const matchesSearch = 
         p.name.toLowerCase().includes(debouncedSearch.toLowerCase()) ||
         p.category_name.toLowerCase().includes(debouncedSearch.toLowerCase());

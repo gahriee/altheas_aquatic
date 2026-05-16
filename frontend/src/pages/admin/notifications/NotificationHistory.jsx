@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { Bell, Filter, Trash2, Check, ChevronLeft, ChevronRight, Loader2, AlertCircle } from 'lucide-react';
 import { getHistory, markAsRead, markAllAsRead, deleteReadNotifications } from '../../../api/notifications';
 import { formatDistanceToNow, format } from 'date-fns';
-import ConfirmDialog from '../../../components/shared/ConfirmDialog';
+import ConfirmationDialog from '../../../components/admin/ConfirmationDialog';
 import Tooltip from '../../../components/ui/Tooltip';
 
 export default function NotificationHistory() {
@@ -281,16 +281,16 @@ export default function NotificationHistory() {
       )}
 
       {/* Delete Confirmation Dialog */}
-      <ConfirmDialog
+      <ConfirmationDialog
         isOpen={isConfirmOpen}
+        onClose={() => setIsConfirmOpen(false)}
+        onConfirm={handleDeleteRead}
         title="Clear Read Notifications"
         message="Are you sure you want to permanently delete all read notifications? Unread notifications will be kept. This action cannot be undone."
         confirmLabel={isDeleting ? 'Deleting...' : 'Yes, clear read notifications'}
         cancelLabel="Cancel"
-        onConfirm={handleDeleteRead}
-        onCancel={() => setIsConfirmOpen(false)}
         variant="danger"
-        disabled={isDeleting}
+        loading={isDeleting}
       />
     </div>
   );
