@@ -28,7 +28,7 @@ export default function ForgotPassword() {
     try {
       await forgotPassword(email);
       setEmail('');
-    } catch (err) {
+    } catch (_err) {
     } finally {
       setIsSubmitting(false);
     }
