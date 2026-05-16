@@ -7,6 +7,10 @@ import Input from '../components/ui/Input';
 import Label from '../components/ui/Label';
 import { Lock, Eye, EyeOff, AlertCircle } from 'lucide-react';
 
+/**
+ * Reset Password page — validates the reset token from the URL and allows
+ * the user to set a new password if the token is valid.
+ */
 export default function ResetPassword() {
   const [searchParams] = useSearchParams();
   const selector = searchParams.get('selector');
@@ -44,6 +48,9 @@ export default function ResetPassword() {
     validateToken();
   }, [selector, token]);
 
+  /**
+   * Validates passwords, calls the reset API, and redirects to login.
+   */
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!newPassword || !confirmPassword) {
@@ -62,17 +69,15 @@ export default function ResetPassword() {
     setIsSubmitting(true);
     try {
       await resetPassword(selector, token, newPassword, confirmPassword);
-      // Success toast is handled by apiFetch
       navigate('/admin/login', { replace: true });
     } catch (err) {
-      // Error toast is handled by apiFetch
     } finally {
       setIsSubmitting(false);
     }
   };
 
   return (
-    <div className="min-h-screen bg-sage-50 flex flex-col justify-center py-12 sm:px-6 lg:px-8 font-sans">
+    <div className="min-h-screen bg-sage-50 flex flex-col justify-center py-8 sm:py-12 px-4 sm:px-6 lg:px-8 font-sans">
       <div className="sm:mx-auto sm:w-full sm:max-w-md text-center">
         <div className="mx-auto h-24 w-24 bg-white rounded-[2rem] flex items-center justify-center shadow-2xl shadow-teal-600/10 border border-teal-50 p-3 mb-8">
            <img src="/logo_nobg.svg" alt="Logo" className="w-full h-full object-contain" />
@@ -85,8 +90,8 @@ export default function ResetPassword() {
         </p>
       </div>
 
-      <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
-        <div className="bg-white py-8 px-4 shadow-xl shadow-teal-500/5 sm:rounded-3xl sm:px-10 border border-sage-100">
+      <div className="mt-6 sm:mt-8 mx-auto w-full max-w-md">
+        <div className="bg-white py-6 sm:py-8 px-4 shadow-xl shadow-teal-500/5 rounded-2xl sm:rounded-3xl sm:px-10 border border-sage-100">
           
           {isValidating ? (
             <div className="text-center py-8">

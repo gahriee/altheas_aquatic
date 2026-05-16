@@ -1,4 +1,3 @@
-/* eslint-disable react-refresh/only-export-components */
 import { createContext, useContext, useState, useEffect } from 'react';
 import { getMe, login as apiLogin, logout as apiLogout } from '../api/auth';
 

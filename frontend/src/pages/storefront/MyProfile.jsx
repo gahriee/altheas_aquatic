@@ -9,6 +9,10 @@ import Input from '../../components/ui/Input';
 import Label from '../../components/ui/Label';
 import Select from '../../components/ui/Select';
 
+/**
+ * My Profile page — allows the customer to view and update their personal
+ * information and default delivery address. Pre-fills from existing profile data.
+ */
 export default function MyProfile() {
   const { user } = useAuth();
   const [loading, setLoading] = useState(false);
@@ -30,7 +34,6 @@ export default function MyProfile() {
   const [cityOptions, setCityOptions] = useState([]);
   const [barangayOptions, setBarangayOptions] = useState([]);
 
-  // Sync user email when it becomes available (since useAuth might be loading initially)
   useEffect(() => {
     if (user?.email && !formData.email) {
       setFormData(prev => ({ ...prev, email: user.email }));
@@ -85,11 +88,17 @@ export default function MyProfile() {
     loadProfile();
   }, []);
 
+  /**
+   * Generic form field change handler.
+   */
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
   };
 
+  /**
+   * Strips non-digit characters, removes leading 0, formats as xxx-xxx-xxxx.
+   */
   const handlePhoneChange = (e) => {
     let raw = e.target.value.replace(/[^\d]/g, '');
     if (raw.startsWith('0')) {
@@ -107,6 +116,9 @@ export default function MyProfile() {
     setFormData(prev => ({ ...prev, phone: formatted }));
   };
 
+  /**
+   * Handles region dropdown change, resets dependent address fields.
+   */
   const handleRegionChange = (e) => {
     const code = e.target.value;
     const label = regionOptions.find(o => o.value === code)?.label || '';
@@ -118,6 +130,9 @@ export default function MyProfile() {
     });
   };
 
+  /**
+   * Handles province dropdown change, resets city and barangay.
+   */
   const handleProvinceChange = (e) => {
     const code = e.target.value;
     const label = provinceOptions.find(o => o.value === code)?.label || '';
@@ -128,6 +143,9 @@ export default function MyProfile() {
     });
   };
 
+  /**
+   * Handles city dropdown change, resets barangay.
+   */
   const handleCityChange = (e) => {
     const code = e.target.value;
     const label = cityOptions.find(o => o.value === code)?.label || '';
@@ -137,12 +155,18 @@ export default function MyProfile() {
     });
   };
 
+  /**
+   * Handles barangay dropdown change.
+   */
   const handleBarangayChange = (e) => {
     const code = e.target.value;
     const label = barangayOptions.find(o => o.value === code)?.label || '';
     setFormData(prev => ({ ...prev, barangay_code: code, barangay: label }));
   };
 
+  /**
+   * Submits updated profile data to the API and shows a toast notification.
+   */
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
@@ -167,15 +191,14 @@ export default function MyProfile() {
   }
 
   return (
-    <div className="animate-in fade-in duration-700 max-w-4xl mx-auto px-4 py-8">
-      <div className="space-y-2 mb-8">
-        <h1 className="text-4xl font-bold font-display text-sage-800 tracking-tight">My Profile</h1>
-        <p className="text-sage-400 font-medium">Manage your personal information and default delivery address.</p>
+    <div className="animate-in fade-in duration-700 max-w-4xl mx-auto px-4 py-4 sm:py-8">
+      <div className="space-y-2 mb-6 sm:mb-8">
+        <h1 className="text-2xl sm:text-4xl font-bold font-display text-sage-800 tracking-tight">My Profile</h1>
+        <p className="text-sm sm:text-base text-sage-400 font-medium">Manage your personal information and default delivery address.</p>
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-8">
-        {/* Personal Information Card */}
-        <div className="bg-white p-8 rounded-[40px] border border-sage-100 shadow-sm space-y-6">
+        <div className="bg-white p-5 sm:p-8 rounded-3xl sm:rounded-[40px] border border-sage-100 shadow-sm space-y-6">
           <h3 className="text-lg font-bold font-display text-sage-800 flex items-center gap-2">
             <User size={20} className="text-teal-500" />
             Personal Information
@@ -226,8 +249,7 @@ export default function MyProfile() {
           </div>
         </div>
 
-        {/* Delivery Address Card */}
-        <div className="bg-white p-8 rounded-[40px] border border-sage-100 shadow-sm space-y-6">
+        <div className="bg-white p-5 sm:p-8 rounded-3xl sm:rounded-[40px] border border-sage-100 shadow-sm space-y-6">
           <h3 className="text-lg font-bold font-display text-sage-800 flex items-center gap-2">
             <MapPin size={20} className="text-teal-500" />
             Default Delivery Address

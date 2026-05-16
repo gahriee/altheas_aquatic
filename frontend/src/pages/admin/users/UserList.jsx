@@ -19,7 +19,6 @@ export default function UserList() {
 
   useEffect(() => {
     loadUsers();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [activeTab]);
 
   async function loadUsers() {

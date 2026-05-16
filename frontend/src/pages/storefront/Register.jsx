@@ -1,12 +1,16 @@
 import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { Mail, Lock, ArrowRight, Loader2, Sparkles } from 'lucide-react';
+import { Mail, Lock, ArrowRight, Loader2 } from 'lucide-react';
 import { register } from '../../api/auth';
 import Label from '../../components/ui/Label';
 import Input from '../../components/ui/Input';
 import Button from '../../components/ui/Button';
 import ErrorMessage from '../../components/shared/ErrorMessage';
 
+/**
+ * Register page — allows new customers to create an account with email/password.
+ * Validates password length and match before submission.
+ */
 export default function Register() {
   const [formData, setFormData] = useState({
     email: '',
@@ -17,16 +21,22 @@ export default function Register() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const navigate = useNavigate();
 
+  /**
+   * Generic form field change handler.
+   */
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
   };
 
+  /**
+   * Validates passwords match and min length, calls register API,
+   * then redirects to login on success.
+   */
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
 
-    // Client-side validation
     if (formData.password !== formData.confirmPassword) {
       setError('Passwords do not match');
       return;
@@ -44,7 +54,6 @@ export default function Register() {
         email: formData.email,
         password: formData.password
       });
-      // Redirect to login on success
       navigate('/login', { 
         state: { message: 'Account created successfully! Please log in.' } 
       });
@@ -56,12 +65,12 @@ export default function Register() {
   };
 
   return (
-    <div className="bg-sage-50 flex flex-col py-12 sm:px-6 lg:px-8 font-sans">
+    <div className="bg-sage-50 flex flex-col py-8 sm:py-12 px-4 sm:px-6 lg:px-8 font-sans">
       <div className="sm:mx-auto sm:w-full sm:max-w-md text-center">
         <div className="mx-auto h-20 w-20 bg-white rounded-3xl flex items-center justify-center shadow-xl border border-sage-100 p-2">
            <img src="/logo_nobg.svg" alt="Logo" className="w-full h-full object-contain" />
         </div>
-        <h2 className="mt-6 text-center text-3xl font-bold font-display text-sage-800 tracking-tight">
+        <h2 className="mt-4 sm:mt-6 text-center text-2xl sm:text-3xl font-bold font-display text-sage-800 tracking-tight">
           Join Althea's Aquatic Farm
         </h2>
         <p className="mt-2 text-center text-sm text-sage-500 font-medium lowercase tracking-wide">
@@ -70,8 +79,7 @@ export default function Register() {
       </div>
 
       <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
-        <div className="bg-white py-10 px-4 shadow-2xl shadow-teal-500/10 sm:rounded-[32px] sm:px-12 border border-sage-100 relative overflow-hidden">
-          {/* Decorative element */}
+        <div className="bg-white py-8 sm:py-10 px-4 shadow-2xl shadow-teal-500/10 rounded-2xl sm:rounded-[32px] sm:px-12 border border-sage-100 relative overflow-hidden">
           <div className="absolute top-0 right-0 -mt-4 -mr-4 h-24 w-24 bg-teal-50 rounded-full blur-3xl opacity-50" />
           
           {error && <div className="mb-6 animate-in slide-in-from-top-2 duration-300"><ErrorMessage message={error} /></div>}

@@ -39,7 +39,6 @@ export default function OrderDetail() {
 
   useEffect(() => {
     fetchOrder();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id]);
 
   const handleStatusUpdate = async (newStatus) => {

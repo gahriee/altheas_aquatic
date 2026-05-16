@@ -5,6 +5,7 @@ import { useCart } from '../../context/CartContext';
 import { useAuth } from '../../context/AuthContext';
 import { createPaymentIntent } from '../../api/payments';
 import { fetchProfile } from '../../api/profile';
+import { formatCurrency } from '../../utils/format';
 import { regions, provincesByCode, cities, barangays } from 'select-philippines-address';
 import Button from '../../components/ui/Button';
 import Input from '../../components/ui/Input';
@@ -13,10 +14,9 @@ import Textarea from '../../components/ui/Textarea';
 import Select from '../../components/ui/Select';
 
 /**
- * ----------------------------------------
- * Checkout Page
- * ----------------------------------------
- * Collects customer information and initiates the PayMongo GCash flow.
+ * Checkout page — collects customer information (name, email, phone, address)
+ * and initiates the PayMongo GCash payment flow. Pre-fills data from the
+ * user's saved profile when available.
  */
 export default function Checkout() {
   const { items, total, clearCart } = useCart();
@@ -79,18 +79,18 @@ export default function Checkout() {
     }
   }, [user]);
 
-  const formatCurrency = (val) => {
-    return new Intl.NumberFormat('en-PH', {
-      style: 'currency',
-      currency: 'PHP',
-    }).format(val || 0);
-  };
 
+  /**
+   * Generic form field change handler for text/email inputs.
+   */
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
   };
 
+  /**
+   * Strips non-digit characters, removes leading 0, formats as xxx-xxx-xxxx.
+   */
   const handlePhoneChange = (e) => {
     let raw = e.target.value.replace(/[^\d]/g, '');
     if (raw.startsWith('0')) {
@@ -108,6 +108,9 @@ export default function Checkout() {
     setFormData(prev => ({ ...prev, phone: formatted }));
   };
 
+  /**
+   * Handles region dropdown change, resets dependent address fields.
+   */
   const handleRegionChange = (e) => {
     const code = e.target.value;
     const label = regionOptions.find(o => o.value === code)?.label || '';
@@ -119,6 +122,9 @@ export default function Checkout() {
     });
   };
 
+  /**
+   * Handles province dropdown change, resets city and barangay.
+   */
   const handleProvinceChange = (e) => {
     const code = e.target.value;
     const label = provinceOptions.find(o => o.value === code)?.label || '';
@@ -129,6 +135,9 @@ export default function Checkout() {
     });
   };
 
+  /**
+   * Handles city dropdown change, resets barangay.
+   */
   const handleCityChange = (e) => {
     const code = e.target.value;
     const label = cityOptions.find(o => o.value === code)?.label || '';
@@ -138,12 +147,19 @@ export default function Checkout() {
     });
   };
 
+  /**
+   * Handles barangay dropdown change.
+   */
   const handleBarangayChange = (e) => {
     const code = e.target.value;
     const label = barangayOptions.find(o => o.value === code)?.label || '';
     setFormData(prev => ({ ...prev, barangayCode: code, barangay: label }));
   };
 
+  /**
+   * Submits the checkout form: builds full address, calls createPaymentIntent,
+   * clears the cart, and redirects to PayMongo checkout URL.
+   */
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
@@ -173,12 +189,10 @@ export default function Checkout() {
       });
 
       if (response.redirect_url) {
-        // Store intent ID for the confirmation page polling
         if (response.payment_intent_id) {
           sessionStorage.setItem('last_payment_intent_id', response.payment_intent_id);
         }
         
-        // Clear cart local state before redirecting
         await clearCart();
         window.location.href = response.redirect_url;
       }
@@ -195,7 +209,7 @@ export default function Checkout() {
   }
 
   return (
-    <div className="animate-in fade-in duration-700 max-w-7xl mx-auto px-4 py-8">
+    <div className="animate-in fade-in duration-700 max-w-7xl mx-auto px-4 py-4 sm:py-8">
       <button 
         onClick={() => navigate('/cart')}
         className="flex items-center gap-2 text-sage-400 hover:text-teal-600 font-semibold text-xs uppercase tracking-widest transition-colors mb-8"
@@ -204,16 +218,15 @@ export default function Checkout() {
         Back to Selection
       </button>
 
-      <div className="flex flex-col lg:flex-row gap-12">
-        {/* Customer Information Form */}
-        <div className="flex-1 space-y-8">
+      <div className="flex flex-col lg:flex-row gap-8 lg:gap-12">
+        <div className="flex-1 space-y-6 sm:space-y-8">
           <div className="space-y-2">
-            <h1 className="text-4xl font-bold font-display text-sage-800 tracking-tight">Personal Details</h1>
-            <p className="text-sage-400 font-medium">We need this information to process your aquatic collection.</p>
+            <h1 className="text-2xl sm:text-4xl font-bold font-display text-sage-800 tracking-tight">Personal Details</h1>
+            <p className="text-sm sm:text-base text-sage-400 font-medium">We need this information to process your aquatic collection.</p>
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-6">
-            <div className="bg-white p-8 rounded-[40px] border border-sage-100 shadow-sm space-y-6">
+            <div className="bg-white p-5 sm:p-8 rounded-3xl sm:rounded-[40px] border border-sage-100 shadow-sm space-y-6">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="space-y-2">
                   <Label htmlFor="name">Full Name</Label>
@@ -257,7 +270,6 @@ export default function Checkout() {
                 </div>
               </div>
 
-                {/* Delivery Address Section */}
                 <div className="pt-6 border-t border-sage-50 space-y-6">
                   <h3 className="text-lg font-bold font-display text-sage-800 flex items-center gap-2">
                     <MapPin size={20} className="text-teal-500" />
@@ -347,7 +359,7 @@ export default function Checkout() {
                 </div>
             </div>
 
-            <div className="bg-white p-8 rounded-[40px] border border-sage-100 shadow-sm">
+            <div className="bg-white p-5 sm:p-8 rounded-3xl sm:rounded-[40px] border border-sage-100 shadow-sm">
               <div className="flex items-center gap-4 mb-6">
                 <div className="w-12 h-12 bg-teal-100 rounded-2xl flex items-center justify-center text-teal-600">
                   <CreditCard size={24} />
@@ -382,9 +394,8 @@ export default function Checkout() {
           </form>
         </div>
 
-        {/* Order Preview */}
         <div className="w-full lg:w-96 shrink-0 space-y-6">
-          <div className="bg-white p-8 rounded-[48px] border border-sage-100 shadow-sm divide-y divide-sage-50">
+          <div className="bg-white p-5 sm:p-8 rounded-3xl sm:rounded-[48px] border border-sage-100 shadow-sm divide-y divide-sage-50">
             <h2 className="text-xl font-bold font-display text-sage-800 pb-6 flex items-center gap-3">
               <ShoppingBag size={20} className="text-teal-500" />
               Order Preview
@@ -419,7 +430,7 @@ export default function Checkout() {
               </div>
               <div className="pt-4 flex justify-between items-end">
                 <span className="text-xs font-bold text-teal-500 uppercase tracking-widest">Grand Total</span>
-                <span className="text-3xl font-bold font-display text-sage-800 tracking-tight">{formatCurrency(total)}</span>
+                <span className="text-2xl sm:text-3xl font-bold font-display text-sage-800 tracking-tight">{formatCurrency(total)}</span>
               </div>
             </div>
           </div>

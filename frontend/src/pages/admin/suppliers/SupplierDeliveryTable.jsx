@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { History as HistoryIcon, Package, Calendar, Hash, Coins, Loader2 } from 'lucide-react';
 import { getDeliveries } from '../../../api/deliveries';
+import { formatCurrency } from '../../../utils/format';
 
 export default function SupplierDeliveryTable({ supplierId }) {
   const [deliveries, setDeliveries] = useState([]);
@@ -21,13 +22,6 @@ export default function SupplierDeliveryTable({ supplierId }) {
     }
     fetchHistory();
   }, [supplierId]);
-
-  const formatCurrency = (val) => {
-    return new Intl.NumberFormat('en-PH', {
-      style: 'currency',
-      currency: 'PHP',
-    }).format(val || 0);
-  };
 
   const formatDate = (dateStr) => {
     return new Date(dateStr).toLocaleDateString('en-US', {

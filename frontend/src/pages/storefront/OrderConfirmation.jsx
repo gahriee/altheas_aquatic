@@ -3,14 +3,12 @@ import { useParams, useSearchParams, Link } from 'react-router-dom';
 import { CheckCircle, XCircle, Clock, ShoppingBag, ArrowRight, Loader2 } from 'lucide-react';
 import { getConfirmation } from '../../api/orders';
 import { checkPaymentStatus } from '../../api/payments';
+import { formatCurrency } from '../../utils/format';
 import Button from '../../components/ui/Button';
 
 /**
- * ----------------------------------------
- * Order Confirmation Page
- * ----------------------------------------
- * Displays order status and summary. Polls for status updates if pending.
- * Supports polling via PayMongo intent status for real-time updates.
+ * Order Confirmation page — displays order status and summary after checkout.
+ * Polls PayMongo payment intent status for real-time updates until resolved.
  */
 export default function OrderConfirmation() {
   const { id } = useParams();
@@ -19,14 +17,8 @@ export default function OrderConfirmation() {
   
   const [order, setOrder] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [paymentStatus, setPaymentStatus] = useState('processing'); // succeeded, awaiting_payment_method, processing
+  const [paymentStatus, setPaymentStatus] = useState('processing');
 
-  const formatCurrency = (val) => {
-    return new Intl.NumberFormat('en-PH', {
-      style: 'currency',
-      currency: 'PHP',
-    }).format(val || 0);
-  };
 
   useEffect(() => {
     let pollCount = 0;
@@ -38,7 +30,6 @@ export default function OrderConfirmation() {
         const data = await getConfirmation(id);
         setOrder(data);
         
-        // If order reflects paid status in DB (via webhook), we stop polling
         if (data.payment_status === 'paid') {
           setPaymentStatus('succeeded');
           return true;
@@ -59,7 +50,7 @@ export default function OrderConfirmation() {
         const statusData = await checkPaymentStatus(paymentIntentId);
         if (statusData.status === 'succeeded') {
           setPaymentStatus('succeeded');
-          fetchOrder(); // Update order details
+          fetchOrder();
           return true;
         } else if (statusData.status === 'awaiting_payment_method') {
           setPaymentStatus('awaiting_payment_method');
@@ -80,7 +71,6 @@ export default function OrderConfirmation() {
         return;
       }
 
-      // Initial payment check
       if (paymentIntentId) {
         const paymentDone = await pollPayment();
         if (paymentDone) {
@@ -91,7 +81,6 @@ export default function OrderConfirmation() {
       
       setLoading(false);
 
-      // Setup interval for polling
       interval = setInterval(async () => {
         pollCount++;
         const orderDone = await fetchOrder();
@@ -134,21 +123,21 @@ export default function OrderConfirmation() {
   const isPending = !isPaid && !isFailed;
 
   return (
-    <div className="animate-in fade-in duration-700 max-w-3xl mx-auto px-4 py-12 text-center">
-      <div className="relative mb-12">
-        <div className={`absolute inset-0 blur-3xl rounded-full opacity-20 mx-auto w-32 ${isPaid ? 'bg-emerald-500' : isFailed ? 'bg-coral-500' : 'bg-amber-500'}`} />
-        <div className="relative inline-flex p-8 bg-white rounded-[40px] shadow-xl border border-sage-50">
-          {isPaid && <CheckCircle className="text-emerald-500" size={80} strokeWidth={1.5} />}
-          {isFailed && <XCircle className="text-coral-500" size={80} strokeWidth={1.5} />}
-          {isPending && <Clock className="text-amber-500" size={80} strokeWidth={1.5} />}
+    <div className="animate-in fade-in duration-700 max-w-3xl mx-auto px-4 py-6 sm:py-12 text-center">
+      <div className="relative mb-8 sm:mb-12">
+        <div className={`absolute inset-0 blur-3xl rounded-full opacity-20 mx-auto w-24 sm:w-32 ${isPaid ? 'bg-emerald-500' : isFailed ? 'bg-coral-500' : 'bg-amber-500'}`} />
+        <div className="relative inline-flex p-5 sm:p-8 bg-white rounded-3xl sm:rounded-[40px] shadow-xl border border-sage-50">
+          {isPaid && <CheckCircle className="text-emerald-500" size={60} strokeWidth={1.5} />}
+          {isFailed && <XCircle className="text-coral-500" size={60} strokeWidth={1.5} />}
+          {isPending && <Clock className="text-amber-500" size={60} strokeWidth={1.5} />}
         </div>
       </div>
 
-      <div className="space-y-4 mb-12 text-center">
-        <h1 className="text-4xl font-bold font-display text-sage-800 tracking-tight">
+      <div className="space-y-3 sm:space-y-4 mb-8 sm:mb-12 text-center">
+        <h1 className="text-2xl sm:text-4xl font-bold font-display text-sage-800 tracking-tight">
           {isPaid ? 'Order Confirmed!' : isFailed ? 'Payment Failed' : 'Verifying Payment...'}
         </h1>
-        <p className="text-sage-500 font-medium max-w-lg mx-auto">
+        <p className="text-sm sm:text-base text-sage-500 font-medium max-w-lg mx-auto">
           {isPaid 
             ? `Excellent choice. Your order ${order.order_number || `#${order.order_id}`} has been secured. Our marine specialists are preparing your specimens for transit.`
             : isFailed 
@@ -157,7 +146,7 @@ export default function OrderConfirmation() {
         </p>
       </div>
 
-      <div className="bg-white p-8 rounded-[48px] border border-sage-100 shadow-sm text-left space-y-6 mb-12">
+      <div className="bg-white p-5 sm:p-8 rounded-3xl sm:rounded-[48px] border border-sage-100 shadow-sm text-left space-y-4 sm:space-y-6 mb-8 sm:mb-12">
         <h2 className="text-xl font-bold font-display text-sage-800 flex items-center gap-3">
           <ShoppingBag size={20} className="text-teal-500" />
           Order Summary

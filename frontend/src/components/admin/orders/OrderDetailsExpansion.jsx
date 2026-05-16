@@ -23,7 +23,6 @@ export default function OrderDetailsExpansion({ orderId, onUpdate }) {
 
   useEffect(() => {
     fetchDetails();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [orderId]);
 
   const handleStatusUpdate = async (newStatus) => {

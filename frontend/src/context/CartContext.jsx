@@ -1,4 +1,3 @@
-/* eslint-disable react-refresh/only-export-components */
 import { createContext, useContext, useState, useEffect, useCallback } from 'react';
 import { getCart, addToCart, updateCart, removeFromCart, clearCart as apiClearCart } from '../api/cart';
 import { useAuth } from './AuthContext';

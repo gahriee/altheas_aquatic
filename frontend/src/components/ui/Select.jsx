@@ -12,12 +12,10 @@ export default function Select({
   value, 
   onChange, 
   placeholder = 'Select an option', 
-  // eslint-disable-next-line no-unused-vars
-  label,
+  _label,
   id,
   name,
-  // eslint-disable-next-line no-unused-vars
-  required = false,
+  _required = false,
   className = ''
 }) {
   const [isOpen, setIsOpen] = useState(false);

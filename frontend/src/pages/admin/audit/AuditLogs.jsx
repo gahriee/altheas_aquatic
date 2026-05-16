@@ -40,7 +40,6 @@ export default function AuditLogs() {
 
   useEffect(() => {
     loadLogs();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [page, actionFilter, resourceFilter, debouncedSearch, fromDate, toDate]);
 
   async function loadLogs() {

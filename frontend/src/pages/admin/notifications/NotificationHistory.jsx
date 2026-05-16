@@ -24,7 +24,6 @@ export default function NotificationHistory() {
 
   useEffect(() => {
     fetchHistory();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [page, typeFilter, readFilter]);
 
   const fetchHistory = async () => {

@@ -3,8 +3,13 @@ import { useParams, Link, useNavigate } from 'react-router-dom';
 import { ArrowLeft, Package, Clock, CheckCircle, XCircle, AlertCircle, FileText, MapPin, CreditCard, Box } from 'lucide-react';
 import { getMyOrderDetail } from '../../api/orders';
 import { useAuth } from '../../context/AuthContext';
+import { formatCurrency, formatDateTime } from '../../utils/format';
 import LoadingSpinner from '../../components/shared/LoadingSpinner';
 
+/**
+ * Order detail page — displays a single order's status, items, customer info,
+ * and delivery details. Redirects to order list if order not found.
+ */
 export default function MyOrderDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
@@ -14,6 +19,10 @@ export default function MyOrderDetail() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
+  /**
+   * Fetches order details by ID from the API. On 'not found' error,
+   * redirects to the orders list after a short delay.
+   */
   const fetchOrder = useCallback(async () => {
     try {
       setLoading(true);
@@ -37,9 +46,11 @@ export default function MyOrderDetail() {
       return;
     }
     fetchOrder();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [authLoading, isAuthenticated, navigate]);
 
+  /**
+   * Returns color, background, and icon config for a given order status.
+   */
   const getStatusConfig = (status) => {
     switch (status) {
       case 'pending': return { color: 'text-amber-500', bg: 'bg-amber-50 border-amber-100', icon: Clock };
@@ -53,7 +64,7 @@ export default function MyOrderDetail() {
   if (authLoading) {
     return (
       <div className="max-w-4xl mx-auto py-20 px-4">
-        <LoadingSpinner size="lg" className="text-teal-500" />
+      <LoadingSpinner message="Loading order details..." />
       </div>
     );
   }
@@ -63,7 +74,7 @@ export default function MyOrderDetail() {
   if (loading) {
     return (
       <div className="max-w-4xl mx-auto py-20 px-4">
-        <LoadingSpinner size="lg" className="text-teal-500" />
+      <LoadingSpinner message="Loading order details..." />
       </div>
     );
   }
@@ -89,7 +100,7 @@ export default function MyOrderDetail() {
   const StatusIcon = statusConfig.icon;
 
   return (
-    <div className="max-w-4xl mx-auto py-8 px-4">
+    <div className="max-w-4xl mx-auto py-4 sm:py-8 px-4">
       <Link to="/my-orders" className="inline-flex items-center gap-2 text-sage-500 hover:text-teal-600 font-medium mb-6 transition-colors">
         <ArrowLeft size={18} /> Back to My Orders
       </Link>
@@ -101,7 +112,7 @@ export default function MyOrderDetail() {
               <StatusIcon className={`w-8 h-8 ${statusConfig.color}`} />
             </div>
             <div>
-              <h1 className="text-2xl font-bold font-display text-sage-900 flex items-center gap-3">
+              <h1 className="text-xl sm:text-2xl font-bold font-display text-sage-900 flex items-center gap-2 sm:gap-3 flex-wrap">
                 {order.order_number || `#${order.order_id}`}
                 <span className={`px-3 py-1 rounded-full text-xs font-bold border capitalize ${statusConfig.bg} ${statusConfig.color}`}>
                   {order.status}
@@ -109,9 +120,7 @@ export default function MyOrderDetail() {
               </h1>
               <p className="text-sage-500 mt-1 flex items-center gap-2">
                 <Clock size={14} />
-                Placed on {new Date(order.ordered_at).toLocaleString('en-US', {
-                  year: 'numeric', month: 'long', day: 'numeric', hour: 'numeric', minute: '2-digit'
-                })}
+                Placed on {formatDateTime(order.ordered_at)}
               </p>
             </div>
           </div>
@@ -119,7 +128,7 @@ export default function MyOrderDetail() {
           <div className="flex flex-col items-start md:items-end p-4 md:p-0 bg-white md:bg-transparent rounded-xl border md:border-0 border-sage-100">
             <span className="text-sage-500 text-xs font-semibold uppercase tracking-wider mb-1">Total Amount</span>
             <span className="text-2xl font-bold font-display text-sage-900">
-              ₱{parseFloat(order.total_amount).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+              {formatCurrency(order.total_amount)}
             </span>
             <div className="flex items-center gap-1.5 mt-1">
               <CreditCard size={14} className={order.payment_status === 'paid' ? 'text-emerald-500' : 'text-amber-500'} />
@@ -139,8 +148,8 @@ export default function MyOrderDetail() {
           </h2>
           <div className="space-y-4">
             {order.items?.map(item => (
-              <div key={item.item_id} className="flex items-center gap-4 p-4 rounded-2xl bg-sage-50/50 border border-sage-100">
-                <div className="w-20 h-20 shrink-0 bg-white rounded-xl border border-sage-200 overflow-hidden flex items-center justify-center">
+              <div key={item.item_id} className="flex items-center gap-3 sm:gap-4 p-3 sm:p-4 rounded-2xl bg-sage-50/50 border border-sage-100">
+                <div className="w-14 h-14 sm:w-20 sm:h-20 shrink-0 bg-white rounded-xl border border-sage-200 overflow-hidden flex items-center justify-center">
                   {item.image_path ? (
                     <img 
                       src={`/image.php?file=${item.image_path}`} 
@@ -152,14 +161,14 @@ export default function MyOrderDetail() {
                   )}
                 </div>
                 <div className="flex-1 min-w-0">
-                  <h3 className="font-bold text-sage-900 truncate">{item.product_name}</h3>
-                  <div className="text-sage-500 text-sm mt-1">
-                    ₱{parseFloat(item.unit_price).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} × {item.qty}
+                  <h3 className="font-bold text-sage-900 truncate text-sm sm:text-base">{item.product_name}</h3>
+                  <div className="text-sage-500 text-xs sm:text-sm mt-1">
+                    {formatCurrency(item.unit_price)} × {item.qty}
                   </div>
                 </div>
                 <div className="text-right">
                   <div className="font-bold text-sage-900">
-                    ₱{parseFloat(item.subtotal).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                    {formatCurrency(item.subtotal)}
                   </div>
                 </div>
               </div>

@@ -1,8 +1,9 @@
 import { useState, useEffect, useCallback } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Package, Clock, CheckCircle, XCircle, AlertCircle, Eye, Loader } from 'lucide-react';
+import { Package, Clock, CheckCircle, XCircle, AlertCircle, Eye } from 'lucide-react';
 import { getMyOrders } from '../../api/orders';
 import { useAuth } from '../../context/AuthContext';
+import { formatCurrency, formatDate } from '../../utils/format';
 import LoadingSpinner from '../../components/shared/LoadingSpinner';
 
 const STATUS_TABS = [
@@ -13,6 +14,10 @@ const STATUS_TABS = [
   { value: 'cancelled', label: 'Cancelled' }
 ];
 
+/**
+ * My Orders page — lists all customer orders with status filtering tabs.
+ * Redirects unauthenticated users to the login page.
+ */
 export default function MyOrders() {
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -21,6 +26,9 @@ export default function MyOrders() {
   const { isAuthenticated, loading: authLoading } = useAuth();
   const navigate = useNavigate();
 
+  /**
+   * Fetches the customer's orders from the API, filtered by activeTab status.
+   */
   const fetchOrders = useCallback(async () => {
     try {
       setLoading(true);
@@ -41,9 +49,11 @@ export default function MyOrders() {
       return;
     }
     fetchOrders();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [authLoading, isAuthenticated, navigate]);
 
+  /**
+   * Returns color, background, and icon config for a given order status.
+   */
   const getStatusConfig = (status) => {
     switch (status) {
       case 'pending': return { color: 'text-amber-500', bg: 'bg-amber-50 border-amber-100', icon: Clock };
@@ -54,6 +64,9 @@ export default function MyOrders() {
     }
   };
 
+  /**
+   * Returns a styled badge element for a given payment status.
+   */
   const getPaymentBadge = (status) => {
     switch (status) {
       case 'paid': return <span className="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-600 border border-emerald-100">Paid</span>;
@@ -66,7 +79,7 @@ export default function MyOrders() {
   if (authLoading) {
     return (
       <div className="py-20">
-        <LoadingSpinner size="lg" className="text-teal-500" />
+      <LoadingSpinner message="Loading your orders..." />
       </div>
     );
   }
@@ -74,13 +87,13 @@ export default function MyOrders() {
   if (!isAuthenticated()) return null;
 
   return (
-    <div className="max-w-4xl mx-auto py-8 px-4">
+    <div className="max-w-4xl mx-auto py-4 sm:py-8 px-4">
       <div className="flex items-center gap-3 mb-8">
         <div className="p-3 bg-teal-50 rounded-xl">
           <Package className="text-teal-500 w-6 h-6" />
         </div>
         <div>
-          <h1 className="text-2xl font-bold font-display text-sage-900">My Orders</h1>
+          <h1 className="text-xl sm:text-2xl font-bold font-display text-sage-900">My Orders</h1>
           <p className="text-sage-500 text-sm">Track and view your order history</p>
         </div>
       </div>
@@ -109,9 +122,7 @@ export default function MyOrders() {
       )}
 
       {loading ? (
-        <div className="py-20">
-          <LoadingSpinner size="lg" className="text-teal-500" />
-        </div>
+        <LoadingSpinner message="Loading your orders..." />
       ) : orders.length === 0 ? (
         <div className="text-center py-20 bg-white rounded-2xl border border-sage-100 shadow-sm">
           <Package className="w-16 h-16 text-sage-200 mx-auto mb-4" />
@@ -154,12 +165,10 @@ export default function MyOrders() {
                         {getPaymentBadge(order.payment_status)}
                       </div>
                       <p className="text-sage-500 text-sm mb-1">
-                        Placed on {new Date(order.ordered_at).toLocaleDateString('en-US', {
-                          year: 'numeric', month: 'long', day: 'numeric'
-                        })}
+                        Placed on {formatDate(order.ordered_at)}
                       </p>
                       <p className="text-sage-600 text-sm font-medium">
-                        {order.item_count} {order.item_count === 1 ? 'item' : 'items'} • ₱{parseFloat(order.total_amount).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                        {order.item_count} {order.item_count === 1 ? 'item' : 'items'} • {formatCurrency(order.total_amount)}
                       </p>
                     </div>
                   </div>

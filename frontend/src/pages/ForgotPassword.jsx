@@ -7,10 +7,16 @@ import Input from '../components/ui/Input';
 import Label from '../components/ui/Label';
 import { ArrowLeft, Mail } from 'lucide-react';
 
+/**
+ * Forgot Password page — allows users to request a password reset link.
+ */
 export default function ForgotPassword() {
   const [email, setEmail] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
 
+  /**
+   * Validates email and submits the forgot password request.
+   */
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!email) {
@@ -21,17 +27,15 @@ export default function ForgotPassword() {
     setIsSubmitting(true);
     try {
       await forgotPassword(email);
-      // Success toast is handled by apiFetch
       setEmail('');
     } catch (err) {
-      // Error toast is handled by apiFetch
     } finally {
       setIsSubmitting(false);
     }
   };
 
   return (
-    <div className="min-h-screen bg-sage-50 flex flex-col justify-center py-12 sm:px-6 lg:px-8 font-sans">
+    <div className="min-h-screen bg-sage-50 flex flex-col justify-center py-8 sm:py-12 px-4 sm:px-6 lg:px-8 font-sans">
       <div className="sm:mx-auto sm:w-full sm:max-w-md text-center">
         <div className="mx-auto h-24 w-24 bg-white rounded-[2rem] flex items-center justify-center shadow-2xl shadow-teal-600/10 border border-teal-50 p-3 mb-8">
            <img src="/logo_nobg.svg" alt="Logo" className="w-full h-full object-contain" />
@@ -44,8 +48,8 @@ export default function ForgotPassword() {
         </p>
       </div>
 
-      <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
-        <div className="bg-white py-8 px-4 shadow-xl shadow-teal-500/5 sm:rounded-3xl sm:px-10 border border-sage-100 relative">
+      <div className="mt-6 sm:mt-8 mx-auto w-full max-w-md">
+        <div className="bg-white py-6 sm:py-8 px-4 shadow-xl shadow-teal-500/5 rounded-2xl sm:rounded-3xl sm:px-10 border border-sage-100 relative">
           
           <Link to="/admin/login" className="absolute top-6 left-6 text-sage-400 hover:text-teal-600 transition-colors p-2 hover:bg-teal-50 rounded-xl flex items-center justify-center">
             <ArrowLeft size={20} />

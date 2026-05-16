@@ -7,6 +7,11 @@ import { ShoppingCart, ArrowLeft, Loader2, Minus, Plus, Package, Tag, Info } fro
 import Button from '../../components/ui/Button';
 import { useFlyToCart } from '../../hooks/useFlyToCart';
 
+/**
+ * Product detail page — shows full product information (image, price, stock,
+ * description) with quantity controls and add-to-cart functionality.
+ * Redirects to login if the user is not authenticated.
+ */
 export default function ProductDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
@@ -34,6 +39,10 @@ export default function ProductDetail() {
     fetchDetails();
   }, [id]);
 
+  /**
+   * Adds the product to cart or redirects to login if unauthenticated.
+   * Triggers a fly-to-cart animation before updating the cart context.
+   */
   const handleAddToCart = async () => {
     if (!isAuthenticated()) {
       setPendingAction({
@@ -48,6 +57,9 @@ export default function ProductDetail() {
     addItem(product.product_id, quantity);
   };
 
+  /**
+   * Adjusts quantity within valid bounds (1 to stock_qty).
+   */
   const handleQuantityChange = (delta) => {
     const newQty = quantity + delta;
     if (newQty >= 1 && newQty <= (product?.stock_qty || 1)) {
@@ -81,18 +93,17 @@ export default function ProductDetail() {
   }
 
   return (
-    <div className="max-w-7xl mx-auto">
+    <div className="max-w-7xl mx-auto px-4">
       <button
         onClick={() => navigate(-1)}
-        className="flex items-center gap-2 text-sage-400 hover:text-teal-500 font-bold transition-all hover:-translate-x-1 mb-8 focus:outline-none"
+        className="flex items-center gap-2 text-sage-400 hover:text-teal-500 font-bold transition-all hover:-translate-x-1 mb-6 sm:mb-8 focus:outline-none"
       >
         <ArrowLeft size={20} />
         Back to Results
       </button>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 xl:gap-24">
-        {/* Product Image */}
-        <div className="relative aspect-square rounded-[48px] overflow-hidden bg-white shadow-2xl shadow-teal-500/5 group">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 xl:gap-24">
+        <div className="relative aspect-square rounded-3xl sm:rounded-[48px] overflow-hidden bg-white shadow-2xl shadow-teal-500/5 group">
           <img
             src={product.image_path ? `/image.php?file=${product.image_path}` : 'https://placehold.co/800x800?text=No+Image'}
             alt={product.name}
@@ -100,7 +111,7 @@ export default function ProductDetail() {
           />
           <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent pointer-events-none" />
           
-          <div className="absolute top-8 left-8">
+          <div className="absolute top-4 left-4 sm:top-8 sm:left-8">
             <span className="px-4 py-2 bg-white/90 backdrop-blur-md rounded-full text-xs font-bold text-teal-600 shadow-xl shadow-black/5 flex items-center gap-2 uppercase tracking-widest">
               <Tag size={14} />
               {product.category_name}
@@ -108,18 +119,17 @@ export default function ProductDetail() {
           </div>
         </div>
 
-        {/* Product Details */}
-        <div className="flex flex-col justify-center space-y-8">
-          <div className="space-y-4">
-            <h1 className="text-4xl lg:text-6xl font-bold font-display text-sage-800 leading-tight">
+        <div className="flex flex-col justify-center space-y-6 sm:space-y-8">
+          <div className="space-y-3 sm:space-y-4">
+            <h1 className="text-3xl sm:text-4xl lg:text-6xl font-bold font-display text-sage-800 leading-tight">
               {product.name}
             </h1>
-            <p className="text-3xl font-bold font-display text-teal-600">
+            <p className="text-2xl sm:text-3xl font-bold font-display text-teal-600">
               ₱{Number(product.price).toFixed(2)}
             </p>
           </div>
 
-          <div className="bg-white p-8 rounded-[40px] border border-sage-100 shadow-xl shadow-teal-500/5 space-y-6">
+          <div className="bg-white p-5 sm:p-8 rounded-3xl sm:rounded-[40px] border border-sage-100 shadow-xl shadow-teal-500/5 space-y-4 sm:space-y-6">
             <div className="flex items-center gap-6 pb-6 border-b border-sage-50">
               <div className="flex flex-col gap-1">
                 <span className="text-[10px] font-bold uppercase text-sage-300 tracking-widest">Available Stock</span>

@@ -2,12 +2,16 @@ import { useState, useEffect } from 'react';
 import { useNavigate, useLocation, Link } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { useCart } from '../../context/CartContext';
-import { User, Lock, LogIn, Loader2, Info, Mail } from 'lucide-react';
+import { Lock, LogIn, Loader2, Info, Mail } from 'lucide-react';
 import ErrorMessage from '../../components/shared/ErrorMessage';
 import Label from '../../components/ui/Label';
 import Input from '../../components/ui/Input';
 import Button from '../../components/ui/Button';
 
+/**
+ * Login page — allows existing customers to sign in with email and password.
+ * Handles pending cart actions (e.g., add-to-cart) that triggered a login redirect.
+ */
 export default function Login() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -18,7 +22,6 @@ export default function Login() {
   const navigate = useNavigate();
   const location = useLocation();
 
-  // Success message from registration
   const successMessage = location.state?.message;
 
   useEffect(() => {
@@ -28,15 +31,18 @@ export default function Login() {
     }
   }, [user, navigate, location]);
 
+  /**
+   * Handles form submission — calls login API, then resolves any pending
+   * cart action (like add-to-cart) that was queued before redirect.
+   */
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
     setIsSubmitting(true);
 
     try {
-      await login(email, password, false); // false = customer login
+      await login(email, password, false);
       
-      // Handle pending actions
       if (pendingAction && pendingAction.type === 'ADD_TO_CART') {
         addItem(pendingAction.payload.id, 1);
         setPendingAction(null);
@@ -49,12 +55,12 @@ export default function Login() {
   };
 
   return (
-    <div className="bg-sage-50 flex flex-col py-12 sm:px-6 lg:px-8 font-sans">
+    <div className="bg-sage-50 flex flex-col py-8 sm:py-12 px-4 sm:px-6 lg:px-8 font-sans">
       <div className="sm:mx-auto sm:w-full sm:max-w-md text-center">
         <div className="mx-auto h-20 w-20 bg-white rounded-3xl flex items-center justify-center shadow-xl border border-sage-100 p-2">
            <img src="/logo_nobg.svg" alt="Logo" className="w-full h-full object-contain" />
         </div>
-        <h2 className="mt-6 text-center text-3xl font-bold font-display text-sage-800 tracking-tight">
+        <h2 className="mt-4 sm:mt-6 text-center text-2xl sm:text-3xl font-bold font-display text-sage-800 tracking-tight">
           Welcome Home
         </h2>
         <p className="mt-2 text-center text-sm text-sage-500 font-medium">
@@ -63,7 +69,7 @@ export default function Login() {
       </div>
 
       <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
-        <div className="bg-white py-10 px-4 shadow-2xl shadow-teal-500/10 sm:rounded-[32px] sm:px-12 border border-sage-100">
+        <div className="bg-white py-8 sm:py-10 px-4 shadow-2xl shadow-teal-500/10 rounded-2xl sm:rounded-[32px] sm:px-12 border border-sage-100">
           {successMessage && (
             <div className="mb-6 p-4 bg-emerald-50 text-emerald-600 rounded-2xl border border-emerald-100 flex items-center gap-2 text-sm font-semibold animate-in fade-in slide-in-from-top-2 duration-300">
               <Info size={18} />
