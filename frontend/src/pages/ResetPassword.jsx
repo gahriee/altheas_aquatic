@@ -70,7 +70,8 @@ export default function ResetPassword() {
     try {
       await resetPassword(selector, token, newPassword, confirmPassword);
       navigate('/admin/login', { replace: true });
-    } catch (_err) {
+    } catch (err) {
+      console.error(err);
     } finally {
       setIsSubmitting(false);
     }
