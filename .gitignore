@@ -13,7 +13,7 @@ frontend/.env
 .agents/*
 .claude/
 .claude/*
-/docs/tickets/
+/docs/
 /AGENTS.md
 /CLAUDE.md
 
