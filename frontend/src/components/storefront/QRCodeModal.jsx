@@ -17,17 +17,18 @@ export default function QRCodeModal({
   const [isExpired, setIsExpired] = useState(false);
   const [status, setStatus] = useState('processing');
   
+  const [targetTime] = useState(() => {
+    let t = Number(expiresAt);
+    if (!t || isNaN(t)) {
+      return Math.floor(Date.now() / 1000) + (30 * 60);
+    }
+    return t;
+  });
+
   useEffect(() => {
     // Countdown Timer
     const updateTimer = () => {
       const now = Math.floor(Date.now() / 1000);
-      let targetTime = Number(expiresAt);
-      
-      // Fallback to 30 minutes if missing or invalid (matches PayMongo default)
-      if (!targetTime || isNaN(targetTime)) {
-        targetTime = now + (30 * 60);
-      }
-      
       const remaining = targetTime - now;
       
       if (remaining <= 0) {
@@ -42,7 +43,7 @@ export default function QRCodeModal({
     const timerInterval = setInterval(updateTimer, 1000);
     
     return () => clearInterval(timerInterval);
-  }, [expiresAt]);
+  }, [targetTime]);
   
   useEffect(() => {
     // Payment Status Polling
