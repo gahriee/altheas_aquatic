@@ -10,6 +10,8 @@
 // Load configuration
 require_once __DIR__ . '/../config/config.php';
 
+date_default_timezone_set('Asia/Manila');
+
 // Composer Autoloader
 if (file_exists(__DIR__ . '/../vendor/autoload.php')) {
     require_once __DIR__ . '/../vendor/autoload.php';
