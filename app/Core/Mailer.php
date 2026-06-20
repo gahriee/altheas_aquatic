@@ -31,6 +31,7 @@ class Mailer
             $mail->Password   = constant('SMTP_PASS') ?: '';
             $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
             $mail->Port       = (int) (constant('SMTP_PORT') ?: 587);
+            $mail->Timeout    = 5; // Fail fast if network is unreachable
 
             // Sender and recipient
             $fromName = constant('SMTP_FROM_NAME') ?: "Althea's Aquatic";

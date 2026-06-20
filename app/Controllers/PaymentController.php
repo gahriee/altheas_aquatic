@@ -318,6 +318,27 @@ class PaymentController
                 case 'qr.paid':
                     $this->orderModel->updatePaymentStatus($intentId, 'paid', 'confirmed');
 
+                    // ---------------------------------------------------------
+                    // RESPOND TO PAYMONGO EARLY TO PREVENT TIMEOUTS
+                    // ---------------------------------------------------------
+                    header('Content-Type: application/json');
+                    $responseJson = json_encode(['message' => 'Webhook handled successfully']);
+                    echo $responseJson;
+                    
+                    if (function_exists('fastcgi_finish_request')) {
+                        fastcgi_finish_request();
+                    } else {
+                        // Fallback for non-FPM (best effort to close connection)
+                        ignore_user_abort(true);
+                        ob_start();
+                        echo $responseJson;
+                        header('Connection: close');
+                        header('Content-Length: ' . ob_get_length());
+                        ob_end_flush();
+                        @ob_flush();
+                        flush();
+                    }
+
                     // Real-time Notification
                     $order = $this->orderModel->getByIntentId($intentId);
                     if ($order) {
@@ -380,6 +401,7 @@ class PaymentController
                             }
                         }
                     }
+                    exit; // Exit here since we already sent the HTTP response
                     break;
 
                 case 'payment.failed':
