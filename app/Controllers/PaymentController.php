@@ -263,6 +263,65 @@ class PaymentController
 
             $order = $this->orderModel->getByIntentId($intentId);
 
+            if ($status === 'succeeded' && $order && ($order['payment_status'] ?? '') !== 'paid') {
+                $this->orderModel->updatePaymentStatus($intentId, 'paid', 'confirmed');
+
+                $displayId = $order['order_number'] ?? "#{$order['order_id']}";
+                $notif = [
+                    'type' => 'order_paid',
+                    'title' => 'Payment Received',
+                    'message' => "Order {$displayId} for ₱" . number_format((float) $order['total_amount'], 2) . " has been paid.",
+                    'data_json' => ['order_id' => $order['order_id'], 'order_number' => $order['order_number']]
+                ];
+                $this->notificationModel->create($notif);
+                \App\Core\PusherService::broadcast('admin-notifications', 'notification-received', $notif);
+
+                $fullOrder = $this->orderModel->getById((int) $order['order_id']);
+                if ($fullOrder && !empty($fullOrder['customer_email'])) {
+                    $totalAmount = number_format((float) $fullOrder['total_amount'], 2);
+                    $subject = "Payment Confirmed: Order {$displayId}";
+
+                    $itemsHtml = '<table style="width: 100%; border-collapse: collapse; margin-top: 15px;">';
+                    $itemsHtml .= '<thead><tr><th style="border-bottom: 1px solid #ddd; padding: 8px; text-align: left;">Product</th><th style="border-bottom: 1px solid #ddd; padding: 8px; text-align: right;">Qty</th><th style="border-bottom: 1px solid #ddd; padding: 8px; text-align: right;">Price</th><th style="border-bottom: 1px solid #ddd; padding: 8px; text-align: right;">Subtotal</th></tr></thead>';
+                    $itemsHtml .= '<tbody>';
+                    foreach ($fullOrder['items'] as $item) {
+                        $price = number_format((float) $item['unit_price'], 2);
+                        $subtotal = number_format((float) $item['subtotal'], 2);
+                        $itemsHtml .= "<tr><td style='padding: 8px; border-bottom: 1px solid #eee;'>{$item['product_name']}</td><td style='padding: 8px; text-align: right; border-bottom: 1px solid #eee;'>{$item['qty']}</td><td style='padding: 8px; text-align: right; border-bottom: 1px solid #eee;'>₱{$price}</td><td style='padding: 8px; text-align: right; border-bottom: 1px solid #eee;'>₱{$subtotal}</td></tr>";
+                    }
+                    $itemsHtml .= '</tbody></table>';
+
+                    $date = date('F j, Y, g:i a');
+                    $address = $fullOrder['delivery_address'] ?: 'No address provided';
+
+                    $htmlBody = "
+                    <div style='font-family: sans-serif; max-width: 600px; margin: 0 auto; color: #333;'>
+                        <h2 style='color: #0d9488; border-bottom: 2px solid #0d9488; padding-bottom: 10px;'>Althea's Aquatic</h2>
+                        <p>Hi {$fullOrder['customer_name']},</p>
+                        <p>Thank you for your order! We have received your payment. Your order details are below.</p>
+                        <div style='background: #f8fafc; padding: 15px; border-radius: 8px; margin: 20px 0;'>
+                            <p style='margin: 0 0 5px 0;'><strong>Order Number:</strong> {$displayId}</p>
+                            <p style='margin: 0 0 5px 0;'><strong>Date:</strong> {$date}</p>
+                            <p style='margin: 0 0 5px 0;'><strong>Total Amount:</strong> <span style='color: #0d9488; font-weight: bold;'>₱{$totalAmount}</span></p>
+                            <p style='margin: 0 0 0 0;'><strong>Delivery Address:</strong> {$address}</p>
+                        </div>
+                        <h3>Order Summary</h3>
+                        {$itemsHtml}
+                        <p style='margin-top: 30px; font-size: 0.9em; color: #64748b;'>If you have any questions, feel free to reply to this email.</p>
+                    </div>
+                    ";
+
+                    try {
+                        \App\Core\Mailer::send($fullOrder['customer_email'], $subject, $htmlBody);
+                        error_log("Reconciliation email sent to {$fullOrder['customer_email']} for Order {$displayId}");
+                    } catch (\Exception $e) {
+                        error_log("Reconciliation email failed for Order {$displayId}: " . $e->getMessage());
+                    }
+                }
+
+                $order['payment_status'] = 'paid';
+            }
+
             Response::json([
                 'status' => $status,
                 'order_id' => $order['order_id'] ?? null,
