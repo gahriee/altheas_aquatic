@@ -106,8 +106,11 @@ class PayMongo
     public function verifyWebhookSignature(string $rawBody, string $sigHeader, string $secret): bool
     {
         if (empty($sigHeader)) {
+            error_log("Webhook verification failed: Empty signature header.");
             return false;
         }
+
+        error_log("Raw Signature Header: " . $sigHeader);
 
         $parts = explode(',', $sigHeader);
         $timestamp = '';
@@ -130,7 +133,12 @@ class PayMongo
         $signedPayload = $timestamp . '.' . $rawBody;
         $expectedSignature = hash_hmac('sha256', $signedPayload, $secret);
 
-        return hash_equals($expectedSignature, $signature);
+        if (!hash_equals($expectedSignature, $signature)) {
+            error_log("Webhook Signature Mismatch! Expected: $expectedSignature, Got: $signature, Secret: " . substr($secret, 0, 8) . "...");
+            return false;
+        }
+
+        return true;
     }
 
     /**
