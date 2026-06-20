@@ -297,9 +297,23 @@ class PaymentController
 
             $event = json_decode($payload, true);
             $type = $event['data']['attributes']['type'] ?? '';
+
+            error_log("PayMongo Webhook received: type={$type}");
+            error_log("PayMongo Webhook payload: " . substr($payload, 0, 2000));
+
             $intentId = $event['data']['attributes']['data']['attributes']['payment_intent_id'] ?? '';
 
             if (empty($intentId)) {
+                $intentId = $event['data']['attributes']['data']['attributes']['data']['attributes']['payment_intent_id'] ?? '';
+            }
+            if (empty($intentId)) {
+                $intentId = $event['data']['attributes']['data']['id'] ?? '';
+            }
+
+            error_log("PayMongo Webhook extracted intentId={$intentId}");
+
+            if (empty($intentId)) {
+                error_log("PayMongo Webhook FAILED: no intent ID found. Full event keys: " . json_encode(array_keys($event['data']['attributes']['data']['attributes'] ?? [])));
                 Response::error('Payment intent ID not found in payload', 400);
             }
 
