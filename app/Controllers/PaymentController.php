@@ -174,24 +174,61 @@ class PaymentController
             $attach = $this->payMongo->attachPaymentIntent($intentId, $methodId, $returnUrl);
 
             $nextAction = $attach['data']['attributes']['next_action'] ?? [];
-            $redirectUrl = $nextAction['redirect']['url'] ?? $nextAction['qr_code']['url'] ?? '';
-
-            if (empty($redirectUrl)) {
-                throw new \RuntimeException("Failed to generate checkout redirect URL from PayMongo.");
-            }
+            $type = $nextAction['type'] ?? '';
 
             // Save Intent ID on Order
             $this->orderModel->setIntentId($orderId, $intentId);
 
             $db->commit();
 
-            Response::json([
-                'order_id' => $orderId,
-                'order_number' => $orderNumber,
-                'redirect_url' => $redirectUrl,
-                'payment_intent_id' => $intentId,
-                'client_key' => $clientKey
-            ], 201);
+            if ($type === 'redirect') {
+                $redirectUrl = $nextAction['redirect']['url'] ?? '';
+                if (empty($redirectUrl)) {
+                    throw new \RuntimeException("Failed to generate checkout redirect URL from PayMongo.");
+                }
+
+                Response::json([
+                    'order_id' => $orderId,
+                    'order_number' => $orderNumber,
+                    'checkout_type' => 'redirect',
+                    'redirect_url' => $redirectUrl,
+                    'payment_intent_id' => $intentId,
+                    'client_key' => $clientKey
+                ], 201);
+            } elseif ($type === 'qrph') {
+                $qrData = $nextAction['qrph']['data'] ?? '';
+                $qrMimeType = $nextAction['qrph']['mime_type'] ?? '';
+                $qrExpiresAt = $nextAction['qrph']['expires_at'] ?? 0;
+
+                if (empty($qrData)) {
+                    throw new \RuntimeException("Failed to generate QRPH data from PayMongo.");
+                }
+
+                Response::json([
+                    'order_id' => $orderId,
+                    'order_number' => $orderNumber,
+                    'checkout_type' => 'qrph',
+                    'qr_data' => $qrData,
+                    'qr_mime_type' => $qrMimeType,
+                    'qr_expires_at' => $qrExpiresAt,
+                    'payment_intent_id' => $intentId,
+                    'client_key' => $clientKey
+                ], 201);
+            } else {
+                // Fallback for unexpected type
+                $redirectUrl = $nextAction['redirect']['url'] ?? $nextAction['qr_code']['url'] ?? '';
+                if (empty($redirectUrl)) {
+                    throw new \RuntimeException("Failed to generate checkout URL from PayMongo. Unknown type: $type");
+                }
+                Response::json([
+                    'order_id' => $orderId,
+                    'order_number' => $orderNumber,
+                    'checkout_type' => 'redirect',
+                    'redirect_url' => $redirectUrl,
+                    'payment_intent_id' => $intentId,
+                    'client_key' => $clientKey
+                ], 201);
+            }
 
         } catch (\Exception $e) {
             if (isset($db) && $db->inTransaction()) {

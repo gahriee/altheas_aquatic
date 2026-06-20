@@ -141,7 +141,7 @@ export default function OrderConfirmation() {
           {isPaid 
             ? `Excellent choice. Your order ${order.order_number || `#${order.order_id}`} has been secured. Our marine specialists are preparing your specimens for transit.`
             : isFailed 
-            ? `We encountered an issue with your GCash transaction. No specimens were reserved. Please try again or use a different method.`
+            ? `We encountered an issue with your payment transaction. No specimens were reserved. Please try again or use a different method.`
             : `We are awaiting confirmation from the payment gateway. This usually takes just a few seconds.`}
         </p>
       </div>
