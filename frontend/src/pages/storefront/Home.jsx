@@ -23,7 +23,9 @@ export default function Home() {
       setLoading(true);
       try {
         const data = await getProducts(selectedCategoryId);
-        setProducts(data);
+        // Filter out products with 0 quantity
+        const inStockProducts = data.filter(product => product.stock_qty > 0);
+        setProducts(inStockProducts);
       } catch (error) {
         console.error('Failed to fetch products:', error);
       } finally {
