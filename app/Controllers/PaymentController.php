@@ -196,10 +196,19 @@ class PaymentController
                     'client_key' => $clientKey
                 ], 201);
             } elseif ($type === 'qrph' || $type === 'consume_qr') {
-                $qrPayload = $nextAction[$type] ?? $nextAction['qrph'] ?? $nextAction['consume_qr'] ?? [];
+                $qrPayload = $nextAction['code'] ?? $nextAction[$type] ?? $nextAction['qrph'] ?? $nextAction['consume_qr'] ?? [];
                 $qrData = $qrPayload['data'] ?? '';
                 $qrMimeType = $qrPayload['mime_type'] ?? '';
                 $qrExpiresAt = $qrPayload['expires_at'] ?? 0;
+
+                // Handle consume_qr payload where data is inside image_url data URI
+                if (empty($qrData) && !empty($qrPayload['image_url'])) {
+                    $imageUrl = $qrPayload['image_url'];
+                    if (preg_match('/^data:([^;]+);base64,(.*)$/', $imageUrl, $matches)) {
+                        $qrMimeType = $matches[1];
+                        $qrData = $matches[2];
+                    }
+                }
 
                 if (empty($qrData)) {
                     $debug = json_encode($nextAction);
