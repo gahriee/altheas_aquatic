@@ -45,22 +45,34 @@ export default function QRCodeModal({
     return () => clearInterval(timerInterval);
   }, [targetTime]);
   
-  // Removed polling logic. Webhook handles reconciliation.
-  const handleManualCheck = async () => {
-    if (isExpired) return;
-    try {
-      const response = await checkPaymentStatus(paymentIntentId);
-      if (response.status === 'succeeded' || response.payment_status === 'paid') {
-        setStatus('succeeded');
-        onPaymentSuccess();
-      } else {
-        // Just alert or toast that it's still processing
-        setStatus('processing');
+  useEffect(() => {
+    if (isExpired || status === 'succeeded') return;
+    
+    let pollCount = 0;
+    const maxPolls = 600; // 30 mins
+    
+    const pollStatus = async () => {
+      try {
+        const response = await checkPaymentStatus(paymentIntentId);
+        if (response.status === 'succeeded' || response.payment_status === 'paid') {
+          setStatus('succeeded');
+          clearInterval(pollInterval);
+          onPaymentSuccess();
+        }
+      } catch (err) {
+        console.error('Failed to poll payment status:', err);
       }
-    } catch (err) {
-      console.error('Failed to check payment status:', err);
-    }
-  };
+      
+      pollCount++;
+      if (pollCount >= maxPolls) {
+        clearInterval(pollInterval);
+      }
+    };
+    
+    const pollInterval = setInterval(pollStatus, 3000);
+    
+    return () => clearInterval(pollInterval);
+  }, [paymentIntentId, isExpired, status, onPaymentSuccess]);
   
   const formatTime = (seconds) => {
     const mins = Math.floor(seconds / 60);
@@ -118,7 +130,8 @@ export default function QRCodeModal({
             ) : (
               <>
                 <p className="text-sage-500 text-sm font-medium flex items-center justify-center gap-2">
-                  Please scan with your GCash or Maya app.
+                  <Loader2 size={16} className="animate-spin text-teal-500" />
+                  Awaiting payment...
                 </p>
                 <div className="bg-sage-50 py-2 px-4 rounded-full inline-block">
                   <p className="text-sage-600 font-semibold text-sm">
@@ -129,14 +142,9 @@ export default function QRCodeModal({
             )}
           </div>
           
-          <div className="mt-8 space-y-3">
-            {!isExpired && status !== 'succeeded' && (
-              <Button onClick={handleManualCheck} className="w-full">
-                I have paid
-              </Button>
-            )}
+          <div className="mt-8">
             <Button onClick={onClose} variant="secondary" className="w-full">
-              {isExpired ? 'Return to Checkout' : 'Close'}
+              {isExpired ? 'Return to Checkout' : 'Cancel Payment'}
             </Button>
           </div>
         </div>
