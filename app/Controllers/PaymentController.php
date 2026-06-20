@@ -195,13 +195,15 @@ class PaymentController
                     'payment_intent_id' => $intentId,
                     'client_key' => $clientKey
                 ], 201);
-            } elseif ($type === 'qrph') {
-                $qrData = $nextAction['qrph']['data'] ?? '';
-                $qrMimeType = $nextAction['qrph']['mime_type'] ?? '';
-                $qrExpiresAt = $nextAction['qrph']['expires_at'] ?? 0;
+            } elseif ($type === 'qrph' || $type === 'consume_qr') {
+                $qrPayload = $nextAction[$type] ?? $nextAction['qrph'] ?? $nextAction['consume_qr'] ?? [];
+                $qrData = $qrPayload['data'] ?? '';
+                $qrMimeType = $qrPayload['mime_type'] ?? '';
+                $qrExpiresAt = $qrPayload['expires_at'] ?? 0;
 
                 if (empty($qrData)) {
-                    throw new \RuntimeException("Failed to generate QRPH data from PayMongo.");
+                    $debug = json_encode($nextAction);
+                    throw new \RuntimeException("Failed to generate QRPH data from PayMongo. NextAction: $debug");
                 }
 
                 Response::json([
