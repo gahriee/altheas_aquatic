@@ -225,6 +225,7 @@ export default function MyProfile() {
                 value={formData.display_name}
                 onChange={handleChange}
                 placeholder="e.g. Juan Dela Cruz"
+                required
               />
             </div>
             <div className="space-y-2">
@@ -256,6 +257,7 @@ export default function MyProfile() {
                 placeholder="9XX-XXX-XXXX"
                 maxLength={12}
                 className="pl-12"
+                required
               />
             </div>
           </div>
@@ -277,6 +279,7 @@ export default function MyProfile() {
                 onChange={handleRegionChange}
                 options={regionOptions}
                 placeholder="Select Region"
+                required
               />
             </div>
             <div className="space-y-2">
@@ -289,6 +292,7 @@ export default function MyProfile() {
                 options={provinceOptions}
                 placeholder="Select Province"
                 className={formData.region_code ? '' : 'opacity-50 pointer-events-none'}
+                required
               />
             </div>
           </div>
@@ -304,6 +308,7 @@ export default function MyProfile() {
                 options={cityOptions}
                 placeholder="Select City"
                 className={formData.province_code ? '' : 'opacity-50 pointer-events-none'}
+                required
               />
             </div>
             <div className="space-y-2">
@@ -316,6 +321,7 @@ export default function MyProfile() {
                 options={barangayOptions}
                 placeholder="Select Barangay"
                 className={formData.city_code ? '' : 'opacity-50 pointer-events-none'}
+                required
               />
             </div>
           </div>
@@ -328,6 +334,7 @@ export default function MyProfile() {
               value={formData.street}
               onChange={handleChange}
               placeholder="e.g. 123 Aquatic St., Building Name, Unit 4"
+              required
             />
           </div>
         </div>
