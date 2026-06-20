@@ -1,7 +1,7 @@
 import { toast } from 'react-hot-toast';
 import { getGlobalToastsEnabled } from '../context/ToastContext';
 
-const DEFAULT_TIMEOUT_MS = 15000;
+const DEFAULT_TIMEOUT_MS = 60000;
 
 /**
  * Althea's Aquatic Farm API Client
