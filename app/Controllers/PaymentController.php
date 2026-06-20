@@ -173,7 +173,8 @@ class PaymentController
 
             $attach = $this->payMongo->attachPaymentIntent($intentId, $methodId, $returnUrl);
 
-            $redirectUrl = $attach['data']['attributes']['next_action']['redirect']['url'] ?? '';
+            $nextAction = $attach['data']['attributes']['next_action'] ?? [];
+            $redirectUrl = $nextAction['redirect']['url'] ?? $nextAction['qr_code']['url'] ?? '';
 
             if (empty($redirectUrl)) {
                 throw new \RuntimeException("Failed to generate checkout redirect URL from PayMongo.");
