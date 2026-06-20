@@ -119,9 +119,9 @@ class PayMongo
         foreach ($parts as $part) {
             if (strpos($part, 't=') === 0) {
                 $timestamp = substr($part, 2);
-            } elseif (strpos($part, 'te=') === 0) {
+            } elseif (strpos($part, 'te=') === 0 && strlen($part) > 3) {
                 $signature = substr($part, 3);
-            } elseif (strpos($part, 'v1=') === 0) {
+            } elseif (strpos($part, 'li=') === 0 && strlen($part) > 3) {
                 $signature = substr($part, 3);
             }
         }
