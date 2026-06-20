@@ -177,7 +177,7 @@ CREATE TABLE IF NOT EXISTS `orders` (
     `total_amount` DECIMAL(10, 2) NOT NULL,
     `order_number` VARCHAR(25) NULL,
     `payment_intent_id` VARCHAR(100) NULL,
-    `payment_method` ENUM('gcash', 'card', 'maya') DEFAULT 'gcash',
+    `payment_method` ENUM('gcash', 'card', 'maya', 'qrph') DEFAULT 'gcash',
     `payment_status` ENUM('unpaid', 'paid', 'failed') DEFAULT 'unpaid',
     `status` ENUM('pending', 'confirmed', 'completed', 'cancelled') DEFAULT 'pending',
     `ordered_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
