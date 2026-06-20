@@ -37,7 +37,7 @@ class PayMongo
             'data' => [
                 'attributes' => [
                     'amount' => $amountCentavos,
-                    'payment_method_allowed' => ['gcash'],
+                    'payment_method_allowed' => ['qrph'],
                     'currency' => 'PHP',
                     'description' => $description
                 ]
@@ -51,9 +51,9 @@ class PayMongo
      * ----------------------------------------
      * createPaymentMethod
      * ----------------------------------------
-     * Creates a new PaymentMethod for GCash.
+     * Creates a new PaymentMethod for QRPH.
      */
-    public function createPaymentMethod(string $type = 'gcash'): array
+    public function createPaymentMethod(string $type = 'qrph'): array
     {
         $payload = [
             'data' => [
