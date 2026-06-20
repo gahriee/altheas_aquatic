@@ -23,9 +23,9 @@ export default function QRCodeModal({
       const now = Math.floor(Date.now() / 1000);
       let targetTime = Number(expiresAt);
       
-      // Fallback to 15 minutes if missing or invalid
+      // Fallback to 30 minutes if missing or invalid (matches PayMongo default)
       if (!targetTime || isNaN(targetTime)) {
-        targetTime = now + (15 * 60);
+        targetTime = now + (30 * 60);
       }
       
       const remaining = targetTime - now;
