@@ -118,6 +118,8 @@ class PayMongo
                 $timestamp = substr($part, 2);
             } elseif (strpos($part, 'te=') === 0) {
                 $signature = substr($part, 3);
+            } elseif (strpos($part, 'v1=') === 0) {
+                $signature = substr($part, 3);
             }
         }
 
