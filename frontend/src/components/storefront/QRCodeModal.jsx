@@ -50,12 +50,12 @@ export default function QRCodeModal({
     if (isExpired) return;
     
     let pollCount = 0;
-    const maxPolls = 60; // 3 minutes total at 3s intervals
+    const maxPolls = 600; // 30 minutes total at 3s intervals
     
     const pollStatus = async () => {
       try {
         const response = await checkPaymentStatus(paymentIntentId);
-        if (response.status === 'succeeded') {
+        if (response.status === 'succeeded' || response.payment_status === 'paid') {
           setStatus('succeeded');
           onPaymentSuccess();
           clearInterval(pollInterval);

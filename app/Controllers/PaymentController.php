@@ -265,7 +265,8 @@ class PaymentController
 
             Response::json([
                 'status' => $status,
-                'order_id' => $order['order_id'] ?? null
+                'order_id' => $order['order_id'] ?? null,
+                'payment_status' => $order['payment_status'] ?? null
             ]);
         } catch (\Exception $e) {
             Response::error($e->getMessage(), 400);
