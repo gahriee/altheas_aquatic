@@ -263,6 +263,12 @@ class PaymentController
 
             $order = $this->orderModel->getByIntentId($intentId);
 
+            // Proactively update database if PayMongo says it's succeeded
+            // This acts as a fallback/accelerator to webhooks for UI responsiveness.
+            if ($status === 'succeeded' && $order && $order['payment_status'] !== 'paid') {
+                $this->orderModel->updatePaymentStatus($intentId, 'paid', 'confirmed');
+            }
+
             Response::json([
                 'status' => $status,
                 'order_id' => $order['order_id'] ?? null
