@@ -21,7 +21,14 @@ export default function QRCodeModal({
     // Countdown Timer
     const updateTimer = () => {
       const now = Math.floor(Date.now() / 1000);
-      const remaining = expiresAt - now;
+      let targetTime = Number(expiresAt);
+      
+      // Fallback to 15 minutes if missing or invalid
+      if (!targetTime || isNaN(targetTime)) {
+        targetTime = now + (15 * 60);
+      }
+      
+      const remaining = targetTime - now;
       
       if (remaining <= 0) {
         setTimeLeft(0);
