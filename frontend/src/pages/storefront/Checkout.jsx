@@ -216,7 +216,10 @@ export default function Checkout() {
     }
   };
 
+  const [isSuccess, setIsSuccess] = useState(false);
+
   const handlePaymentSuccess = async () => {
+    setIsSuccess(true);
     await clearCart();
     navigate(`/order-confirmation/${qrPayload.orderId}?pi=${qrPayload.paymentIntentId}`);
   };
@@ -227,12 +230,12 @@ export default function Checkout() {
   };
 
   useEffect(() => {
-    if (!items || items.length === 0) {
+    if (!isSuccess && (!items || items.length === 0)) {
       navigate('/cart');
     }
-  }, [items, navigate]);
+  }, [items, navigate, isSuccess]);
 
-  if (!items || items.length === 0) {
+  if (!isSuccess && (!items || items.length === 0)) {
     return null;
   }
 
