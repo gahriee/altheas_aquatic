@@ -12,6 +12,7 @@ import Input from '../../components/ui/Input';
 import Label from '../../components/ui/Label';
 import Textarea from '../../components/ui/Textarea';
 import Select from '../../components/ui/Select';
+import QRCodeModal from '../../components/storefront/QRCodeModal';
 
 /**
  * Checkout page — collects customer information (name, email, phone, address)
@@ -23,6 +24,8 @@ export default function Checkout() {
   const { user } = useAuth();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
+  const [showQRModal, setShowQRModal] = useState(false);
+  const [qrPayload, setQrPayload] = useState(null);
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -188,7 +191,17 @@ export default function Checkout() {
         }))
       });
 
-      if (response.redirect_url) {
+      if (response.checkout_type === 'qrph') {
+        setQrPayload({
+          qrData: response.qr_data,
+          qrMimeType: response.qr_mime_type,
+          expiresAt: response.qr_expires_at,
+          orderId: response.order_id,
+          orderNumber: response.order_number,
+          paymentIntentId: response.payment_intent_id
+        });
+        setShowQRModal(true);
+      } else if (response.redirect_url) {
         if (response.payment_intent_id) {
           sessionStorage.setItem('last_payment_intent_id', response.payment_intent_id);
         }
@@ -203,6 +216,16 @@ export default function Checkout() {
     }
   };
 
+  const handlePaymentSuccess = async () => {
+    await clearCart();
+    navigate(`/order-confirmation/${qrPayload.orderId}?pi=${qrPayload.paymentIntentId}`);
+  };
+
+  const handleModalClose = () => {
+    setShowQRModal(false);
+    setLoading(false);
+  };
+
   if (!items || items.length === 0) {
     navigate('/cart');
     return null;
@@ -210,6 +233,13 @@ export default function Checkout() {
 
   return (
     <div className="animate-in fade-in duration-700 max-w-7xl mx-auto px-4 py-4 sm:py-8">
+      {showQRModal && qrPayload && (
+        <QRCodeModal 
+          {...qrPayload}
+          onClose={handleModalClose}
+          onPaymentSuccess={handlePaymentSuccess}
+        />
+      )}
       <button 
         onClick={() => navigate('/cart')}
         className="flex items-center gap-2 text-sage-400 hover:text-teal-600 font-semibold text-xs uppercase tracking-widest transition-colors mb-8"
@@ -370,7 +400,7 @@ export default function Checkout() {
                 </div>
               </div>
               <p className="text-sage-500 text-sm leading-relaxed mb-6">
-                You will be redirected to the secure PayMongo checkout portal to complete your transaction via GCash.
+                Complete your transaction securely via GCash, Maya, or any QR Ph enabled banking app.
               </p>
               
               <Button 
