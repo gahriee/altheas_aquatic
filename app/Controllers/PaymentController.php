@@ -314,7 +314,7 @@ class PaymentController
                     try {
                         \App\Core\Mailer::send($fullOrder['customer_email'], $subject, $htmlBody);
                         error_log("Reconciliation email sent to {$fullOrder['customer_email']} for Order {$displayId}");
-                    } catch (\Exception $e) {
+                    } catch (\Throwable $e) {
                         error_log("Reconciliation email failed for Order {$displayId}: " . $e->getMessage());
                     }
                 }

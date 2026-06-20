@@ -44,7 +44,7 @@ class PusherService
         try {
             $pusher = self::getInstance();
             return (bool)$pusher->trigger($channel, $event, $data);
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             error_log("Pusher Error: " . $e->getMessage());
             return false;
         }

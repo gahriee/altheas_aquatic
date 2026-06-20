@@ -226,8 +226,13 @@ export default function Checkout() {
     setLoading(false);
   };
 
+  useEffect(() => {
+    if (!items || items.length === 0) {
+      navigate('/cart');
+    }
+  }, [items, navigate]);
+
   if (!items || items.length === 0) {
-    navigate('/cart');
     return null;
   }
 
