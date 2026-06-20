@@ -216,9 +216,12 @@ export default function Checkout() {
     }
   };
 
+  const [isRedirecting, setIsRedirecting] = useState(false);
+
   const handlePaymentSuccess = async () => {
-    await clearCart();
+    setIsRedirecting(true);
     navigate(`/order-confirmation/${qrPayload.orderId}?pi=${qrPayload.paymentIntentId}`);
+    await clearCart();
   };
 
   const handleModalClose = () => {
@@ -226,7 +229,7 @@ export default function Checkout() {
     setLoading(false);
   };
 
-  if (!items || items.length === 0) {
+  if (!isRedirecting && (!items || items.length === 0)) {
     navigate('/cart');
     return null;
   }
