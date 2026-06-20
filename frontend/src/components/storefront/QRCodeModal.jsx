@@ -55,6 +55,7 @@ export default function QRCodeModal({
     const pollStatus = async () => {
       try {
         const response = await checkPaymentStatus(paymentIntentId);
+        console.log('[QR Poll]', { status: response.status, payment_status: response.payment_status, order_id: response.order_id });
         if (response.status === 'succeeded' || response.payment_status === 'paid') {
           setStatus('succeeded');
           onPaymentSuccess();
