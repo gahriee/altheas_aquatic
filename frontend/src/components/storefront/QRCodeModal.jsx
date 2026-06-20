@@ -45,39 +45,22 @@ export default function QRCodeModal({
     return () => clearInterval(timerInterval);
   }, [targetTime]);
   
-  useEffect(() => {
-    // Payment Status Polling
+  // Removed polling logic. Webhook handles reconciliation.
+  const handleManualCheck = async () => {
     if (isExpired) return;
-    
-    let pollCount = 0;
-    const maxPolls = 600; // 30 minutes total at 3s intervals
-    
-    const pollStatus = async () => {
-      try {
-        const response = await checkPaymentStatus(paymentIntentId);
-        if (response.status === 'succeeded' || response.payment_status === 'paid') {
-          setStatus('succeeded');
-          onPaymentSuccess();
-          clearInterval(pollInterval);
-        } else if (response.status === 'awaiting_payment_method') {
-          // It failed or is still awaiting.
-          // PayMongo usually keeps it awaiting until paid or expired.
-          // For safety, we keep polling until max polls.
-        }
-      } catch (err) {
-        console.error('Failed to poll payment status:', err);
+    try {
+      const response = await checkPaymentStatus(paymentIntentId);
+      if (response.status === 'succeeded' || response.payment_status === 'paid') {
+        setStatus('succeeded');
+        onPaymentSuccess();
+      } else {
+        // Just alert or toast that it's still processing
+        setStatus('processing');
       }
-      
-      pollCount++;
-      if (pollCount >= maxPolls) {
-        clearInterval(pollInterval);
-      }
-    };
-    
-    const pollInterval = setInterval(pollStatus, 3000);
-    
-    return () => clearInterval(pollInterval);
-  }, [paymentIntentId, isExpired, onPaymentSuccess]);
+    } catch (err) {
+      console.error('Failed to check payment status:', err);
+    }
+  };
   
   const formatTime = (seconds) => {
     const mins = Math.floor(seconds / 60);
@@ -135,8 +118,7 @@ export default function QRCodeModal({
             ) : (
               <>
                 <p className="text-sage-500 text-sm font-medium flex items-center justify-center gap-2">
-                  <Loader2 size={16} className="animate-spin text-teal-500" />
-                  Awaiting payment...
+                  Please scan with your GCash or Maya app.
                 </p>
                 <div className="bg-sage-50 py-2 px-4 rounded-full inline-block">
                   <p className="text-sage-600 font-semibold text-sm">
@@ -147,9 +129,14 @@ export default function QRCodeModal({
             )}
           </div>
           
-          <div className="mt-8">
+          <div className="mt-8 space-y-3">
+            {!isExpired && status !== 'succeeded' && (
+              <Button onClick={handleManualCheck} className="w-full">
+                I have paid
+              </Button>
+            )}
             <Button onClick={onClose} variant="secondary" className="w-full">
-              {isExpired ? 'Return to Checkout' : 'Cancel Payment'}
+              {isExpired ? 'Return to Checkout' : 'Close'}
             </Button>
           </div>
         </div>
