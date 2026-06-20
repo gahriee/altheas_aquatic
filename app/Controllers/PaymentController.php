@@ -304,6 +304,7 @@ class PaymentController
 
             switch ($type) {
                 case 'payment.paid':
+                case 'qr.paid':
                     $this->orderModel->updatePaymentStatus($intentId, 'paid', 'confirmed');
 
                     // Real-time Notification
@@ -372,13 +373,14 @@ class PaymentController
 
                 case 'payment.failed':
                 case 'qrph.expired':
+                case 'qr.expired':
                     $this->orderModel->updatePaymentStatus($intentId, 'failed', 'pending');
 
                     // Real-time Notification
                     $order = $this->orderModel->getByIntentId($intentId);
                     if ($order) {
                         $displayId = $order['order_number'] ?? "#{$order['order_id']}";
-                        $reason = $type === 'qrph.expired' ? 'QR Code Expired' : 'Payment Failed';
+                        $reason = in_array($type, ['qrph.expired', 'qr.expired']) ? 'QR Code Expired' : 'Payment Failed';
                         $notif = [
                             'type' => 'order_failed',
                             'title' => $reason,
