@@ -113,7 +113,7 @@ class PaymentController
                 'customer_phone' => $customer['phone'],
                 'delivery_address' => $customer['address'] ?? null,
                 'total_amount' => $totalAmount,
-                'payment_method' => 'gcash',
+                'payment_method' => 'qrph',
                 'notes' => $customer['notes'] ?? '',
                 'order_number' => $orderNumber
             ];
@@ -160,8 +160,8 @@ class PaymentController
             $intentId = $intent['data']['id'];
             $clientKey = $intent['data']['attributes']['client_key'];
 
-            // PayMongo Flow Step 2: Create Payment Method (GCash)
-            $method = $this->payMongo->createPaymentMethod('gcash');
+            // PayMongo Flow Step 2: Create Payment Method (QRPH)
+            $method = $this->payMongo->createPaymentMethod('qrph');
             $methodId = $method['data']['id'];
 
             // PayMongo Flow Step 3: Attach Payment Method
