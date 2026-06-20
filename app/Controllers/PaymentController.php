@@ -327,7 +327,8 @@ class PaymentController
                 'order_id' => $order['order_id'] ?? null,
                 'payment_status' => $order['payment_status'] ?? null
             ]);
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
+            error_log("checkStatus error: " . $e->getMessage() . " in " . $e->getFile() . ":" . $e->getLine());
             Response::error($e->getMessage(), 400);
         }
     }
@@ -462,7 +463,8 @@ class PaymentController
             }
 
             Response::json(['message' => 'Webhook handled successfully']);
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
+            error_log("Webhook error: " . $e->getMessage() . " in " . $e->getFile() . ":" . $e->getLine());
             Response::error('Webhook error: ' . $e->getMessage(), 400);
         }
     }
