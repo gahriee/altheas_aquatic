@@ -104,7 +104,7 @@ class InventoryController
             'stock_qty' => (int) ($_POST['stock_qty'] ?? 0),
             'low_stock_threshold' => (int) ($_POST['low_stock_threshold'] ?? 5),
             'image_path' => $imagePath,
-            'is_active' => (int) ($_POST['is_active'] ?? 1)
+            'is_active' => 1
         ];
 
         // Basic validation
