@@ -85,6 +85,18 @@ class NotificationModel
 
     /**
      * ----------------------------------------
+     * markAllAsRead
+     * ----------------------------------------
+     * Marks all unread notifications as read.
+     */
+    public function markAllAsRead(): bool
+    {
+        $stmt = $this->db->prepare("UPDATE notifications SET is_read = 1 WHERE is_read = 0");
+        return $stmt->execute();
+    }
+
+    /**
+     * ----------------------------------------
      * getPaginated
      * ----------------------------------------
      * Fetches a paginated list of notifications with optional type and read status filters.

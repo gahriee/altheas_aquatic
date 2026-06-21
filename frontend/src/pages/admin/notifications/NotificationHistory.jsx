@@ -4,6 +4,7 @@ import { getHistory, markAsRead, markAllAsRead, deleteReadNotifications } from '
 import { formatDistanceToNow, format } from 'date-fns';
 import ConfirmationDialog from '../../../components/admin/ConfirmationDialog';
 import Tooltip from '../../../components/ui/Tooltip';
+import Select from '../../../components/ui/Select';
 
 export default function NotificationHistory() {
   // Data State
@@ -156,27 +157,29 @@ export default function NotificationHistory() {
         </div>
         
         <div className="flex flex-1 gap-4 w-full sm:w-auto">
-          <select 
+          <Select 
             value={typeFilter}
             onChange={handleTypeChange}
-            className="flex-1 sm:flex-none border border-sage-200 text-sage-700 text-sm font-semibold rounded-xl focus:ring-2 focus:ring-teal-500 focus:border-teal-500 p-2.5 outline-none transition-shadow"
-          >
-            <option value="">All Types</option>
-            <option value="order_paid">Payment Received</option>
-            <option value="order_failed">Payment Failed</option>
-            <option value="low_stock">Low Stock Alerts</option>
-            <option value="new_customer">New Customers</option>
-          </select>
+            options={[
+              { label: 'All Types', value: '' },
+              { label: 'Payment Received', value: 'order_paid' },
+              { label: 'Payment Failed', value: 'order_failed' },
+              { label: 'Low Stock Alerts', value: 'low_stock' },
+              { label: 'New Customers', value: 'new_customer' }
+            ]}
+            className="flex-1 sm:flex-none min-w-[200px]"
+          />
 
-          <select 
+          <Select 
             value={readFilter}
             onChange={handleReadChange}
-            className="flex-1 sm:flex-none border border-sage-200 text-sage-700 text-sm font-semibold rounded-xl focus:ring-2 focus:ring-teal-500 focus:border-teal-500 p-2.5 outline-none transition-shadow"
-          >
-            <option value="">All Statuses</option>
-            <option value="0">Unread Only</option>
-            <option value="1">Read Only</option>
-          </select>
+            options={[
+              { label: 'All Statuses', value: '' },
+              { label: 'Unread Only', value: '0' },
+              { label: 'Read Only', value: '1' }
+            ]}
+            className="flex-1 sm:flex-none min-w-[160px]"
+          />
         </div>
       </div>
 

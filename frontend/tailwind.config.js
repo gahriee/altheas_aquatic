@@ -26,6 +26,9 @@ export default {
 
         // — functional colors —
         coral: {
+          50: '#FEF2F2',
+          100: '#FEE2E2',
+          200: '#FECACA',
           500: '#EB5757', // error, destructive actions
           600: '#D94343', // error hover
         },
