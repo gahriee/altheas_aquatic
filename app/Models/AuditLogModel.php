@@ -72,32 +72,37 @@ class AuditLogModel
             $params = [];
 
             if (!empty($filters['action'])) {
-                $where[] = "action = :action";
+                $where[] = "a.action = :action";
                 $params[':action'] = $filters['action'];
             }
 
             if (!empty($filters['resource_type'])) {
-                $where[] = "resource_type = :resource_type";
+                $where[] = "a.resource_type = :resource_type";
                 $params[':resource_type'] = $filters['resource_type'];
             }
 
             if (!empty($filters['user_id'])) {
-                $where[] = "user_id = :user_id";
+                $where[] = "a.user_id = :user_id";
                 $params[':user_id'] = (int)$filters['user_id'];
             }
 
             if (!empty($filters['search'])) {
-                $where[] = "(description LIKE :search OR user_email LIKE :search OR resource_type LIKE :search OR action LIKE :search)";
-                $params[':search'] = '%' . $filters['search'] . '%';
+                $where[] = "(a.description LIKE :search1 OR a.user_email LIKE :search2 OR u.email LIKE :search3 OR a.resource_type LIKE :search4 OR a.action LIKE :search5)";
+                $searchVal = '%' . $filters['search'] . '%';
+                $params[':search1'] = $searchVal;
+                $params[':search2'] = $searchVal;
+                $params[':search3'] = $searchVal;
+                $params[':search4'] = $searchVal;
+                $params[':search5'] = $searchVal;
             }
 
             if (!empty($filters['from'])) {
-                $where[] = "created_at >= :from";
+                $where[] = "a.created_at >= :from";
                 $params[':from'] = $filters['from'] . ' 00:00:00';
             }
 
             if (!empty($filters['to'])) {
-                $where[] = "created_at <= :to";
+                $where[] = "a.created_at <= :to";
                 $params[':to'] = $filters['to'] . ' 23:59:59';
             }
 
@@ -105,16 +110,6 @@ class AuditLogModel
 
             // Count total
             $countSql = "SELECT COUNT(*) FROM audit_logs a LEFT JOIN users u ON a.user_id = u.id $whereClause";
-            // Replace where clause column references with table aliases if needed
-            $countSql = str_replace('description LIKE', 'a.description LIKE', $countSql);
-            $countSql = str_replace('user_email LIKE', 'a.user_email LIKE :search OR u.email LIKE :search', $countSql);
-            $countSql = str_replace('resource_type LIKE', 'a.resource_type LIKE', $countSql);
-            $countSql = str_replace('action LIKE', 'a.action LIKE', $countSql);
-            $countSql = str_replace('WHERE action', 'WHERE a.action', $countSql);
-            $countSql = str_replace('WHERE resource_type', 'WHERE a.resource_type', $countSql);
-            $countSql = str_replace('AND resource_type', 'AND a.resource_type', $countSql);
-            $countSql = str_replace('user_id =', 'a.user_id =', $countSql);
-            $countSql = str_replace('created_at', 'a.created_at', $countSql);
 
             $stmt = $pdo->prepare($countSql);
             $stmt->execute($params);
@@ -123,21 +118,11 @@ class AuditLogModel
             // Fetch records
             $offset = ($page - 1) * $perPage;
             
-            $sqlWhereClause = str_replace('description LIKE', 'a.description LIKE', $whereClause);
-            $sqlWhereClause = str_replace('user_email LIKE', 'a.user_email LIKE :search OR u.email LIKE :search', $sqlWhereClause);
-            $sqlWhereClause = str_replace('resource_type LIKE', 'a.resource_type LIKE', $sqlWhereClause);
-            $sqlWhereClause = str_replace('action LIKE', 'a.action LIKE', $sqlWhereClause);
-            $sqlWhereClause = str_replace('WHERE action', 'WHERE a.action', $sqlWhereClause);
-            $sqlWhereClause = str_replace('WHERE resource_type', 'WHERE a.resource_type', $sqlWhereClause);
-            $sqlWhereClause = str_replace('AND resource_type', 'AND a.resource_type', $sqlWhereClause);
-            $sqlWhereClause = str_replace('user_id =', 'a.user_id =', $sqlWhereClause);
-            $sqlWhereClause = str_replace('created_at', 'a.created_at', $sqlWhereClause);
-
             $sql = "SELECT a.id, a.user_id, COALESCE(a.user_email, u.email) as user_email, a.action, a.resource_type, a.resource_id, 
                            a.description, a.ip_address, a.created_at 
                     FROM audit_logs a
                     LEFT JOIN users u ON a.user_id = u.id
-                    $sqlWhereClause 
+                    $whereClause 
                     ORDER BY a.created_at DESC 
                     LIMIT :limit OFFSET :offset";
             

@@ -185,9 +185,9 @@ export default function DataTable({
                     </tr>
                     {renderExpanded && (
                       <tr className={`transition-all duration-300 ${isExpanded ? 'bg-sage-50/20' : 'bg-transparent invisible'}`}>
-                        <td colSpan={columns.length + (renderExpanded ? 1 : 0)} className="px-14 p-0 overflow-hidden">
+                        <td colSpan={columns.length + (renderExpanded ? 1 : 0)} className={`px-14 p-0 ${isExpanded ? '' : 'overflow-hidden'}`}>
                           <div className={`grid transition-all duration-300 ease-in-out ${isExpanded ? 'grid-rows-[1fr] opacity-100' : 'grid-rows-[0fr] opacity-0'}`}>
-                            <div className="overflow-hidden min-h-0">
+                            <div className={`${isExpanded ? 'overflow-visible' : 'overflow-hidden'} min-h-0`}>
                               <div className="py-6">
                                 {renderExpanded(row)}
                               </div>
