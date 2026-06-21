@@ -277,19 +277,6 @@ export default function ProductForm() {
                         className="bg-sage-50/50"
                       />
                     </div>
-                    <div className="space-y-2">
-                      <Label>Online Status</Label>
-                      <Switch
-                        id="is_active"
-                        name="is_active"
-                        variant="segmented"
-                        offLabel="Hidden"
-                        onLabel="Visible"
-                        checked={formData.is_active === '1'}
-                        onChange={handleChange}
-                        className="mt-1"
-                      />
-                    </div>
                   </div>
                 </div>
               </section>

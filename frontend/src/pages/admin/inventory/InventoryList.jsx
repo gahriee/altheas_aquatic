@@ -178,7 +178,7 @@ export default function InventoryList() {
             </Link>
           </Tooltip>
           {product.is_active && (
-            <Tooltip text="Deactivate & Archive">
+            <Tooltip text="Archive">
               <button
                 onClick={(e) => {
                   e.stopPropagation(); // Prevent row toggle
