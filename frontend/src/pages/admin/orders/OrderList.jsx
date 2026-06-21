@@ -61,7 +61,7 @@ export default function OrderList() {
       label: 'Status', 
       sortable: true,
       render: (row) => (
-        <span className={`px-2 py-1 rounded text-[10px] font-bold uppercase tracking-wider ${getOrderStatusStyle(row.status)}`}>
+        <span className={`px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider border ${getOrderStatusStyle(row.status)}`}>
           {row.status}
         </span>
       )

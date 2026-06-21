@@ -304,8 +304,8 @@ export default function Dashboard() {
                     <td className="py-4 px-6 text-sage-600 font-medium">{order.customer_name}</td>
                     <td className="py-4 px-6 font-bold text-teal-600">₱{Number(order.total_amount).toLocaleString()}</td>
                     <td className="py-4 px-6">
-                      <span className={`px-2.5 py-1 rounded-full text-xs font-bold border ${getOrderStatusStyle(order.status)}`}>
-                        {order.status.charAt(0).toUpperCase() + order.status.slice(1)}
+                      <span className={`px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider border ${getOrderStatusStyle(order.status)}`}>
+                        {order.status}
                       </span>
                     </td>
                     <td className="py-4 px-6 text-right text-sage-400 text-sm">
