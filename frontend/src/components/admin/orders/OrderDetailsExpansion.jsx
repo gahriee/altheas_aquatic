@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { getOrder, updateOrderStatus } from '../../../api/orders';
 import { Loader2, Mail, Phone, MessageSquare, Package, CreditCard, ChevronRight, CheckCircle2 } from 'lucide-react';
+import Select from '../../../components/ui/Select';
 
 export default function OrderDetailsExpansion({ orderId, onUpdate }) {
   const [order, setOrder] = useState(null);
@@ -102,20 +103,24 @@ export default function OrderDetailsExpansion({ orderId, onUpdate }) {
 
         <div className="space-y-4 pt-4 border-t border-sage-100">
           <h4 className="text-[10px] font-bold text-sage-400 uppercase tracking-[0.2em]">Fulfillment Status</h4>
-          <div className="relative">
-            <select
-              value={order.status}
-              disabled={updating}
-              onChange={(e) => handleStatusUpdate(e.target.value)}
-              className="w-full bg-sage-50 border border-sage-200 rounded-xl px-4 py-3 text-sm font-bold text-sage-700 appearance-none focus:outline-none focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 transition-all disabled:opacity-50"
-            >
-              {statuses.map(s => (
-                <option key={s} value={s}>{s.charAt(0).toUpperCase() + s.slice(1)}</option>
-              ))}
-            </select>
-            <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-sage-400">
-              {updating ? <Loader2 className="animate-spin" size={16} /> : <ChevronRight size={16} className="rotate-90" />}
+          <div className="relative flex items-center gap-2">
+            <div className="flex-1">
+              <Select
+                value={order.status}
+                disabled={updating}
+                onChange={(e) => handleStatusUpdate(e.target.value)}
+                options={statuses.map(s => ({
+                  label: s.charAt(0).toUpperCase() + s.slice(1),
+                  value: s
+                }))}
+                className="w-full"
+              />
             </div>
+            {updating && (
+              <div className="flex-shrink-0 text-teal-500">
+                <Loader2 className="animate-spin" size={20} />
+              </div>
+            )}
           </div>
           <p className="text-[10px] text-sage-400 font-medium italic">
             Updating status will notify the system and update inventory logs.
