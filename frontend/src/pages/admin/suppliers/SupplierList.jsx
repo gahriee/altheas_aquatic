@@ -221,12 +221,6 @@ export default function SupplierList() {
                     >
                       <Mail size={14} /> Send Email
                     </a>
-                    <a 
-                      href={`tel:${s.phone}`} 
-                      className={`flex-1 flex items-center justify-center gap-2 py-3 bg-sage-50 text-sage-600 rounded-xl font-semibold text-xs hover:bg-sage-100 transition-colors ${!s.phone && 'pointer-events-none opacity-50'}`}
-                    >
-                      <Phone size={14} /> Call Now
-                    </a>
                   </div>
                 </div>
               </div>

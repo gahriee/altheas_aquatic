@@ -16,6 +16,7 @@ export default function Select({
   id,
   name,
   _required = false,
+  disabled = false,
   className = ''
 }) {
   const [isOpen, setIsOpen] = useState(false);
@@ -46,11 +47,12 @@ export default function Select({
   };
 
   return (
-    <div className={`relative ${className}`} ref={containerRef}>
+    <div className={`relative ${className} ${disabled ? 'opacity-50 pointer-events-none' : ''}`} ref={containerRef}>
       <button
         type="button"
         id={id}
-        onClick={() => setIsOpen(!isOpen)}
+        disabled={disabled}
+        onClick={() => !disabled && setIsOpen(!isOpen)}
         className={`flex items-center justify-between w-full px-5 py-3.5 border border-sage-100 rounded-2xl shadow-sm text-left transition-all outline-none focus:ring-2 focus:ring-mint-300 focus:border-mint-300 focus:bg-white ${
           isOpen ? 'ring-2 ring-mint-300 bg-white border-mint-100 shadow-lg shadow-teal-500/5' : 'bg-sage-50'
         } ${className}`}

@@ -87,7 +87,7 @@ class AuditLogModel
             }
 
             if (!empty($filters['search'])) {
-                $where[] = "(description LIKE :search OR user_email LIKE :search)";
+                $where[] = "(description LIKE :search OR user_email LIKE :search OR resource_type LIKE :search OR action LIKE :search)";
                 $params[':search'] = '%' . $filters['search'] . '%';
             }
 
@@ -104,18 +104,41 @@ class AuditLogModel
             $whereClause = !empty($where) ? 'WHERE ' . implode(' AND ', $where) : '';
 
             // Count total
-            $countSql = "SELECT COUNT(*) FROM audit_logs $whereClause";
+            $countSql = "SELECT COUNT(*) FROM audit_logs a LEFT JOIN users u ON a.user_id = u.id $whereClause";
+            // Replace where clause column references with table aliases if needed
+            $countSql = str_replace('description LIKE', 'a.description LIKE', $countSql);
+            $countSql = str_replace('user_email LIKE', 'a.user_email LIKE :search OR u.email LIKE :search', $countSql);
+            $countSql = str_replace('resource_type LIKE', 'a.resource_type LIKE', $countSql);
+            $countSql = str_replace('action LIKE', 'a.action LIKE', $countSql);
+            $countSql = str_replace('WHERE action', 'WHERE a.action', $countSql);
+            $countSql = str_replace('WHERE resource_type', 'WHERE a.resource_type', $countSql);
+            $countSql = str_replace('AND resource_type', 'AND a.resource_type', $countSql);
+            $countSql = str_replace('user_id =', 'a.user_id =', $countSql);
+            $countSql = str_replace('created_at', 'a.created_at', $countSql);
+
             $stmt = $pdo->prepare($countSql);
             $stmt->execute($params);
             $total = (int)$stmt->fetchColumn();
 
             // Fetch records
             $offset = ($page - 1) * $perPage;
-            $sql = "SELECT id, user_id, user_email, action, resource_type, resource_id, 
-                           description, ip_address, created_at 
-                    FROM audit_logs 
-                    $whereClause 
-                    ORDER BY created_at DESC 
+            
+            $sqlWhereClause = str_replace('description LIKE', 'a.description LIKE', $whereClause);
+            $sqlWhereClause = str_replace('user_email LIKE', 'a.user_email LIKE :search OR u.email LIKE :search', $sqlWhereClause);
+            $sqlWhereClause = str_replace('resource_type LIKE', 'a.resource_type LIKE', $sqlWhereClause);
+            $sqlWhereClause = str_replace('action LIKE', 'a.action LIKE', $sqlWhereClause);
+            $sqlWhereClause = str_replace('WHERE action', 'WHERE a.action', $sqlWhereClause);
+            $sqlWhereClause = str_replace('WHERE resource_type', 'WHERE a.resource_type', $sqlWhereClause);
+            $sqlWhereClause = str_replace('AND resource_type', 'AND a.resource_type', $sqlWhereClause);
+            $sqlWhereClause = str_replace('user_id =', 'a.user_id =', $sqlWhereClause);
+            $sqlWhereClause = str_replace('created_at', 'a.created_at', $sqlWhereClause);
+
+            $sql = "SELECT a.id, a.user_id, COALESCE(a.user_email, u.email) as user_email, a.action, a.resource_type, a.resource_id, 
+                           a.description, a.ip_address, a.created_at 
+                    FROM audit_logs a
+                    LEFT JOIN users u ON a.user_id = u.id
+                    $sqlWhereClause 
+                    ORDER BY a.created_at DESC 
                     LIMIT :limit OFFSET :offset";
             
             // Re-bind params because LIMIT/OFFSET require bindValue as integers
