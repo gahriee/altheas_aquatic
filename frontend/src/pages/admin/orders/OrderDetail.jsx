@@ -54,6 +54,18 @@ export default function OrderDetail() {
     }
   };
 
+  const handlePaymentStatusUpdate = async (newPaymentStatus) => {
+    try {
+      setUpdating(true);
+      await updateOrderStatus(id, { payment_status: newPaymentStatus });
+      await fetchOrder();
+    } catch (err) {
+      // Error handled by apiFetch
+    } finally {
+      setUpdating(false);
+    }
+  };
+
   if (loading) {
     return (
       <div className="flex flex-col items-center justify-center min-h-[60vh] space-y-4">
@@ -211,7 +223,14 @@ export default function OrderDetail() {
               <div className="grid grid-cols-2 gap-6">
                 <div>
                   <p className="text-[10px] text-cream-300/60 font-bold uppercase tracking-widest mb-1">Method</p>
-                  <p className="text-sm font-bold tracking-tight uppercase">{order.payment_method}</p>
+                  <p className="text-sm font-bold tracking-tight uppercase flex items-center gap-2">
+                    {order.payment_method}
+                    {order.payment_method === 'cod' && (
+                      <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-teal-500/20 text-teal-300 border border-teal-500/30">
+                        COD
+                      </span>
+                    )}
+                  </p>
                 </div>
                 <div>
                   <p className="text-[10px] text-cream-300/60 font-bold uppercase tracking-widest mb-1">Currency</p>
@@ -225,6 +244,20 @@ export default function OrderDetail() {
                   <code className="text-xs bg-black/20 px-2 py-1 rounded select-all font-mono">
                     {order.payment_intent_id}
                   </code>
+                </div>
+              )}
+
+              {order.payment_method === 'cod' && order.payment_status === 'unpaid' && (
+                <div className="pt-4 border-t border-white/10 flex justify-end">
+                  <Button 
+                    variant="outline" 
+                    size="sm"
+                    className="border-white/20 text-white hover:bg-white/10"
+                    disabled={updating}
+                    onClick={() => handlePaymentStatusUpdate('paid')}
+                  >
+                    Mark as Paid
+                  </Button>
                 </div>
               )}
             </div>
