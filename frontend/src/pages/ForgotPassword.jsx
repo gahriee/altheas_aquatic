@@ -5,6 +5,7 @@ import { toast } from 'react-hot-toast';
 import Button from '../components/ui/Button';
 import Input from '../components/ui/Input';
 import Label from '../components/ui/Label';
+import ErrorMessage from '../components/shared/ErrorMessage';
 import { ArrowLeft, Mail } from 'lucide-react';
 
 /**
@@ -12,6 +13,7 @@ import { ArrowLeft, Mail } from 'lucide-react';
  */
 export default function ForgotPassword() {
   const [email, setEmail] = useState('');
+  const [error, setError] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   /**
@@ -24,12 +26,13 @@ export default function ForgotPassword() {
       return;
     }
 
+    setError('');
     setIsSubmitting(true);
     try {
       await forgotPassword(email);
       setEmail('');
     } catch (err) {
-      console.error(err);
+      setError(err.message || 'An error occurred.');
     } finally {
       setIsSubmitting(false);
     }
@@ -62,6 +65,8 @@ export default function ForgotPassword() {
               Enter your email address and we'll send you a link to reset your password.
             </p>
           </div>
+
+          {error && <div className="mb-6"><ErrorMessage message={error} /></div>}
 
           <form className="space-y-6" onSubmit={handleSubmit}>
             <div className="space-y-1.5">
