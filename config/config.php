@@ -80,11 +80,9 @@ $defaults = [
     'CLOUDINARY_CLOUD_NAME' => '',
     'CLOUDINARY_API_KEY' => '',
     'CLOUDINARY_API_SECRET' => '',
-    'SMTP_HOST' => 'smtp.gmail.com',
-    'SMTP_PORT' => '587',
-    'SMTP_USER' => '',
-    'SMTP_PASS' => '',
-    'SMTP_FROM_NAME' => "Althea's Aquatic",
+    'BREVO_API_KEY' => '',
+    'MAIL_FROM_ADDRESS' => 'altheasaquatic@gmail.com',
+    'MAIL_FROM_NAME' => "Althea's Aquatic",
 ];
 
 foreach ($defaults as $key => $default) {
