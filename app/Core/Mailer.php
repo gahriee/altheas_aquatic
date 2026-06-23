@@ -25,6 +25,7 @@ class Mailer
         try {
             // Server settings
             $mail->isSMTP();
+            $mail->Timeout    = 5; // Prevent long hangs if SMTP is unreachable
             $mail->Host       = defined('SMTP_HOST') ? constant('SMTP_HOST') : 'smtp.gmail.com';
             $mail->SMTPAuth   = true;
             $mail->Username   = defined('SMTP_USER') ? constant('SMTP_USER') : '';
