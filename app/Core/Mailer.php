@@ -8,7 +8,7 @@ class Mailer
      * ----------------------------------------
      * send
      * ----------------------------------------
-     * Sends an HTML email using the Resend API.
+     * Sends an HTML email using the Resend API SDK.
      * 
      * @param string $to Recipient email address
      * @param string $subject Email subject
@@ -27,39 +27,22 @@ class Mailer
         $fromAddress = constant('MAIL_FROM_ADDRESS') ?: "onboarding@resend.dev";
         $from = "{$fromName} <{$fromAddress}>";
 
-        $ch = curl_init();
-        curl_setopt($ch, CURLOPT_URL, 'https://api.resend.com/emails');
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($ch, CURLOPT_POST, true);
-        
-        $payload = json_encode([
-            'from' => $from,
-            'to' => [$to],
-            'subject' => $subject,
-            'html' => $htmlBody
-        ]);
+        try {
+            $resend = \Resend::client($apiKey);
+            
+            $result = $resend->emails->send([
+                'from' => $from,
+                'to' => [$to],
+                'subject' => $subject,
+                'html' => $htmlBody
+            ]);
 
-        curl_setopt($ch, CURLOPT_POSTFIELDS, $payload);
-        curl_setopt($ch, CURLOPT_HTTPHEADER, [
-            'Authorization: Bearer ' . $apiKey,
-            'Content-Type: application/json'
-        ]);
-
-        $result = curl_exec($ch);
-        $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-        $curlError = curl_error($ch);
-        
-        curl_close($ch);
-
-        if ($result === false) {
-            error_log("Mailer::send failed (cURL error): {$curlError}");
-            return false;
-        }
-
-        if ($httpCode >= 200 && $httpCode < 300) {
+            $resendId = $result->id ?? 'unknown';
+            error_log("Mailer::send success. Resend ID: {$resendId} | To: {$to}");
             return true;
-        } else {
-            error_log("Mailer::send failed (HTTP {$httpCode}): {$result}");
+            
+        } catch (\Exception $e) {
+            error_log("Mailer::send failed (Resend SDK): " . $e->getMessage());
             return false;
         }
     }
