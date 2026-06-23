@@ -270,7 +270,7 @@ class PaymentController
                 'payment_status' => $order['payment_status'] ?? null
             ]);
         } catch (\Throwable $e) {
-            error_log("checkStatus error: " . $e->getMessage() . " in " . $e->getFile() . ":" . $e->getLine());
+            @error_log("checkStatus error: " . $e->getMessage() . " in " . $e->getFile() . ":" . $e->getLine());
             Response::error($e->getMessage(), 400);
         }
     }
@@ -392,11 +392,11 @@ class PaymentController
                                 </div>
                                 ";
 
-                                try {
-                                    \App\Core\Mailer::send($fullOrder['customer_email'], $subject, $htmlBody);
-                                    error_log("Email successfully sent to {$fullOrder['customer_email']} for Order {$displayId}");
-                                } catch (\Exception $e) {
-                                    error_log("Email failed for Order {$displayId}: " . $e->getMessage());
+                                $emailSent = \App\Core\Mailer::send($fullOrder['customer_email'], $subject, $htmlBody);
+                                if ($emailSent) {
+                                    @error_log("Email successfully sent to {$fullOrder['customer_email']} for Order {$displayId}");
+                                } else {
+                                    @error_log("Email failed for Order {$displayId}");
                                 }
                             }
                         }
@@ -428,7 +428,7 @@ class PaymentController
 
             Response::json(['message' => 'Webhook handled successfully']);
         } catch (\Throwable $e) {
-            error_log("Webhook error: " . $e->getMessage() . " in " . $e->getFile() . ":" . $e->getLine());
+            @error_log("Webhook error: " . $e->getMessage() . " in " . $e->getFile() . ":" . $e->getLine());
             Response::error('Webhook error: ' . $e->getMessage(), 400);
         }
     }

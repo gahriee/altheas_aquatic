@@ -210,11 +210,11 @@ class OrderController
                     </div>
                     ";
 
-                    try {
-                        \App\Core\Mailer::send($fullOrder['customer_email'], $subject, $htmlBody);
+                    $emailSent = \App\Core\Mailer::send($fullOrder['customer_email'], $subject, $htmlBody);
+                    if ($emailSent) {
                         @error_log("Email successfully sent to {$fullOrder['customer_email']} for Order {$displayId}");
-                    } catch (\Exception $e) {
-                        @error_log("Email failed for Order {$displayId}: " . $e->getMessage());
+                    } else {
+                        @error_log("Email failed for Order {$displayId}");
                     }
                 }
             }
