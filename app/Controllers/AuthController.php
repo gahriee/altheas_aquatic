@@ -255,10 +255,18 @@ class AuthController
                 $url = APP_URL . '/reset-password?selector=' . \urlencode($selector) . '&token=' . \urlencode($token);
                 
                 $subject = "Password Reset Request";
-                $message = "You requested a password reset. Click the link below to set a new password:\n\n" . $url . "\n\nIf you did not request this, please ignore this email.";
-                $headers = "From: noreply@" . parse_url(APP_URL, PHP_URL_HOST);
+                $message = "
+                    <div style='font-family: sans-serif; max-width: 600px; margin: 0 auto; color: #333;'>
+                        <h2 style='color: #0d9488; border-bottom: 2px solid #0d9488; padding-bottom: 10px;'>Althea's Aquatic</h2>
+                        <p>You requested a password reset. Click the link below to set a new password:</p>
+                        <p><a href='{$url}' style='display: inline-block; padding: 10px 20px; background-color: #0d9488; color: #ffffff; text-decoration: none; border-radius: 5px;'>Reset Password</a></p>
+                        <p>Or copy and paste this link into your browser:</p>
+                        <p><a href='{$url}'>{$url}</a></p>
+                        <p style='margin-top: 30px; font-size: 0.9em; color: #64748b;'>If you did not request this, please ignore this email.</p>
+                    </div>
+                ";
                 
-                @mail($email, $subject, $message, $headers);
+                \App\Core\Mailer::send($email, $subject, $message);
             });
         } catch (InvalidEmailException | TooManyRequestsException | \Exception $e) {
             // Silently catch these exceptions to prevent email enumeration

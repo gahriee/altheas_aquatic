@@ -123,7 +123,7 @@ export default function OrderList() {
         <div className="w-auto">
           <Select
             options={[
-              { value: 'all', label: 'All PaymentStatus' },
+              { value: 'all', label: 'All Payment Status' },
               { value: 'paid', label: 'Paid' },
               { value: 'unpaid', label: 'Unpaid' },
               { value: 'failed', label: 'Failed' }

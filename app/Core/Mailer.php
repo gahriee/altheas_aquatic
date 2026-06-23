@@ -2,16 +2,13 @@
 
 namespace App\Core;
 
-use PHPMailer\PHPMailer\PHPMailer;
-use PHPMailer\PHPMailer\Exception;
-
 class Mailer
 {
     /**
      * ----------------------------------------
      * send
      * ----------------------------------------
-     * Sends an HTML email using PHPMailer with SMTP.
+     * Sends an HTML email using the Resend API.
      * 
      * @param string $to Recipient email address
      * @param string $subject Email subject
@@ -20,34 +17,49 @@ class Mailer
      */
     public static function send(string $to, string $subject, string $htmlBody): bool
     {
-        $mail = new PHPMailer(true);
+        $apiKey = constant('RESEND_API_KEY');
+        if (!$apiKey) {
+            error_log("Mailer::send failed: RESEND_API_KEY is not set.");
+            return false;
+        }
 
-        try {
-            // Server settings
-            $mail->isSMTP();
-            $mail->Host       = constant('SMTP_HOST') ?: 'smtp.gmail.com';
-            $mail->SMTPAuth   = true;
-            $mail->Username   = constant('SMTP_USER') ?: '';
-            $mail->Password   = constant('SMTP_PASS') ?: '';
-            $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
-            $mail->Port       = (int) (constant('SMTP_PORT') ?: 587);
-            $mail->Timeout    = 5; // Fail fast if network is unreachable
+        $fromName = constant('MAIL_FROM_NAME') ?: "Althea's Aquatic";
+        $fromAddress = constant('MAIL_FROM_ADDRESS') ?: "onboarding@resend.dev";
+        $from = "{$fromName} <{$fromAddress}>";
 
-            // Sender and recipient
-            $fromName = constant('SMTP_FROM_NAME') ?: "Althea's Aquatic";
-            $mail->setFrom($mail->Username, $fromName);
-            $mail->addAddress($to);
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_URL, 'https://api.resend.com/emails');
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_POST, true);
+        
+        $payload = json_encode([
+            'from' => $from,
+            'to' => [$to],
+            'subject' => $subject,
+            'html' => $htmlBody
+        ]);
 
-            // Content
-            $mail->isHTML(true);
-            $mail->Subject = $subject;
-            $mail->Body    = $htmlBody;
-            $mail->AltBody = strip_tags($htmlBody);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, $payload);
+        curl_setopt($ch, CURLOPT_HTTPHEADER, [
+            'Authorization: Bearer ' . $apiKey,
+            'Content-Type: application/json'
+        ]);
 
-            $mail->send();
+        $result = curl_exec($ch);
+        $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        $curlError = curl_error($ch);
+        
+        curl_close($ch);
+
+        if ($result === false) {
+            error_log("Mailer::send failed (cURL error): {$curlError}");
+            return false;
+        }
+
+        if ($httpCode >= 200 && $httpCode < 300) {
             return true;
-        } catch (Exception $e) {
-            error_log("Mailer::send failed to send email to {$to}. Error: {$mail->ErrorInfo}");
+        } else {
+            error_log("Mailer::send failed (HTTP {$httpCode}): {$result}");
             return false;
         }
     }
