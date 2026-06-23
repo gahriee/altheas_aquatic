@@ -398,8 +398,10 @@ class OrderModel
         }
 
         if (!empty($params['search'])) {
-            $sql .= " AND (order_number LIKE :search OR customer_name LIKE :search OR customer_email LIKE :search)";
-            $binds[':search'] = '%' . $params['search'] . '%';
+            $sql .= " AND (order_number LIKE :search1 OR customer_name LIKE :search2 OR customer_email LIKE :search3)";
+            $binds[':search1'] = '%' . $params['search'] . '%';
+            $binds[':search2'] = '%' . $params['search'] . '%';
+            $binds[':search3'] = '%' . $params['search'] . '%';
         }
 
         if (!empty($params['from'])) {

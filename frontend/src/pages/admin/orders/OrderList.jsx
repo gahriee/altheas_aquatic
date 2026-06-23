@@ -6,6 +6,7 @@ import { getOrders } from '../../../api/orders';
 import { getOrderStatusStyle } from '../../../utils/status';
 import OrderDetailsExpansion from '../../../components/admin/orders/OrderDetailsExpansion';
 import Input from '../../../components/ui/Input';
+import Select from '../../../components/ui/Select';
 
 export default function OrderList() {
   const [data, setData] = useState({ orders: [], counts: {} });
@@ -95,97 +96,97 @@ export default function OrderList() {
         </div>
       </div>
 
-      {/* Status Tabs and Filters Row */}
-      <div className="flex flex-col xl:flex-row justify-between items-start xl:items-end border-b border-sage-100 gap-4 pb-4">
-        <div className="flex overflow-x-auto pb-1 gap-2 w-full xl:w-auto">
-          {tabs.map((tab) => (
-            <button
-              key={tab.id}
-              onClick={() => setFilters({ ...filters, status: tab.id })}
-              className={`flex items-center gap-2 px-4 py-2 rounded-t-xl font-bold text-xs uppercase tracking-widest transition-all whitespace-nowrap ${
-                filters.status === tab.id 
-                  ? 'bg-teal-500 text-white shadow-lg shadow-teal-500/20 translate-y-[-2px]' 
-                  : 'text-sage-400 hover:text-teal-500 hover:bg-teal-50'
-              }`}
-            >
-              {tab.label}
-              <span className={`px-1.5 py-0.5 rounded-full text-[10px] ${
-                filters.status === tab.id ? 'bg-white/20 text-white' : 'bg-sage-100 text-sage-500'
-              }`}>
-                {data.counts?.[tab.id] || 0}
-              </span>
-            </button>
-          ))}
+      {/* Filters Row (Above Tabs) */}
+      <div className="flex flex-wrap items-center gap-3 w-full bg-white p-4 rounded-2xl border border-sage-100 shadow-sm">
+        <div className="flex-1 min-w-[200px] relative">
+          <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-sage-400 z-10" size={16} />
+          <Input
+            type="text"
+            placeholder="Search orders..."
+            value={filters.search}
+            onChange={(e) => setFilters({ ...filters, search: e.target.value })}
+            className="pl-10 !py-2.5"
+          />
         </div>
+        <div className="w-36">
+          <Select
+            options={[
+              { value: 'all', label: 'All Methods' },
+              { value: 'cod', label: 'COD' },
+              { value: 'qrph', label: 'QRPH' }
+            ]}
+            value={filters.payment_method}
+            onChange={(e) => setFilters({ ...filters, payment_method: e.target.value })}
+            className="!py-2.5"
+          />
+        </div>
+        <div className="w-36">
+          <Select
+            options={[
+              { value: 'all', label: 'All Status' },
+              { value: 'paid', label: 'Paid' },
+              { value: 'unpaid', label: 'Unpaid' },
+              { value: 'failed', label: 'Failed' }
+            ]}
+            value={filters.payment_status}
+            onChange={(e) => setFilters({ ...filters, payment_status: e.target.value })}
+            className="!py-2.5"
+          />
+        </div>
+        <div className="w-36">
+          <Input
+            type="date"
+            value={filters.from}
+            max={filters.to}
+            onChange={(e) => {
+              const newFrom = e.target.value;
+              setFilters({
+                ...filters,
+                from: newFrom,
+                to: (filters.to && newFrom > filters.to) ? newFrom : filters.to
+              });
+            }}
+            className="!py-2.5"
+          />
+        </div>
+        <div className="w-36">
+          <Input
+            type="date"
+            value={filters.to}
+            min={filters.from}
+            onChange={(e) => {
+              const newTo = e.target.value;
+              setFilters({
+                ...filters,
+                to: newTo,
+                from: (filters.from && newTo < filters.from) ? newTo : filters.from
+              });
+            }}
+            className="!py-2.5"
+          />
+        </div>
+      </div>
 
-        {/* Date and Additional Filters */}
-        <div className="flex flex-wrap items-end gap-3 w-full xl:w-auto">
-          <div className="flex-1 min-w-[200px]">
-            <div className="relative">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-sage-400" size={16} />
-              <input
-                type="text"
-                placeholder="Search orders..."
-                value={filters.search}
-                onChange={(e) => setFilters({ ...filters, search: e.target.value })}
-                className="w-full pl-10 pr-4 py-2.5 bg-white border border-sage-200 rounded-xl text-sm font-medium text-sage-800 placeholder:text-sage-400 focus:outline-none focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 transition-all"
-              />
-            </div>
-          </div>
-          <div className="w-32">
-            <select
-              value={filters.payment_method}
-              onChange={(e) => setFilters({ ...filters, payment_method: e.target.value })}
-              className="w-full bg-white border border-sage-200 rounded-xl px-3 py-2.5 text-sm font-medium text-sage-800 focus:outline-none focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 transition-all"
-            >
-              <option value="all">All Methods</option>
-              <option value="cod">COD</option>
-              <option value="qrph">QRPH</option>
-            </select>
-          </div>
-          <div className="w-32">
-            <select
-              value={filters.payment_status}
-              onChange={(e) => setFilters({ ...filters, payment_status: e.target.value })}
-              className="w-full bg-white border border-sage-200 rounded-xl px-3 py-2.5 text-sm font-medium text-sage-800 focus:outline-none focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 transition-all"
-            >
-              <option value="all">All Status</option>
-              <option value="paid">Paid</option>
-              <option value="unpaid">Unpaid</option>
-              <option value="failed">Failed</option>
-            </select>
-          </div>
-          <div className="w-32">
-            <Input
-              type="date"
-              value={filters.from}
-              max={filters.to}
-              onChange={(e) => {
-                const newFrom = e.target.value;
-                setFilters({
-                  ...filters,
-                  from: newFrom,
-                  to: (filters.to && newFrom > filters.to) ? newFrom : filters.to
-                });
-              }}
-            />
-          </div>
-          <div className="w-32">
-            <Input
-              type="date"
-              value={filters.to}
-              min={filters.from}
-              onChange={(e) => {
-                const newTo = e.target.value;
-                setFilters({
-                  ...filters,
-                  to: newTo,
-                  from: (filters.from && newTo < filters.from) ? newTo : filters.from
-                });
-              }}
-            />
-          </div>
-        </div>
+      {/* Status Tabs */}
+      <div className="flex overflow-x-auto pb-1 gap-2 w-full border-b border-sage-100">
+        {tabs.map((tab) => (
+          <button
+            key={tab.id}
+            onClick={() => setFilters({ ...filters, status: tab.id })}
+            className={`flex items-center gap-2 px-4 py-2 rounded-t-xl font-bold text-xs uppercase tracking-widest transition-all whitespace-nowrap ${
+              filters.status === tab.id 
+                ? 'bg-teal-500 text-white shadow-lg shadow-teal-500/20 translate-y-[-2px]' 
+                : 'text-sage-400 hover:text-teal-500 hover:bg-teal-50'
+            }`}
+          >
+            {tab.label}
+            <span className={`px-1.5 py-0.5 rounded-full text-[10px] ${
+              filters.status === tab.id ? 'bg-white/20 text-white' : 'bg-sage-100 text-sage-500'
+            }`}>
+              {data.counts?.[tab.id] || 0}
+            </span>
+          </button>
+        ))}
       </div>
       
       {error && (

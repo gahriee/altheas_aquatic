@@ -17,6 +17,7 @@ import {
   ChevronRight
 } from 'lucide-react';
 import Button from '../../../components/ui/Button';
+import Select from '../../../components/ui/Select';
 import { getOrderStatusStyle } from '../../../utils/status';
 
 export default function OrderDetail() {
@@ -125,20 +126,19 @@ export default function OrderDetail() {
         </div>
 
         <div className="flex items-center gap-3 bg-white p-2 rounded-2xl border border-sage-100 shadow-sm">
-          <div className="relative flex-1 min-w-[160px]">
-            <select
+          <div className="relative flex-1 min-w-[200px]">
+            <Select
               value={order.status}
               disabled={updating}
               onChange={(e) => handleStatusUpdate(e.target.value)}
-              className="w-full bg-sage-50 border border-sage-100 rounded-xl px-4 py-2.5 text-sm font-bold text-sage-700 appearance-none focus:outline-none focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 transition-all disabled:opacity-50"
-            >
-              {statuses.map(s => (
-                <option key={s} value={s}>{s.charAt(0).toUpperCase() + s.slice(1)}</option>
-              ))}
-            </select>
-            <div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-sage-400">
-              {updating ? <Loader2 className="animate-spin" size={14} /> : <ChevronRight size={14} className="rotate-90" />}
-            </div>
+              options={statuses.map(s => ({ value: s, label: s.charAt(0).toUpperCase() + s.slice(1) }))}
+              className="text-sm font-bold text-sage-700"
+            />
+            {updating && (
+              <div className="absolute right-12 top-1/2 -translate-y-1/2 pointer-events-none text-sage-400">
+                <Loader2 className="animate-spin" size={14} />
+              </div>
+            )}
           </div>
         </div>
       </div>

@@ -88,6 +88,8 @@ class Router
                 $this->router->post('/suppliers/(\d+)', 'SupplierController@update');
                 $this->router->get('/suppliers/(\d+)/deliveries', 'SupplierController@deliveries');
                 $this->router->post('/suppliers/delivery', 'SupplierController@recordDelivery');
+                $this->router->post('/suppliers/(\d+)/delete', 'SupplierController@delete');
+                $this->router->post('/suppliers/delivery/(\d+)/delete', 'SupplierController@deleteDelivery');
 
                 // Orders
                 $this->router->get('/orders', 'OrderController@index');
