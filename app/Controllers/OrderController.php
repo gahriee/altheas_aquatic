@@ -153,8 +153,16 @@ class OrderController
 
         $userId = Auth::isLoggedIn() ? Auth::userId() : null;
 
+        $orderData = [
+            'customer_name' => $customer['name'],
+            'customer_email' => $customer['email'],
+            'customer_phone' => $customer['phone'],
+            'delivery_address' => $customer['address'],
+            'notes' => $customer['notes'] ?? null
+        ];
+
         try {
-            $result = $this->orderModel->createCodOrder($customer, $items, $userId);
+            $result = $this->orderModel->createCodOrder($orderData, $items, $userId);
 
             // Clear the cart session for logged-in users or guest (since Cart works with session)
             \App\Core\Cart::clear();
