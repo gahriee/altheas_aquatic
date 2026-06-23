@@ -212,9 +212,9 @@ class OrderController
 
                     try {
                         \App\Core\Mailer::send($fullOrder['customer_email'], $subject, $htmlBody);
-                        error_log("Email successfully sent to {$fullOrder['customer_email']} for Order {$displayId}");
+                        @error_log("Email successfully sent to {$fullOrder['customer_email']} for Order {$displayId}");
                     } catch (\Exception $e) {
-                        error_log("Email failed for Order {$displayId}: " . $e->getMessage());
+                        @error_log("Email failed for Order {$displayId}: " . $e->getMessage());
                     }
                 }
             }
