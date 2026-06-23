@@ -41,6 +41,19 @@ export default function OrderDetailsExpansion({ orderId, onUpdate }) {
     }
   };
 
+  const handlePaymentStatusUpdate = async (newPaymentStatus) => {
+    try {
+      setUpdating(true);
+      await updateOrderStatus(orderId, { payment_status: newPaymentStatus });
+      await fetchDetails();
+      if (onUpdate) onUpdate();
+    } catch (err) {
+      // Errors are handled by apiFetch toast
+    } finally {
+      setUpdating(false);
+    }
+  };
+
   if (loading) {
     return (
       <div className="flex flex-col items-center justify-center py-10 space-y-3">
@@ -200,6 +213,15 @@ export default function OrderDetailsExpansion({ orderId, onUpdate }) {
                 <div className="px-3 py-1.5 bg-sage-50 rounded-full border border-sage-100">
                     ID: {order.payment_intent_id}
                 </div>
+            )}
+            {order.payment_method === 'cod' && order.payment_status === 'unpaid' && (
+                <button
+                    onClick={() => handlePaymentStatusUpdate('paid')}
+                    disabled={updating}
+                    className="flex items-center gap-2 px-3 py-1.5 bg-white hover:bg-teal-50 text-teal-600 rounded-full border border-teal-200 transition-colors cursor-pointer disabled:opacity-50"
+                >
+                    Mark as Paid
+                </button>
             )}
         </div>
       </div>

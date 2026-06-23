@@ -140,7 +140,7 @@ class OrderModel
 
             $stmt = $this->db->prepare("
                 INSERT INTO orders (user_id, customer_name, customer_email, customer_phone, delivery_address, total_amount, payment_method, payment_status, status, notes, order_number)
-                VALUES (:user_id, :customer_name, :customer_email, :customer_phone, :delivery_address, :total_amount, 'cod', 'unpaid', 'pending', :notes, :order_number)
+                VALUES (:user_id, :customer_name, :customer_email, :customer_phone, :delivery_address, :total_amount, 'cod', 'unpaid', 'confirmed', :notes, :order_number)
             ");
             
             $stmt->execute([
