@@ -268,8 +268,12 @@ class AuthController
                 
                 \App\Core\Mailer::send($email, $subject, $message);
             });
-        } catch (InvalidEmailException | TooManyRequestsException | \Exception $e) {
-            // Silently catch these exceptions to prevent email enumeration
+        } catch (InvalidEmailException $e) {
+            error_log("ForgotPassword failed: Invalid email ({$email})");
+        } catch (TooManyRequestsException $e) {
+            error_log("ForgotPassword failed: Too many requests for ({$email})");
+        } catch (\Exception $e) {
+            error_log("ForgotPassword error for ({$email}): " . $e->getMessage());
         }
 
         // Always return success message
