@@ -170,6 +170,55 @@ class OrderController
             // Clear the cart session for logged-in users or guest (since Cart works with session)
             \App\Core\Cart::clear();
 
+            // Send Email Notification
+            if (!empty($orderData['customer_email'])) {
+                $fullOrder = $this->orderModel->getById((int) $result['order_id']);
+                if ($fullOrder) {
+                    $displayId = $result['order_number'] ?? "#{$result['order_id']}";
+                    $totalAmount = number_format((float) $fullOrder['total_amount'], 2);
+                    
+                    $subject = "Order Received: {$displayId}";
+                    
+                    $itemsHtml = '<table style="width: 100%; border-collapse: collapse; margin-top: 15px;">';
+                    $itemsHtml .= '<thead><tr><th style="border-bottom: 1px solid #ddd; padding: 8px; text-align: left;">Product</th><th style="border-bottom: 1px solid #ddd; padding: 8px; text-align: right;">Qty</th><th style="border-bottom: 1px solid #ddd; padding: 8px; text-align: right;">Price</th><th style="border-bottom: 1px solid #ddd; padding: 8px; text-align: right;">Subtotal</th></tr></thead>';
+                    $itemsHtml .= '<tbody>';
+                    foreach ($fullOrder['items'] as $item) {
+                        $price = number_format((float) $item['unit_price'], 2);
+                        $subtotal = number_format((float) $item['subtotal'], 2);
+                        $itemsHtml .= "<tr><td style='padding: 8px; border-bottom: 1px solid #eee;'>{$item['product_name']}</td><td style='padding: 8px; text-align: right; border-bottom: 1px solid #eee;'>{$item['qty']}</td><td style='padding: 8px; text-align: right; border-bottom: 1px solid #eee;'>₱{$price}</td><td style='padding: 8px; text-align: right; border-bottom: 1px solid #eee;'>₱{$subtotal}</td></tr>";
+                    }
+                    $itemsHtml .= '</tbody></table>';
+
+                    $date = date('F j, Y, g:i a');
+                    $address = $fullOrder['delivery_address'] ?: 'No address provided';
+
+                    $htmlBody = "
+                    <div style='font-family: sans-serif; max-width: 600px; margin: 0 auto; color: #333;'>
+                        <h2 style='color: #0d9488; border-bottom: 2px solid #0d9488; padding-bottom: 10px;'>Althea's Aquatic</h2>
+                        <p>Hi {$fullOrder['customer_name']},</p>
+                        <p>Thank you for your order! We have received your request and will process it shortly. Please prepare exact cash for the delivery.</p>
+                        <div style='background: #f8fafc; padding: 15px; border-radius: 8px; margin: 20px 0;'>
+                            <p style='margin: 0 0 5px 0;'><strong>Order Number:</strong> {$displayId}</p>
+                            <p style='margin: 0 0 5px 0;'><strong>Date:</strong> {$date}</p>
+                            <p style='margin: 0 0 5px 0;'><strong>Total Amount:</strong> <span style='color: #0d9488; font-weight: bold;'>₱{$totalAmount}</span></p>
+                            <p style='margin: 0 0 5px 0;'><strong>Payment Method:</strong> Cash on Delivery (COD)</p>
+                            <p style='margin: 0 0 0 0;'><strong>Delivery Address:</strong> {$address}</p>
+                        </div>
+                        <h3>Order Summary</h3>
+                        {$itemsHtml}
+                        <p style='margin-top: 30px; font-size: 0.9em; color: #64748b;'>If you have any questions, feel free to reply to this email.</p>
+                    </div>
+                    ";
+
+                    try {
+                        \App\Core\Mailer::send($fullOrder['customer_email'], $subject, $htmlBody);
+                        error_log("Email successfully sent to {$fullOrder['customer_email']} for Order {$displayId}");
+                    } catch (\Exception $e) {
+                        error_log("Email failed for Order {$displayId}: " . $e->getMessage());
+                    }
+                }
+            }
+
             Response::json([
                 'order_id' => $result['order_id'],
                 'order_number' => $result['order_number'],
