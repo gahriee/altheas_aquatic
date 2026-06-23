@@ -2,13 +2,16 @@
 
 namespace App\Core;
 
+use PHPMailer\PHPMailer\PHPMailer;
+use PHPMailer\PHPMailer\Exception;
+
 class Mailer
 {
     /**
      * ----------------------------------------
      * send
      * ----------------------------------------
-     * Sends an HTML email using the Resend API SDK.
+     * Sends an HTML email using PHPMailer and Gmail SMTP.
      * 
      * @param string $to Recipient email address
      * @param string $subject Email subject
@@ -17,32 +20,41 @@ class Mailer
      */
     public static function send(string $to, string $subject, string $htmlBody): bool
     {
-        $apiKey = constant('RESEND_API_KEY');
-        if (!$apiKey) {
-            @error_log("Mailer::send failed: RESEND_API_KEY is not set.");
-            return false;
-        }
-
-        $fromName = constant('MAIL_FROM_NAME') ?: "Althea's Aquatic";
-        $fromAddress = constant('MAIL_FROM_ADDRESS') ?: "onboarding@resend.dev";
-        $from = "{$fromName} <{$fromAddress}>";
+        $mail = new PHPMailer(true);
 
         try {
-            $resend = \Resend::client($apiKey);
-            
-            $result = $resend->emails->send([
-                'from' => $from,
-                'to' => [$to],
-                'subject' => $subject,
-                'html' => $htmlBody
-            ]);
+            // Server settings
+            $mail->isSMTP();
+            $mail->Host       = constant('SMTP_HOST') ?: 'smtp.gmail.com';
+            $mail->SMTPAuth   = true;
+            $mail->Username   = constant('SMTP_USER');
+            $mail->Password   = constant('SMTP_PASS');
+            $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
+            $mail->Port       = (int)(constant('SMTP_PORT') ?: 587);
 
-            $resendId = $result->id ?? 'unknown';
-            @error_log("Mailer::send success. Resend ID: {$resendId} | To: {$to}");
-            return true;
+            // Validate configuration
+            if (empty($mail->Username) || empty($mail->Password)) {
+                @error_log("Mailer::send failed: SMTP_USER or SMTP_PASS is not set.");
+                return false;
+            }
+
+            // Recipients
+            $fromName = constant('MAIL_FROM_NAME') ?: "Althea's Aquatic";
+            $mail->setFrom($mail->Username, $fromName);
+            $mail->addAddress($to);
+
+            // Content
+            $mail->isHTML(true);
+            $mail->Subject = $subject;
+            $mail->Body    = $htmlBody;
             
-        } catch (\Exception $e) {
-            @error_log("Mailer::send failed (Resend SDK): " . $e->getMessage());
+            // Plain text alternative
+            $mail->AltBody = strip_tags(str_replace(['<br>', '<br/>', '<br />', '</p>'], "\n", $htmlBody));
+
+            $mail->send();
+            return true;
+        } catch (Exception $e) {
+            @error_log("Mailer::send failed: {$mail->ErrorInfo}");
             return false;
         }
     }
