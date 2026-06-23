@@ -102,7 +102,7 @@ export default function OrderList() {
           <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-sage-400 z-10" size={16} />
           <Input
             type="text"
-            placeholder="Search orders..."
+            placeholder="Search by Order # or Customer name..."
             value={filters.search}
             onChange={(e) => setFilters({ ...filters, search: e.target.value })}
             className="pl-10 !py-2.5"
@@ -133,60 +133,68 @@ export default function OrderList() {
             className="!py-2.5"
           />
         </div>
-        <div className="w-36">
-          <Input
-            type="date"
-            value={filters.from}
-            max={filters.to}
-            onChange={(e) => {
-              const newFrom = e.target.value;
-              setFilters({
-                ...filters,
-                from: newFrom,
-                to: (filters.to && newFrom > filters.to) ? newFrom : filters.to
-              });
-            }}
-            className="!py-2.5"
-          />
-        </div>
-        <div className="w-36">
-          <Input
-            type="date"
-            value={filters.to}
-            min={filters.from}
-            onChange={(e) => {
-              const newTo = e.target.value;
-              setFilters({
-                ...filters,
-                to: newTo,
-                from: (filters.from && newTo < filters.from) ? newTo : filters.from
-              });
-            }}
-            className="!py-2.5"
-          />
-        </div>
       </div>
 
-      {/* Status Tabs */}
-      <div className="flex overflow-x-auto pb-1 gap-2 w-full border-b border-sage-100">
-        {tabs.map((tab) => (
-          <button
-            key={tab.id}
-            onClick={() => setFilters({ ...filters, status: tab.id })}
-            className={`flex items-center gap-2 px-4 py-2 rounded-t-xl font-bold text-xs uppercase tracking-widest transition-all whitespace-nowrap ${
-              filters.status === tab.id 
-                ? 'bg-teal-500 text-white shadow-lg shadow-teal-500/20 translate-y-[-2px]' 
-                : 'text-sage-400 hover:text-teal-500 hover:bg-teal-50'
-            }`}
-          >
-            {tab.label}
-            <span className={`px-1.5 py-0.5 rounded-full text-[10px] ${
-              filters.status === tab.id ? 'bg-white/20 text-white' : 'bg-sage-100 text-sage-500'
-            }`}>
-              {data.counts?.[tab.id] || 0}
-            </span>
-          </button>
-        ))}
+      {/* Status Tabs and Date Filters Row */}
+      <div className="flex flex-col xl:flex-row justify-between items-start xl:items-end border-b border-sage-100 gap-4 pb-4">
+        {/* Status Tabs */}
+        <div className="flex overflow-x-auto pb-1 gap-2 w-full xl:w-auto">
+          {tabs.map((tab) => (
+            <button
+              key={tab.id}
+              onClick={() => setFilters({ ...filters, status: tab.id })}
+              className={`flex items-center gap-2 px-4 py-2 rounded-t-xl font-bold text-xs uppercase tracking-widest transition-all whitespace-nowrap ${
+                filters.status === tab.id 
+                  ? 'bg-teal-500 text-white shadow-lg shadow-teal-500/20 translate-y-[-2px]' 
+                  : 'text-sage-400 hover:text-teal-500 hover:bg-teal-50'
+              }`}
+            >
+              {tab.label}
+              <span className={`px-1.5 py-0.5 rounded-full text-[10px] ${
+                filters.status === tab.id ? 'bg-white/20 text-white' : 'bg-sage-100 text-sage-500'
+              }`}>
+                {data.counts?.[tab.id] || 0}
+              </span>
+            </button>
+          ))}
+        </div>
+
+        {/* Date Filters */}
+        <div className="flex flex-wrap items-end gap-3 w-full xl:w-auto">
+          <div className="w-36">
+            <Input
+              type="date"
+              value={filters.from}
+              max={filters.to}
+              onChange={(e) => {
+                const newFrom = e.target.value;
+                setFilters({
+                  ...filters,
+                  from: newFrom,
+                  to: (filters.to && newFrom > filters.to) ? newFrom : filters.to
+                });
+              }}
+              className="!py-2.5"
+            />
+          </div>
+          <div className="w-36">
+            <Input
+              type="date"
+              value={filters.to}
+              min={filters.from}
+              onChange={(e) => {
+                const newTo = e.target.value;
+                setFilters({
+                  ...filters,
+                  to: newTo,
+                  from: (filters.from && newTo < filters.from) ? newTo : filters.from
+                });
+              }}
+              className="!py-2.5"
+            />
+          </div>
+        </div>
+
       </div>
       
       {error && (
