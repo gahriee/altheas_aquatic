@@ -7,6 +7,7 @@ import Input from '../components/ui/Input';
 import Label from '../components/ui/Label';
 import ErrorMessage from '../components/shared/ErrorMessage';
 import { ArrowLeft, Mail } from 'lucide-react';
+import useResendTimer from '../hooks/useResendTimer';
 
 /**
  * Forgot Password page — allows users to request a password reset link.
@@ -15,6 +16,7 @@ export default function ForgotPassword() {
   const [email, setEmail] = useState('');
   const [error, setError] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const { secondsLeft, startTimer, isTimerActive } = useResendTimer('adminPasswordResetTimer', 60);
 
   /**
    * Validates email and submits the forgot password request.
@@ -26,10 +28,13 @@ export default function ForgotPassword() {
       return;
     }
 
+    if (isTimerActive) return;
+
     setError('');
     setIsSubmitting(true);
     try {
       await forgotPassword(email);
+      startTimer();
       setEmail('');
     } catch (err) {
       setError(err.message || 'An error occurred.');
@@ -85,6 +90,7 @@ export default function ForgotPassword() {
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="name@example.com"
                   className="pl-11"
+                  disabled={isTimerActive || isSubmitting}
                 />
               </div>
             </div>
@@ -94,8 +100,9 @@ export default function ForgotPassword() {
                 type="submit"
                 loading={isSubmitting}
                 className="w-full"
+                disabled={isTimerActive}
               >
-                Send Reset Link
+                {isTimerActive ? `Try again in ${secondsLeft}s` : 'Send Reset Link'}
               </Button>
             </div>
           </form>
