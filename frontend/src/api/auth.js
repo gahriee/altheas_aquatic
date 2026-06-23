@@ -58,3 +58,10 @@ export async function resetPassword(selector, token, newPassword, confirmPasswor
     body: { selector, token, new_password: newPassword, confirm_password: confirmPassword },
   });
 }
+
+export async function verifyEmail(selector, token) {
+  return apiFetch('/api/verify-email', {
+    method: 'POST',
+    body: { selector, token },
+  });
+}

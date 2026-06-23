@@ -16,6 +16,8 @@ import StorefrontLogin from './pages/storefront/Login';
 import MyOrders from './pages/storefront/MyOrders';
 import MyOrderDetail from './pages/storefront/MyOrderDetail';
 import MyProfile from './pages/storefront/MyProfile';
+import VerifyEmail from './pages/storefront/VerifyEmail';
+import StorefrontResetPassword from './pages/storefront/ResetPassword';
 
 // Admin Pages
 import Login from './pages/admin/Login';
@@ -37,7 +39,8 @@ import NotificationHistory from './pages/admin/notifications/NotificationHistory
 
 // Public Auth Pages
 import ForgotPassword from './pages/ForgotPassword';
-import ResetPassword from './pages/ResetPassword';
+// Using storefront reset password by default for both admin and customers
+// since the email link points to /reset-password
 
 export default function App() {
   return (
@@ -52,6 +55,8 @@ export default function App() {
           <Route path="order-confirmation/:id" element={<OrderConfirmation />} />
           <Route path="register" element={<Register />} />
           <Route path="login" element={<StorefrontLogin />} />
+          <Route path="verify-email" element={<VerifyEmail />} />
+          <Route path="reset-password" element={<StorefrontResetPassword />} />
           <Route path="my-orders" element={<MyOrders />} />
           <Route path="my-orders/:id" element={<MyOrderDetail />} />
           <Route path="my-profile" element={<MyProfile />} />
@@ -60,7 +65,6 @@ export default function App() {
         {/* Admin Login & Password Reset */}
         <Route path="/admin/login" element={<Login />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />
-        <Route path="/reset-password" element={<ResetPassword />} />
 
         {/* Admin Routes (Protected) */}
         <Route path="/admin" element={<ProtectedRoute />}>

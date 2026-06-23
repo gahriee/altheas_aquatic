@@ -58,6 +58,7 @@ class Router
             $this->router->post('/forgot-password', 'AuthController@forgotPassword');
             $this->router->post('/verify-reset-token', 'AuthController@verifyResetToken');
             $this->router->post('/reset-password', 'AuthController@resetPassword');
+            $this->router->post('/verify-email', 'AuthController@verifyEmail');
 
             // Admin Group
             $this->router->mount('/admin', function () {
