@@ -252,7 +252,7 @@ class AuthController
 
         try {
             $this->auth->forgotPassword($email, function ($selector, $token) use ($email) {
-                $url = APP_URL . '/reset-password?selector=' . \urlencode($selector) . '&token=' . \urlencode($token);
+                $url = FRONTEND_URL . '/reset-password?selector=' . \urlencode($selector) . '&token=' . \urlencode($token);
                 
                 $subject = "Password Reset Request";
                 $message = "
