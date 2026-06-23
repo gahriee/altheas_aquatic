@@ -1,10 +1,12 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { Link } from 'react-router-dom';
-import { Plus, Edit3, UserX, UserCheck, ShieldAlert, ShieldCheck, Mail, Calendar, Clock, AlertCircle } from 'lucide-react';
+import { Plus, Edit3, UserX, UserCheck, ShieldAlert, ShieldCheck, Mail, Calendar, Clock, AlertCircle, Search, X } from 'lucide-react';
 import { fetchUsers, deactivateUser, reactivateUser } from '../../../api/users';
 import { formatTimestamp } from '../../../utils/format';
 import { useAuth } from '../../../context/AuthContext';
+import { useDebounce } from '../../../hooks/useDebounce';
 import Button from '../../../components/ui/Button';
+import Input from '../../../components/ui/Input';
 import DataTable from '../../../components/admin/DataTable';
 import ConfirmationDialog from '../../../components/admin/ConfirmationDialog';
 import Tooltip from '../../../components/ui/Tooltip';
@@ -15,6 +17,25 @@ export default function UserList() {
   const [deactivateId, setDeactivateId] = useState(null);
   const [reactivateId, setReactivateId] = useState(null);
   const [activeTab, setActiveTab] = useState('admin_staff');
+  
+  const [searchTerm, setSearchTerm] = useState('');
+  const debouncedSearch = useDebounce(searchTerm, 300);
+  const [isSearching, setIsSearching] = useState(false);
+
+  useEffect(() => {
+    setIsSearching(true);
+    const timer = setTimeout(() => setIsSearching(false), 300);
+    return () => clearTimeout(timer);
+  }, [searchTerm]);
+
+  const filteredUsers = useMemo(() => {
+    if (!debouncedSearch) return data.users;
+    const lower = debouncedSearch.toLowerCase();
+    return data.users.filter(u => 
+      u.email?.toLowerCase().includes(lower) ||
+      (u.username && u.username.toLowerCase().includes(lower))
+    );
+  }, [data.users, debouncedSearch]);
   
   const { user: currentUser } = useAuth();
 
@@ -199,6 +220,28 @@ export default function UserList() {
         </div>
       </div>
 
+      {/* Search Bar */}
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-white p-4 rounded-2xl border border-sage-100 shadow-sm">
+        <div className="w-full sm:w-96 relative">
+          <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-sage-400 z-10" size={16} />
+          <Input
+            type="text"
+            placeholder="Search users by email or username..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="pl-10 pr-10 !py-2.5"
+          />
+          {searchTerm && (
+            <button 
+              onClick={() => setSearchTerm('')}
+              className="absolute right-4 top-1/2 -translate-y-1/2 text-sage-300 hover:text-coral-500 transition-colors z-10"
+            >
+              <X size={16} />
+            </button>
+          )}
+        </div>
+      </div>
+
       {/* Role Tabs and Actions Row */}
       <div className="flex flex-col sm:flex-row justify-between items-end border-b border-sage-100 gap-4">
         <div className="flex overflow-x-auto pb-1 gap-2">
@@ -234,8 +277,8 @@ export default function UserList() {
 
       <DataTable 
         columns={columns}
-        data={data.users}
-        loading={loading}
+        data={filteredUsers}
+        loading={loading || isSearching}
         emptyMessage={activeTab === 'customer' ? 'No Customers' : 'No Admin Users'}
         emptySubMessage={activeTab === 'customer' 
           ? 'You don\'t have any registered customers yet.' 
