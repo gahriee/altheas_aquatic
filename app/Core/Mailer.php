@@ -19,7 +19,7 @@ class Mailer
     {
         $apiKey = constant('RESEND_API_KEY');
         if (!$apiKey) {
-            error_log("Mailer::send failed: RESEND_API_KEY is not set.");
+            @error_log("Mailer::send failed: RESEND_API_KEY is not set.");
             return false;
         }
 
@@ -38,11 +38,11 @@ class Mailer
             ]);
 
             $resendId = $result->id ?? 'unknown';
-            error_log("Mailer::send success. Resend ID: {$resendId} | To: {$to}");
+            @error_log("Mailer::send success. Resend ID: {$resendId} | To: {$to}");
             return true;
             
         } catch (\Exception $e) {
-            error_log("Mailer::send failed (Resend SDK): " . $e->getMessage());
+            @error_log("Mailer::send failed (Resend SDK): " . $e->getMessage());
             return false;
         }
     }
