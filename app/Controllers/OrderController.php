@@ -35,6 +35,9 @@ class OrderController
         
         $params = [
             'status' => $_GET['status'] ?? null,
+            'payment_method' => $_GET['payment_method'] ?? null,
+            'payment_status' => $_GET['payment_status'] ?? null,
+            'search' => $_GET['search'] ?? null,
             'from' => $_GET['from'] ?? null,
             'to' => $_GET['to'] ?? null
         ];

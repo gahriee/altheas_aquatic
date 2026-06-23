@@ -387,6 +387,21 @@ class OrderModel
             $binds[':status'] = $params['status'];
         }
 
+        if (!empty($params['payment_method']) && $params['payment_method'] !== 'all') {
+            $sql .= " AND payment_method = :payment_method";
+            $binds[':payment_method'] = $params['payment_method'];
+        }
+
+        if (!empty($params['payment_status']) && $params['payment_status'] !== 'all') {
+            $sql .= " AND payment_status = :payment_status";
+            $binds[':payment_status'] = $params['payment_status'];
+        }
+
+        if (!empty($params['search'])) {
+            $sql .= " AND (order_number LIKE :search OR customer_name LIKE :search OR customer_email LIKE :search)";
+            $binds[':search'] = '%' . $params['search'] . '%';
+        }
+
         if (!empty($params['from'])) {
             $sql .= " AND ordered_at >= :from";
             $binds[':from'] = $params['from'] . ' 00:00:00';
