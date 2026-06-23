@@ -55,7 +55,7 @@ export default function Register() {
         password: formData.password
       });
       navigate('/login', { 
-        state: { message: 'Account created successfully! Please log in.' } 
+        state: { message: 'Account created! Please check your email to verify your account before logging in.' } 
       });
     } catch (err) {
       setError(err.message || 'Registration failed. Please try again.');

@@ -120,7 +120,7 @@ class AuthController
         } catch (InvalidEmailException | InvalidPasswordException $e) {
             Response::error('Invalid email or password', 401);
         } catch (EmailNotVerifiedException $e) {
-            Response::error('Email not verified', 401);
+            Response::error('Please verify your email address before logging in. Check your inbox for the verification link.', 401);
         } catch (TooManyRequestsException $e) {
             Response::error('Too many requests. Please try again later.', 429);
         }
@@ -145,12 +145,28 @@ class AuthController
         }
 
         try {
-            // Register without username (null)
-            $userId = $this->auth->register($email, $password, null);
+        try {
+            // Register without username (null) and send verification email
+            $userId = $this->auth->register($email, $password, null, function ($selector, $token) use ($email) {
+                $url = FRONTEND_URL . '/verify-email?selector=' . \urlencode($selector) . '&token=' . \urlencode($token);
+                
+                $subject = "Verify your email address";
+                $message = "
+                    <div style='font-family: sans-serif; max-width: 600px; margin: 0 auto; color: #333;'>
+                        <h2 style='color: #0d9488; border-bottom: 2px solid #0d9488; padding-bottom: 10px;'>Althea's Aquatic</h2>
+                        <p>Welcome! Click the link below to verify your email address:</p>
+                        <p><a href='{$url}' style='display: inline-block; padding: 10px 20px; background-color: #0d9488; color: #ffffff; text-decoration: none; border-radius: 5px;'>Verify Email</a></p>
+                        <p>Or copy and paste this link into your browser:</p>
+                        <p><a href='{$url}'>{$url}</a></p>
+                    </div>
+                ";
+                
+                \App\Core\Mailer::send($email, $subject, $message);
+            });
 
-            // For now, auto-verify and set role (since we don't have email flow yet)
+            // Set role to customer (verified stays 0 until they click the link)
             $db = \App\Core\Database::getInstance()->getConnection();
-            $stmt = $db->prepare("UPDATE users SET verified = 1, roles_mask = :role_mask, role_label = 'customer' WHERE id = :id");
+            $stmt = $db->prepare("UPDATE users SET roles_mask = :role_mask, role_label = 'customer' WHERE id = :id");
             $stmt->execute([
                 'role_mask' => \Delight\Auth\Role::CONSUMER, // 16
                 'id' => $userId
@@ -162,7 +178,7 @@ class AuthController
 
             Response::json([
                 'id' => $userId,
-                'message' => 'Account created successfully. Please login to continue.'
+                'message' => 'Account created successfully. Please check your email to verify your account before logging in.'
             ], 201);
         } catch (UserAlreadyExistsException $e) {
             Response::error('An account with this email already exists', 409);
@@ -174,6 +190,38 @@ class AuthController
             Response::error('Too many requests. Please try again later.', 429);
         } catch (\Exception $e) {
             Response::error('Failed to create account', 500);
+        }
+    }
+
+    /**
+     * ----------------------------------------
+     * verifyEmail
+     * ----------------------------------------
+     * Verify a user's email address using selector and token.
+     */
+    public function verifyEmail(): void
+    {
+        $input = json_decode(file_get_contents('php://input'), true);
+        $selector = $input['selector'] ?? '';
+        $token = $input['token'] ?? '';
+
+        if (empty($selector) || empty($token)) {
+            Response::error('Invalid verification link', 400);
+        }
+
+        try {
+            $this->auth->confirmEmail($selector, $token);
+            Response::json(['message' => 'Email verified successfully']);
+        } catch (\Delight\Auth\InvalidSelectorTokenPairException $e) {
+            Response::error('Invalid or expired verification link', 400);
+        } catch (\Delight\Auth\TokenExpiredException $e) {
+            Response::error('Verification link has expired', 400);
+        } catch (\Delight\Auth\UserAlreadyExistsException $e) {
+            Response::error('Email already verified', 400);
+        } catch (\Delight\Auth\TooManyRequestsException $e) {
+            Response::error('Too many requests. Please try again later.', 429);
+        } catch (\Exception $e) {
+            Response::error('Failed to verify email', 500);
         }
     }
 
