@@ -145,7 +145,6 @@ class AuthController
         }
 
         try {
-        try {
             // Register without username (null) and send verification email
             $userId = $this->auth->register($email, $password, null, function ($selector, $token) use ($email) {
                 $url = FRONTEND_URL . '/verify-email?selector=' . \urlencode($selector) . '&token=' . \urlencode($token);
