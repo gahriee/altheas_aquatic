@@ -156,4 +156,85 @@ class SupplierModel
             return false;
         }
     }
+    /**
+     * ----------------------------------------
+     * countDeliveries
+     * ----------------------------------------
+     * Returns the count of deliveries linked to a supplier.
+     */
+    public function countDeliveries(int $supplierId): int
+    {
+        $sql = "SELECT COUNT(*) FROM deliveries WHERE supplier_id = :id";
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute([':id' => $supplierId]);
+        return (int)$stmt->fetchColumn();
+    }
+
+    /**
+     * ----------------------------------------
+     * delete
+     * ----------------------------------------
+     * Deletes a supplier row by supplier_id.
+     */
+    public function delete(int $id): bool
+    {
+        try {
+            $sql = "DELETE FROM suppliers WHERE supplier_id = :id";
+            $stmt = $this->db->prepare($sql);
+            return $stmt->execute([':id' => $id]);
+        } catch (\PDOException $e) {
+            error_log("Supplier Delete Failed: " . $e->getMessage());
+            return false;
+        }
+    }
+
+    /**
+     * ----------------------------------------
+     * fetchDeliveryById
+     * ----------------------------------------
+     * Fetch a single delivery by its ID.
+     */
+    public function fetchDeliveryById(int $deliveryId): ?array
+    {
+        $sql = "SELECT * FROM deliveries WHERE delivery_id = :id";
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute([':id' => $deliveryId]);
+        $delivery = $stmt->fetch();
+        return $delivery ?: null;
+    }
+
+    /**
+     * ----------------------------------------
+     * deleteDelivery
+     * ----------------------------------------
+     * Hard-delete a delivery record and reverse the stock increment atomically.
+     */
+    public function deleteDelivery(int $deliveryId, int $productId, int $qtyReceived): bool
+    {
+        try {
+            $this->db->beginTransaction();
+
+            // 1. Delete delivery record
+            $sql = "DELETE FROM deliveries WHERE delivery_id = :id";
+            $stmt = $this->db->prepare($sql);
+            $stmt->execute([':id' => $deliveryId]);
+
+            // 2. Update product stock (reverse increment, prevent negative)
+            $sqlStock = "UPDATE products SET stock_qty = GREATEST(stock_qty - :qty, 0) WHERE product_id = :pid";
+            $stmtStock = $this->db->prepare($sqlStock);
+            $stmtStock->execute([
+                ':qty' => $qtyReceived,
+                ':pid' => $productId
+            ]);
+
+            $this->db->commit();
+            return true;
+        } catch (\Exception $e) {
+            if ($this->db->inTransaction()) {
+                $this->db->rollBack();
+            }
+            error_log("Delivery Delete Failed: " . $e->getMessage());
+            return false;
+        }
+    }
 }

@@ -1,27 +1,47 @@
 import { useState, useEffect } from 'react';
-import { History as HistoryIcon, Package, Calendar, Hash, Coins, Loader2 } from 'lucide-react';
-import { getDeliveries } from '../../../api/deliveries';
+import { History as HistoryIcon, Package, Calendar, Hash, Coins, Loader2, Trash2 } from 'lucide-react';
+import { getDeliveries, deleteDeliveryRecord } from '../../../api/deliveries';
 import { formatCurrency, formatDateShort } from '../../../utils/format';
+import ConfirmDialog from '../../../components/shared/ConfirmDialog';
 
-export default function SupplierDeliveryTable({ supplierId }) {
+export default function SupplierDeliveryTable({ supplierId, onDeliveryChange }) {
   const [deliveries, setDeliveries] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [deleteTarget, setDeleteTarget] = useState(null);
+  const [deleting, setDeleting] = useState(false);
 
+  async function fetchHistory() {
+    try {
+      setLoading(true);
+      const data = await getDeliveries(supplierId);
+      setDeliveries(data);
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setLoading(false);
+    }
+  }
 
   useEffect(() => {
-    async function fetchHistory() {
-      try {
-        setLoading(true);
-        const data = await getDeliveries(supplierId);
-        setDeliveries(data);
-      } catch (err) {
-        console.error(err);
-      } finally {
-        setLoading(false);
-      }
-    }
     fetchHistory();
   }, [supplierId]);
+
+  async function handleDeleteConfirm() {
+    if (!deleteTarget) return;
+    try {
+      setDeleting(true);
+      await deleteDeliveryRecord(deleteTarget.delivery_id);
+      await fetchHistory();
+      if (onDeliveryChange) {
+        onDeliveryChange();
+      }
+      setDeleteTarget(null);
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setDeleting(false);
+    }
+  }
 
 
 
@@ -75,6 +95,9 @@ export default function SupplierDeliveryTable({ supplierId }) {
                 <span className="text-[10px] font-semibold uppercase tracking-widest">Cost (Unit / Total)</span>
               </div>
             </th>
+            <th className="px-6 py-4 text-right">
+              <span className="text-[10px] font-semibold text-sage-400 uppercase tracking-widest">Actions</span>
+            </th>
           </tr>
         </thead>
         <tbody className="bg-white divide-y divide-sage-50">
@@ -106,10 +129,28 @@ export default function SupplierDeliveryTable({ supplierId }) {
                   {formatCurrency(delivery.unit_cost)} / unit
                 </p>
               </td>
+              <td className="px-6 py-4 text-right">
+                <button 
+                  className="p-2 text-sage-400 hover:text-coral-500 hover:bg-coral-50 rounded-xl transition-all"
+                  onClick={() => setDeleteTarget(delivery)}
+                  title="Delete Delivery"
+                >
+                  <Trash2 size={16} />
+                </button>
+              </td>
             </tr>
           ))}
         </tbody>
       </table>
+
+      <ConfirmDialog
+        isOpen={!!deleteTarget}
+        title="Delete Delivery"
+        message={`Are you sure you want to delete this delivery for ${deleteTarget?.qty_received}x ${deleteTarget?.product_name}? This will reverse the stock increment.`}
+        onConfirm={handleDeleteConfirm}
+        onCancel={() => setDeleteTarget(null)}
+        disabled={deleting}
+      />
     </div>
   );
 }

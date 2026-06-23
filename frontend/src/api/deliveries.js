@@ -22,3 +22,7 @@ export async function recordDelivery(data) {
     body: data,
   });
 }
+
+export async function deleteDeliveryRecord(deliveryId) {
+  return apiFetch(`/api/admin/suppliers/delivery/${deliveryId}/delete`, { method: 'POST' });
+}

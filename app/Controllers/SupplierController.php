@@ -184,4 +184,61 @@ class SupplierController
             Response::error('Failed to record delivery', 500);
         }
     }
+    /**
+     * ----------------------------------------
+     * delete
+     * ----------------------------------------
+     * Delete a supplier.
+     */
+    public function delete(int $id): void
+    {
+        Auth::requireLogin();
+        Csrf::verifyHeader();
+
+        $db = Database::getInstance()->getConnection();
+        $model = new SupplierModel($db);
+
+        $supplier = $model->fetchById($id);
+        if (!$supplier) {
+            Response::error('Supplier not found', 404);
+        }
+
+        if ($model->countDeliveries($id) > 0) {
+            Response::error('Cannot delete supplier with existing deliveries. Remove all deliveries first.', 409);
+        }
+
+        if ($model->delete($id)) {
+            AuditLogger::log('delete', 'supplier', $id, "Deleted supplier '{$supplier['name']}'");
+            Response::json(['message' => 'Supplier deleted successfully']);
+        } else {
+            Response::error('Failed to delete supplier', 500);
+        }
+    }
+
+    /**
+     * ----------------------------------------
+     * deleteDelivery
+     * ----------------------------------------
+     * Delete a delivery and reverse stock increment.
+     */
+    public function deleteDelivery(int $id): void
+    {
+        Auth::requireLogin();
+        Csrf::verifyHeader();
+
+        $db = Database::getInstance()->getConnection();
+        $model = new SupplierModel($db);
+
+        $delivery = $model->fetchDeliveryById($id);
+        if (!$delivery) {
+            Response::error('Delivery not found', 404);
+        }
+
+        if ($model->deleteDelivery($id, (int)$delivery['product_id'], (int)$delivery['qty_received'])) {
+            AuditLogger::log('delete', 'delivery', $id, "Deleted delivery #{$id} and reversed {$delivery['qty_received']} stock for product #{$delivery['product_id']}");
+            Response::json(['message' => 'Delivery deleted and stock reversed']);
+        } else {
+            Response::error('Failed to delete delivery', 500);
+        }
+    }
 }

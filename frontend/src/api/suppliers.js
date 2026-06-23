@@ -17,3 +17,7 @@ export async function updateSupplier(id, data) {
     body: data,
   });
 }
+
+export async function deleteSupplier(id) {
+  return apiFetch(`/api/admin/suppliers/${id}/delete`, { method: 'POST' });
+}

@@ -1,18 +1,22 @@
 import { useState, useEffect, useMemo } from 'react';
 import { Link } from 'react-router-dom';
-import { Plus, Search, Edit3, Truck, Mail, Phone, MapPin, User, Info, X, History as HistoryIcon } from 'lucide-react';
-import { getSuppliers } from '../../../api/suppliers';
+import { Plus, Search, Edit3, Truck, Mail, Phone, MapPin, User, Info, X, History as HistoryIcon, Trash2 } from 'lucide-react';
+import { getSuppliers, deleteSupplier } from '../../../api/suppliers';
 import Button from '../../../components/ui/Button';
 import Input from '../../../components/ui/Input';
 import DataTable from '../../../components/admin/DataTable';
 import Tooltip from '../../../components/ui/Tooltip';
 import { useDebounce } from '../../../hooks/useDebounce';
 
+import ConfirmDialog from '../../../components/shared/ConfirmDialog';
+
 import SupplierDeliveryTable from './SupplierDeliveryTable';
 
 export default function SupplierList() {
   const [suppliers, setSuppliers] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [deleteTarget, setDeleteTarget] = useState(null);
+  const [deleting, setDeleting] = useState(false);
 
   const [searchTerm, setSearchTerm] = useState('');
 
@@ -31,6 +35,20 @@ export default function SupplierList() {
       console.error(err);
     } finally {
       setLoading(false);
+    }
+  }
+
+  async function handleDeleteConfirm() {
+    if (!deleteTarget) return;
+    try {
+      setDeleting(true);
+      await deleteSupplier(deleteTarget.supplier_id);
+      await fetchSuppliers();
+      setDeleteTarget(null);
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setDeleting(false);
     }
   }
 
@@ -111,6 +129,17 @@ export default function SupplierList() {
             >
               <Edit3 size={18} />
             </Link>
+          </Tooltip>
+          <Tooltip text="Delete Supplier">
+            <button 
+              className="p-2 text-sage-400 hover:text-coral-500 hover:bg-coral-50 rounded-xl transition-all"
+              onClick={(e) => {
+                e.stopPropagation();
+                setDeleteTarget(s);
+              }}
+            >
+              <Trash2 size={18} />
+            </button>
           </Tooltip>
         </div>
       )
@@ -231,10 +260,19 @@ export default function SupplierList() {
                 <HistoryIcon size={18} />
                 <h4 className="font-semibold uppercase text-[10px] tracking-widest">Recent Deliveries</h4>
               </div>
-              <SupplierDeliveryTable supplierId={s.supplier_id} />
+              <SupplierDeliveryTable supplierId={s.supplier_id} onDeliveryChange={fetchSuppliers} />
             </div>
           </div>
         )}
+      />
+
+      <ConfirmDialog
+        isOpen={!!deleteTarget}
+        title="Delete Supplier"
+        message={`Are you sure you want to delete "${deleteTarget?.name}"? This action cannot be undone.`}
+        onConfirm={handleDeleteConfirm}
+        onCancel={() => setDeleteTarget(null)}
+        disabled={deleting}
       />
     </div>
   );
