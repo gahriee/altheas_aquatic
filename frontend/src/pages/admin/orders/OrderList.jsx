@@ -108,7 +108,7 @@ export default function OrderList() {
             className="pl-10 !py-2.5"
           />
         </div>
-        <div className="w-36">
+        <div className="w-auto">
           <Select
             options={[
               { value: 'all', label: 'All Methods' },
@@ -120,10 +120,10 @@ export default function OrderList() {
             className="!py-2.5"
           />
         </div>
-        <div className="w-36">
+        <div className="w-auto">
           <Select
             options={[
-              { value: 'all', label: 'All Status' },
+              { value: 'all', label: 'All PaymentStatus' },
               { value: 'paid', label: 'Paid' },
               { value: 'unpaid', label: 'Unpaid' },
               { value: 'failed', label: 'Failed' }
@@ -161,7 +161,7 @@ export default function OrderList() {
 
         {/* Date Filters */}
         <div className="flex flex-wrap items-end gap-3 w-full xl:w-auto">
-          <div className="w-36">
+          <div className="w-auto">
             <Input
               type="date"
               value={filters.from}
@@ -177,7 +177,7 @@ export default function OrderList() {
               className="!py-2.5"
             />
           </div>
-          <div className="w-36">
+          <div className="w-auto">
             <Input
               type="date"
               value={filters.to}
