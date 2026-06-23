@@ -268,15 +268,18 @@ class AuthController
                 
                 \App\Core\Mailer::send($email, $subject, $message);
             });
-        } catch (InvalidEmailException $e) {
-            error_log("ForgotPassword failed: Invalid email ({$email})");
         } catch (TooManyRequestsException $e) {
             error_log("ForgotPassword failed: Too many requests for ({$email})");
+            Response::error('Too many requests. Please try again later.', 429);
+        } catch (InvalidEmailException $e) {
+            error_log("ForgotPassword failed: Invalid email ({$email})");
+            // Keep silent to prevent email enumeration
         } catch (\Exception $e) {
             error_log("ForgotPassword error for ({$email}): " . $e->getMessage());
+            // Keep silent to not expose internal state
         }
 
-        // Always return success message
+        // Always return success message for other cases
         Response::json(['message' => 'If an account with that email exists, a reset link has been sent.']);
     }
 
