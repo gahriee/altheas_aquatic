@@ -4,6 +4,7 @@ export async function login(email, password) {
   return apiFetch('/api/admin/login', {
     method: 'POST',
     body: { email, password },
+    showToast: false,
   });
 }
 
@@ -11,6 +12,7 @@ export async function customerLogin(email, password) {
   return apiFetch('/api/login', {
     method: 'POST',
     body: { email, password },
+    showToast: false,
   });
 }
 
