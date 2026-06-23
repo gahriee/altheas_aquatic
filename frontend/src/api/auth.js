@@ -65,5 +65,6 @@ export async function verifyEmail(selector, token) {
   return apiFetch('/api/verify-email', {
     method: 'POST',
     body: { selector, token },
+    showToast: false,
   });
 }
