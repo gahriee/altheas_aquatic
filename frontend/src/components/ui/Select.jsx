@@ -57,7 +57,7 @@ export default function Select({
           isOpen ? 'ring-2 ring-mint-300 bg-white border-mint-100 shadow-lg shadow-teal-500/5' : 'bg-sage-50'
         } ${className}`}
       >
-        <span className={`${!selectedOption ? 'text-sage-300' : 'text-sage-700'} font-medium`}>
+        <span className={`${!selectedOption ? 'text-sage-300' : 'text-sage-700'} font-medium whitespace-nowrap truncate mr-2`}>
           {selectedOption ? selectedOption.label : placeholder}
         </span>
         <ChevronDown 
