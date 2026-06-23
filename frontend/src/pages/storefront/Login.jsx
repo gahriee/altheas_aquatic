@@ -2,13 +2,14 @@ import { useState, useEffect } from 'react';
 import { useNavigate, useLocation, Link } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { useCart } from '../../context/CartContext';
-import { Lock, LogIn, Loader2, Info, Mail, Send, ArrowLeft } from 'lucide-react';
+import { Lock, LogIn, Loader2, Info, Mail, Send, ArrowLeft, Eye, EyeOff } from 'lucide-react';
 import ErrorMessage from '../../components/shared/ErrorMessage';
 import Label from '../../components/ui/Label';
 import Input from '../../components/ui/Input';
 import Button from '../../components/ui/Button';
 import { forgotPassword } from '../../api/auth';
 import { toast } from 'react-hot-toast';
+import useResendTimer from '../../hooks/useResendTimer';
 
 /**
  * Login page — allows existing customers to sign in with email and password.
@@ -21,7 +22,10 @@ export default function Login() {
   const [error, setError] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isForgotPasswordMode, setIsForgotPasswordMode] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
   
+  const { secondsLeft, startTimer, isTimerActive } = useResendTimer('storefrontPasswordResetTimer', 60);
+
   const { user, login, pendingAction, setPendingAction } = useAuth();
   const { addItem } = useCart();
   const navigate = useNavigate();
@@ -68,12 +72,15 @@ export default function Login() {
       setError('Please enter your email address');
       return;
     }
+
+    if (isTimerActive) return;
     
     setError('');
     setIsSubmitting(true);
     
     try {
       await forgotPassword(email);
+      startTimer();
       toast.success('If an account with that email exists, a reset link has been sent.', { duration: 5000 });
       setIsForgotPasswordMode(false);
       setPassword('');
@@ -127,6 +134,7 @@ export default function Login() {
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     placeholder="name@example.com"
+                    disabled={isTimerActive || isSubmitting}
                   />
                 </div>
               </div>
@@ -136,9 +144,12 @@ export default function Login() {
                   type="submit"
                   variant="primary"
                   loading={isSubmitting}
+                  disabled={isTimerActive}
                   className="w-full flex items-center justify-center gap-2 py-4 shadow-lg shadow-teal-500/20"
                 >
-                  {isSubmitting ? (
+                  {isTimerActive ? (
+                    `Try again in ${secondsLeft}s`
+                  ) : isSubmitting ? (
                     <Loader2 className="animate-spin" size={20} />
                   ) : (
                     <>
@@ -202,14 +213,21 @@ export default function Login() {
                   <Input
                     id="password"
                     name="password"
-                    type="password"
+                    type={showPassword ? "text" : "password"}
                     autoComplete="current-password"
                     required
-                    className="pl-12 bg-sage-50/50"
+                    className="pl-12 pr-12 bg-sage-50/50"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     placeholder="••••••••"
                   />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="absolute right-4 top-1/2 -translate-y-1/2 text-sage-300 hover:text-teal-600 transition-colors focus:outline-none"
+                  >
+                    {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                  </button>
                 </div>
               </div>
 
