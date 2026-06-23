@@ -25,12 +25,12 @@ class Mailer
         try {
             // Server settings
             $mail->isSMTP();
-            $mail->Host       = constant('SMTP_HOST') ?: 'smtp.gmail.com';
+            $mail->Host       = defined('SMTP_HOST') ? constant('SMTP_HOST') : 'smtp.gmail.com';
             $mail->SMTPAuth   = true;
-            $mail->Username   = constant('SMTP_USER');
-            $mail->Password   = constant('SMTP_PASS');
+            $mail->Username   = defined('SMTP_USER') ? constant('SMTP_USER') : '';
+            $mail->Password   = defined('SMTP_PASS') ? constant('SMTP_PASS') : '';
             $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
-            $mail->Port       = (int)(constant('SMTP_PORT') ?: 587);
+            $mail->Port       = defined('SMTP_PORT') ? (int)constant('SMTP_PORT') : 587;
 
             // Validate configuration
             if (empty($mail->Username) || empty($mail->Password)) {
@@ -39,7 +39,7 @@ class Mailer
             }
 
             // Recipients
-            $fromName = constant('MAIL_FROM_NAME') ?: "Althea's Aquatic";
+            $fromName = defined('MAIL_FROM_NAME') ? constant('MAIL_FROM_NAME') : "Althea's Aquatic";
             $mail->setFrom($mail->Username, $fromName);
             $mail->addAddress($to);
 
