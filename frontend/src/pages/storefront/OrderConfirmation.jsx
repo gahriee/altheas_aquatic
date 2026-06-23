@@ -30,6 +30,11 @@ export default function OrderConfirmation() {
         const data = await getConfirmation(id);
         setOrder(data);
         
+        if (!paymentIntentId && data.payment_method === 'cod') {
+          setPaymentStatus('cod');
+          return true;
+        }
+
         if (data.payment_status === 'paid') {
           setPaymentStatus('succeeded');
           return true;
@@ -120,7 +125,8 @@ export default function OrderConfirmation() {
 
   const isPaid = paymentStatus === 'succeeded' || order.payment_status === 'paid';
   const isFailed = paymentStatus === 'awaiting_payment_method' || order.payment_status === 'failed';
-  const isPending = !isPaid && !isFailed;
+  const isCod = paymentStatus === 'cod';
+  const isPending = !isPaid && !isFailed && !isCod;
 
   return (
     <div className="animate-in fade-in duration-700 max-w-3xl mx-auto px-4 py-6 sm:py-12 text-center">
@@ -129,19 +135,21 @@ export default function OrderConfirmation() {
         <div className="relative inline-flex p-5 sm:p-8 bg-white rounded-3xl sm:rounded-[40px] shadow-xl border border-sage-50">
           {isPaid && <CheckCircle className="text-emerald-500" size={60} strokeWidth={1.5} />}
           {isFailed && <XCircle className="text-coral-500" size={60} strokeWidth={1.5} />}
-          {isPending && <Clock className="text-amber-500" size={60} strokeWidth={1.5} />}
+          {(isPending || isCod) && <Clock className="text-amber-500" size={60} strokeWidth={1.5} />}
         </div>
       </div>
 
       <div className="space-y-3 sm:space-y-4 mb-8 sm:mb-12 text-center">
         <h1 className="text-2xl sm:text-4xl font-bold font-display text-sage-800 tracking-tight">
-          {isPaid ? 'Order Confirmed!' : isFailed ? 'Payment Failed' : 'Verifying Payment...'}
+          {isPaid ? 'Order Confirmed!' : isFailed ? 'Payment Failed' : isCod ? 'Order Placed Successfully!' : 'Verifying Payment...'}
         </h1>
         <p className="text-sm sm:text-base text-sage-500 font-medium max-w-lg mx-auto">
           {isPaid 
             ? `Excellent choice. Your order ${order.order_number || `#${order.order_id}`} has been secured. Our marine specialists are preparing your specimens for transit.`
             : isFailed 
             ? `We encountered an issue with your payment transaction. No specimens were reserved. Please try again or use a different method.`
+            : isCod
+            ? `Your order ${order.order_number || `#${order.order_id}`} has been received. Please prepare ₱${order.total_amount} for cash payment upon delivery.`
             : `We are awaiting confirmation from the payment gateway. This usually takes just a few seconds.`}
         </p>
       </div>
@@ -171,8 +179,8 @@ export default function OrderConfirmation() {
           </div>
           <div className="flex justify-between items-center pt-2">
             <span className="text-[10px] font-bold uppercase tracking-widest text-teal-500">Gateway Status</span>
-            <span className={`text-[10px] font-bold uppercase tracking-widest px-4 py-1.5 rounded-full ${isPaid ? 'bg-emerald-100 text-emerald-600' : isFailed ? 'bg-coral-100 text-coral-600' : 'bg-amber-100 text-amber-600'}`}>
-              {isPaid ? 'PAID' : isFailed ? 'FAILED' : 'AWAITING CONFIRMATION'}
+            <span className={`text-[10px] font-bold uppercase tracking-widest px-4 py-1.5 rounded-full ${isPaid ? 'bg-emerald-100 text-emerald-600' : isFailed ? 'bg-coral-100 text-coral-600' : isCod ? 'bg-teal-100 text-teal-600' : 'bg-amber-100 text-amber-600'}`}>
+              {isPaid ? 'PAID' : isFailed ? 'FAILED' : isCod ? 'CASH ON DELIVERY' : 'AWAITING CONFIRMATION'}
             </span>
           </div>
         </div>

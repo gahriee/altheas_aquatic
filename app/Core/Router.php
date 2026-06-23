@@ -135,6 +135,7 @@ class Router
 
             // Checkout
             $this->router->post('/checkout', 'PaymentController@createIntent');
+            $this->router->post('/checkout/cod', 'OrderController@submitCod');
             $this->router->get('/order-confirmation/(\d+)', 'OrderController@confirmation');
             $this->router->get('/orders/(\d+)/confirmation', 'OrderController@confirmation');
 

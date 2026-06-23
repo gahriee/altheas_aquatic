@@ -61,19 +61,38 @@ class OrderController
 
         $input = json_decode(file_get_contents('php://input'), true);
         $status = $input['status'] ?? null;
+        $paymentStatus = $input['payment_status'] ?? null;
 
-        if (!$status) {
-            Response::error('Status is required', 400);
+        if (!$status && !$paymentStatus) {
+            Response::error('Status or payment_status is required', 400);
         }
 
-        if ($this->orderModel->updateStatus($id, $status)) {
+        $success = false;
+        $messages = [];
+
+        if ($status) {
+            if ($this->orderModel->updateStatus($id, $status)) {
+                $success = true;
+                $messages[] = "status to '{$status}'";
+            }
+        }
+
+        if ($paymentStatus) {
+            if ($this->orderModel->updatePaymentStatusById($id, $paymentStatus)) {
+                $success = true;
+                $messages[] = "payment status to '{$paymentStatus}'";
+            }
+        }
+
+        if ($success) {
             $order = $this->orderModel->getById($id);
             if ($order) {
-                AuditLogger::log('update', 'order', $id, "Updated order #{$order['order_number']} status to '{$status}'");
+                $changes = implode(' and ', $messages);
+                AuditLogger::log('update', 'order', $id, "Updated order #{$order['order_number']} {$changes}");
             }
-            Response::json(['message' => 'Order status updated successfully']);
+            Response::json(['message' => 'Order updated successfully']);
         } else {
-            Response::error('Failed to update order status');
+            Response::error('Failed to update order');
         }
     }
 
@@ -108,6 +127,47 @@ class OrderController
 
         // This endpoint could be extended to show polling info or status
         Response::json($order);
+    }
+
+    /**
+     * ----------------------------------------
+     * submitCod
+     * ----------------------------------------
+     * Handles COD checkout creation.
+     */
+    public function submitCod(): void
+    {
+        \App\Core\Csrf::verifyHeader();
+
+        $input = json_decode(file_get_contents('php://input'), true);
+        $customer = $input['customer'] ?? [];
+        $items = $input['items'] ?? [];
+
+        if (empty($customer['name']) || empty($customer['email']) || empty($customer['phone']) || empty($customer['address'])) {
+            Response::error('Name, email, phone, and address are required', 400);
+        }
+
+        if (empty($items)) {
+            Response::error('Cart is empty', 400);
+        }
+
+        $userId = Auth::isLoggedIn() ? Auth::userId() : null;
+
+        try {
+            $result = $this->orderModel->createCodOrder($customer, $items, $userId);
+
+            // Clear the cart session for logged-in users or guest (since Cart works with session)
+            \App\Core\Cart::clear();
+
+            Response::json([
+                'order_id' => $result['order_id'],
+                'order_number' => $result['order_number'],
+                'checkout_type' => 'cod',
+                'message' => 'Order placed successfully'
+            ], 201);
+        } catch (\Exception $e) {
+            Response::error($e->getMessage(), 422);
+        }
     }
 
     /**

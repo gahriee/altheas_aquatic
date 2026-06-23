@@ -1,9 +1,10 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ArrowLeft, CreditCard, ShieldCheck, ShoppingBag, Loader2, MapPin } from 'lucide-react';
+import { ArrowLeft, CreditCard, ShieldCheck, ShoppingBag, Loader2, MapPin, Banknote } from 'lucide-react';
 import { useCart } from '../../context/CartContext';
 import { useAuth } from '../../context/AuthContext';
 import { createPaymentIntent } from '../../api/payments';
+import { submitCodOrder } from '../../api/orders';
 import { fetchProfile } from '../../api/profile';
 import { formatCurrency } from '../../utils/format';
 import { regions, provincesByCode, cities, barangays } from 'select-philippines-address';
@@ -26,6 +27,7 @@ export default function Checkout() {
   const [loading, setLoading] = useState(false);
   const [showQRModal, setShowQRModal] = useState(false);
   const [qrPayload, setQrPayload] = useState(null);
+  const [paymentMethod, setPaymentMethod] = useState('qrph');
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -176,6 +178,27 @@ export default function Checkout() {
     ].filter(Boolean).join(', ');
 
     try {
+      if (paymentMethod === 'cod') {
+        const response = await submitCodOrder({
+          customer: {
+              name: formData.name,
+              email: formData.email,
+              phone: '+63' + formData.phone.replace(/-/g, ''),
+              notes: formData.notes,
+              address: fullAddress
+          },
+          items: items.map(item => ({
+            product_id: item.id,
+            qty: item.qty,
+            name: item.name
+          }))
+        });
+
+        await clearCart();
+        navigate(`/order-confirmation/${response.order_id}`);
+        return;
+      }
+
       const response = await createPaymentIntent({
         customer: {
             name: formData.name,
@@ -398,18 +421,45 @@ export default function Checkout() {
             </div>
 
             <div className="bg-white p-5 sm:p-8 rounded-3xl sm:rounded-[40px] border border-sage-100 shadow-sm">
-              <div className="flex items-center gap-4 mb-6">
-                <div className="w-12 h-12 bg-teal-100 rounded-2xl flex items-center justify-center text-teal-600">
-                  <CreditCard size={24} />
+              <h3 className="text-lg font-bold font-display text-sage-800 mb-4">Payment Method</h3>
+              
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                <div 
+                  onClick={() => setPaymentMethod('qrph')}
+                  className={`cursor-pointer rounded-2xl border-2 p-4 flex gap-4 transition-colors ${paymentMethod === 'qrph' ? 'border-teal-500 bg-teal-50/50' : 'border-sage-100 hover:border-sage-200'}`}
+                >
+                  <div className={`w-5 h-5 shrink-0 rounded-full border-2 mt-0.5 flex items-center justify-center ${paymentMethod === 'qrph' ? 'border-teal-500' : 'border-sage-300'}`}>
+                    {paymentMethod === 'qrph' && <div className="w-2.5 h-2.5 bg-teal-500 rounded-full" />}
+                  </div>
+                  <div>
+                    <div className="flex items-center gap-2 text-sage-800 font-bold font-display mb-1">
+                      <CreditCard size={18} className="text-teal-600" />
+                      Online Payment
+                    </div>
+                    <p className="text-xs text-sage-500 font-medium leading-relaxed">
+                      GCash, Maya, or QR Ph banking app
+                    </p>
+                  </div>
                 </div>
-                <div>
-                  <h3 className="text-lg font-bold font-display text-sage-800">Payment Method</h3>
-                  <p className="text-sage-400 text-xs font-semibold uppercase tracking-widest">GCash (via PayMongo)</p>
+
+                <div 
+                  onClick={() => setPaymentMethod('cod')}
+                  className={`cursor-pointer rounded-2xl border-2 p-4 flex gap-4 transition-colors ${paymentMethod === 'cod' ? 'border-teal-500 bg-teal-50/50' : 'border-sage-100 hover:border-sage-200'}`}
+                >
+                  <div className={`w-5 h-5 shrink-0 rounded-full border-2 mt-0.5 flex items-center justify-center ${paymentMethod === 'cod' ? 'border-teal-500' : 'border-sage-300'}`}>
+                    {paymentMethod === 'cod' && <div className="w-2.5 h-2.5 bg-teal-500 rounded-full" />}
+                  </div>
+                  <div>
+                    <div className="flex items-center gap-2 text-sage-800 font-bold font-display mb-1">
+                      <Banknote size={18} className="text-teal-600" />
+                      Cash on Delivery
+                    </div>
+                    <p className="text-xs text-sage-500 font-medium leading-relaxed">
+                      Pay when you receive your order
+                    </p>
+                  </div>
                 </div>
               </div>
-              <p className="text-sage-500 text-sm leading-relaxed mb-6">
-                Complete your transaction securely via GCash, Maya, or any QR Ph enabled banking app.
-              </p>
               
               <Button 
                 type="submit" 
@@ -423,8 +473,17 @@ export default function Checkout() {
                   </>
                 ) : (
                   <div className="flex items-center gap-2">
-                    Pay {formatCurrency(total)}
-                    <ShieldCheck className="group-hover:scale-110 transition-transform" size={24} />
+                    {paymentMethod === 'cod' ? (
+                      <>
+                        Place Order — {formatCurrency(total)}
+                        <ShoppingBag className="group-hover:scale-110 transition-transform" size={24} />
+                      </>
+                    ) : (
+                      <>
+                        Pay {formatCurrency(total)}
+                        <ShieldCheck className="group-hover:scale-110 transition-transform" size={24} />
+                      </>
+                    )}
                   </div>
                 )}
               </Button>
