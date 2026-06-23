@@ -194,6 +194,7 @@ export default function Checkout() {
           }))
         });
 
+        setIsSuccess(true);
         await clearCart();
         navigate(`/order-confirmation/${response.order_id}`);
         return;

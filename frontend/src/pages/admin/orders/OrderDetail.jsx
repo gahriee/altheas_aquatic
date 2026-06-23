@@ -140,14 +140,6 @@ export default function OrderDetail() {
               {updating ? <Loader2 className="animate-spin" size={14} /> : <ChevronRight size={14} className="rotate-90" />}
             </div>
           </div>
-          <Button 
-            variant="primary" 
-            disabled={updating}
-            className="h-10 px-6 rounded-xl"
-            onClick={() => handleStatusUpdate(order.status)}
-          >
-            Update
-          </Button>
         </div>
       </div>
 
@@ -204,7 +196,7 @@ export default function OrderDetail() {
           </div>
 
           {/* Payment Info */}
-          <div className="bg-sage-800 rounded-3xl p-6 shadow-xl space-y-6 text-white relative overflow-hidden">
+          <div className="bg-teal-600 rounded-3xl p-6 shadow-xl space-y-6 text-white relative overflow-hidden">
             <div className="absolute top-0 right-0 p-8 opacity-10">
               <CreditCard size={120} />
             </div>
