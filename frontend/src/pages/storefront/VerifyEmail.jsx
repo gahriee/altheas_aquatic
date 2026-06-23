@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useNavigate, useSearchParams, Link } from 'react-router-dom';
+import { useSearchParams, Link } from 'react-router-dom';
 import { verifyEmail } from '../../api/auth';
 import { Loader2, CheckCircle2, AlertCircle, ArrowRight } from 'lucide-react';
 import Button from '../../components/ui/Button';
@@ -8,7 +8,6 @@ export default function VerifyEmail() {
   const [searchParams] = useSearchParams();
   const selector = searchParams.get('selector');
   const token = searchParams.get('token');
-  const navigate = useNavigate();
 
   const [isVerifying, setIsVerifying] = useState(true);
   const [isSuccess, setIsSuccess] = useState(false);
